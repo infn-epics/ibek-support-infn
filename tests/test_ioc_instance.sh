@@ -11,7 +11,7 @@ fi
 
 tmpdir=$(mktemp -d)
 
-ibek startup generate ioc.yaml ../../*/*.support.yaml --out ${tmpdir}/st.cmd \
+ibek runtime generate ioc.yaml ../../*/*.support.yaml --out ${tmpdir}/st.cmd \
     --db-out ${tmpdir}/ioc.db
 
 if not diff ${tmpdir}/st.cmd ./st.cmd || not diff ${tmpdir}/ioc.db ./ioc.db; then
