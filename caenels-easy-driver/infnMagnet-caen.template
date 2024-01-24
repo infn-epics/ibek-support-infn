@@ -1,0 +1,232 @@
+################################################################################
+# lnlMagnets  lnlMagnets-caen.template
+# Template database for a LNL Magnets Power Supply based on CAENels NGPS Hardware
+#
+# Maurizio Montis - 14 February 2018
+#
+# After Firmware 1.4.X, the NGPS IOC Server runs directly into the power supply.
+# As consequence the set of "hardware PVs" are referred directly to them and the 
+# naming convention doesn't follow the EPICS SPES standard
+#
+# substitutions:
+# facsys  - facility system
+# funsys  - functional apparatus
+# subsys  - sub-functional apparatus
+# count1  - counter (for apparatusi / sub-apparatus)
+# obj     - device 
+# count2  - counter (for specify devices)
+# 
+# caenP	  - caenELS P parameter (from IOC Server)
+# caenR   - caenELS R parameter (from IOC Server)
+#
+#
+################################################################################
+# 
+#
+
+##### CURRENT CONVERSION  #####
+
+## SET CURRENT  IN PERCENTAGE [GUI]
+record(ao, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2):CurSt")
+{
+    field(DESC, "Set Output I $(funsys) $(obj)$(count1)")
+    field(EGU,  "%")
+    field(HOPR, "80")
+    field(LOPR, "0")
+    field(DRVH, "80")
+    field(DRVL, "0")
+    field(FLNK, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-Cond01")
+    field(PINI, "YES")
+    field(PREC, "2")
+    field(VAL, "0")
+    #field(SDIS, "$(caenP)$(caenR)Enable")
+    #field(DISV, "0")
+}
+
+## CONVERT CURRENT SETTING FROM % [GUI] TO AMPERE [HW]
+record(calcout, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-Cond01")
+{
+    field(DESC, "Convert I from % to A")
+    field(EGU,  "A")
+    field(FLNK, "$(caenP)$(caenR)Current")
+    field(CALC, "A*(C-D)/B")
+    field(OUT,  "$(caenP)$(caenR)Current PP")
+    field(INPA, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2):CurSt")
+    field(INPB, "100")
+    field(INPC, "$(caenP)$(caenR)LimitMaxI")
+    field(INPD, "$(caenP)$(caenR)LimitMinI")
+    field(PREC, "2")
+    field(SDIS, "$(caenP)$(caenR)RegulationMode")
+    field(DISV, "0")
+}
+
+
+## RESET CURRENT SETPOINT WHEN HW IS OFF
+record(calcout, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-CurRs")
+{
+    field(DESC, "Reset I when PS is OFF")
+    #field(SCAN, ".1 second")
+    field(INPA, "$(caenP)$(caenR)Enable")
+    field(CALC, "A")
+    field(OOPT, "When Zero")
+    field(DOPT, "Use CALC")
+    field(OUT, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2):CurSt PP")
+
+}
+
+## SET CURRENT SENSITIVITY FOR SLIDER [GUI]
+record(ao, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2):CurSl")
+{
+    field(DESC, "Set $(funsys) $(obj)$(count1) I Step ")
+    field(SCAN, "Passive")
+    field(PREC, "5")
+    field(PINI, "YES")
+    field(VAL, "0.0010")
+}
+
+## CONVERT CURRENT READBACK FROM AMPERE [HW] TO % [GUI]
+record(calc, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-Cond02") 
+{                                                                               
+    field(DESC, "Convert RDBK Ampere in %")
+    field(SCAN, "1 second")
+    field(EGU,  "%")                                                            
+    field(CALC, "A*B/(C-D)")    
+    field(INPA, "$(caenP)$(caenR)OutputCurrent CP")
+    field(INPB, "100")
+    field(INPC, "$(caenP)$(caenR)LimitMaxI")
+    field(INPD, "$(caenP)$(caenR)LimitMinI")
+    field(PREC, "2")
+}
+
+
+
+##### VOLTAGE CONVERSION  #####
+
+## SET VOLTAGE IN PERCENTAGE [GUI]
+record(ao, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2):VoltSt")
+{
+    field(DESC, "Set Output V $(funsys) $(obj)$(count1)")
+    field(EGU,  "%")
+    field(HOPR, "80")
+    field(LOPR, "0")
+    field(DRVH, "80")
+    field(DRVL, "0")
+    field(FLNK, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-Cond03")
+    field(PINI, "YES")
+    field(PREC, "2")
+    field(VAL, "0")
+    #field(SDIS, "$(caenP)$(caenR)Enable")
+    #field(DISV, "0")
+}
+
+## CONVERT CURRENT SETTING FROM % [GUI] TO AMPERE [HW]
+record(calcout, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-Cond03")
+{
+    field(DESC, "Convert I from % to A")
+    field(EGU,  "A")
+    field(FLNK, "$(caenP)$(caenR)Voltage")
+    field(CALC, "A*(C-D)/B")
+    field(OUT,  "$(caenP)$(caenR)Voltage PP")
+    field(INPA, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2):VoltSt")
+    field(INPB, "100")
+    field(INPC, "$(caenP)$(caenR)LimitMaxV")
+    field(INPD, "$(caenP)$(caenR)LimitMinV")
+    field(PREC, "5")
+    field(SDIS, "$(caenP)$(caenR)RegulationMode")
+    field(DISV, "1")
+}
+
+## RESET CURRENT SETPOINT WHEN HW IS OFF
+record(calcout, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-VoltRs")
+{
+    field(DESC, "Reset V when PS is OFF")
+    #field(SCAN, ".1 second")
+    field(INPA, "$(caenP)$(caenR)Enable")
+    field(CALC, "A")
+    field(OOPT, "When Zero")
+    field(DOPT, "Use CALC")
+    field(OUT, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2):VoltSt PP")
+
+}
+
+## SET CURRENT SENSITIVITY FOR SLIDER [GUI]
+record(ao, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2):VoltSl")
+{
+    field(DESC, "Set $(funsys) $(obj)$(count1) V Step ")
+    field(SCAN, "Passive")
+    field(PREC, "5")
+    field(PINI, "YES")
+    field(VAL, "0.0010")
+}
+
+## CONVERT VOLTAGE READBACK FROM AMPERE [HW] TO % [GUI]
+record(calc, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-Cond04")
+{
+    field(DESC, "Convert RDBK Voltage in %")
+    field(SCAN, "1 second")
+    field(EGU,  "%")
+    field(CALC, "A*B/(C-D)")
+    field(INPA, "$(caenP)$(caenR)OutputVoltage CP")
+    field(INPB, "100")
+    field(INPC, "$(caenP)$(caenR)LimitMaxV")
+    field(INPD, "$(caenP)$(caenR)LimitMinV")
+    field(PREC, "2")
+}
+
+
+
+## RESET SETPOINTS AND ENABLE AFTER FAULT
+record(calcout, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-EnRs")
+{
+    field(DESC, "Enable Reset for Fault")
+    field(SCAN, "2 second")
+    field(INPA, "$(caenP)$(caenR)StatusMSB")
+    field(CALC, "A#0?0:1")
+    field(OOPT, "Transition To Zero")
+    field(DOPT, "Use OCAL")
+    field(OCAL, "0")
+    field(OUT, "$(caenP)$(caenR)Enable")
+    field(FLNK, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-RsSe")
+}
+
+
+#record(calcout, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-Cond05")
+#{
+#    field(DESC, "Setpoint Reset for PS Disabled")
+#    field(SCAN, "2 second")
+#    field(INPA, "$(caenP):$(caenR):Enable")
+#    field(CALC, "A=0?0:1")
+#    field(OOPT, "When Zero")
+#    field(DOPT, "Use OCAL")
+#    field(OCAL, "0")
+#    field(FLNK, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-RsSe")
+#}
+
+
+record(seq, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2)-RsSe")
+{
+    field(DESC, "Act Reset")
+    field(SELM, "All")
+    field(SDIS, "$(caenP)$(caenR)Enable")
+    field(DISV, "1")
+    field(DOL1, "$(caenP)$(caenR)Enable")
+    field(LNK3, "$(caenP)$(caenR)Current")
+    field(DOL4, "$(caenP)$(caenR)Enable")
+    field(LNK4, "$(caenP)$(caenR)Voltage")
+
+}
+
+## PV for ALARM MANAGER
+record(calcout, "$(facsys)$(funsys)$(subsys)$(count1)_$(obj)$(count2):Alrm")
+{
+   field(DESC, "Fault info for Alarm Manager")
+   field(SCAN, "1 second")
+   field(INPA, "$(FAULTPV)")
+   field(INPB, "$(CONFPV)")
+   field(CALC, "$(CONDITION)")
+   field(HIGH, "1")
+   field(HSV, "MAJOR")
+   field(HIHI, "1")
+   field(HHSV, "MAJOR")
+}
+

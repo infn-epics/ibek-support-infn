@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
+
+module: caenels-easy-driver
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
+
+defs:
+  - name: caenelsEasyPS
+    description: |-
+      This will create an instance of standard CAEN Easy Power Supply
+    args:
+      - type: str
+        name: P
+        description: Device Prefix
+      - type: str
+        name: R
+        description: Device Suffix
+      - type: str
+        name: IP
+        description: |-
+          IP address of the Power Supply
+        default: 127.0.0.1 ## localhost
+      - type: int
+        name: TCPPORT
+        description: |-
+          TCP PORT of the Power Supply
+        default: 10001
+
+      - type: int 
+        name: RANGE
+        description: |-
+          Current channels range
+        default: 1
+      - type: int 
+        name: OMAX
+        description: |-
+          Output MAX
+        default: 0
+      - type: int 
+        name: IMAX
+        description: |-
+          Current MAX
+        default: 0
+
+    pre_init:
+      - value: |
+          devEasyDriverConfigure("{{P}}", "{{IP}}:{{TCPPORT}}", 0x1)
+    databases:
+      - file: $(SUPPORT)/easy-driver-epics/db/asynRecord.db
+        args:
+          P:
+          R: "asyn"
+          PORT: "{{P}}_TCP"
+          OMAX:
+          IMAX:
+    
+      - file: $(SUPPORT)/easy-driver-epics/db/devEasyDriver.db
+        args:
+          P:
+          R:
+          PORT: "{{P}}"
+          RANGE:
+          NELM: "10000"
+          
