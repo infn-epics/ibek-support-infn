@@ -8,7 +8,7 @@
 #  $1 VERSION to install (must match repo tag)
 VERSION=${1}
 NAME=easy-driver-epics
-
+ALIAS=caenels-easy-driver ## maybe ibek should support an alternate name for the support module?
 # log output and abort on failure
 set -xe
 
