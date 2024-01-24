@@ -9,6 +9,8 @@
 VERSION=${1}
 NAME=easy-driver-epics
 ALIAS=caenels-easy-driver ## maybe ibek should support an alternate name for the support module?
+FOLDER=$(dirname $(readlink -f $0))
+
 # log output and abort on failure
 set -xe
 
@@ -33,6 +35,6 @@ fi
 ibek support compile ${NAME}
 
 # prepare *.bob, *.pvi, *.ibek.support.yaml for access outside the container.
-ibek support generate-links ${NAME}
+ibek support generate-links ${FOLDER}
 
 
