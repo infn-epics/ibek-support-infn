@@ -1,0 +1,270 @@
+commit 0bb1aec709af64b2bee7a8c089d00ecd68b61e87
+Author: Giles Knap <giles.knap@diamond.ac.uk>
+Date:   Sun Mar 3 11:08:31 2024 +0000
+
+    PaulsFixes
+
+diff --git a/configure/CONFIG_SITE b/configure/CONFIG_SITE
+index bb04d36..c201f24 100644
+--- a/configure/CONFIG_SITE
++++ b/configure/CONFIG_SITE
+@@ -11,7 +11,7 @@
+ # Set this when you only want to compile this application
+ # for a subset of the cross-compiled target architectures
+ # that Base is built for.
+-#CROSS_COMPILER_TARGET_ARCHS = RTEMS-beatnik
++CROSS_COMPILER_TARGET_ARCHS = RTEMS-beatnik
+ #CROSS_COMPILER_TARGET_ARCHS = RTEMS-uC5282
+ #CROSS_COMPILER_TARGET_ARCHS = RTEMS-pc586
+ 
+diff --git a/configure/RELEASE b/configure/RELEASE
+index 6b27de3..1328c91 100644
+--- a/configure/RELEASE
++++ b/configure/RELEASE
+@@ -11,11 +11,11 @@ MAKE_TEST_IOC_APP=YES
+ # Define the version of modules needed by
+ # IOC apps or other Support apps - used by testIocStatsApp
+ # =============================================================
+-SUPPORT=/usr/local/epics/R3.14.11/modules/soft/synApps_5_5/support
++SUPPORT=/dls_sw/work/R7.0-net-legacy/support
+ 
+-SNCSEQ     = $(SUPPORT)/seq-2-0-12
++SNCSEQ     = $(SUPPORT)/seq
+ 
+-EPICS_BASE=/afs/slac/g/spear/epics/base
++EPICS_BASE=/dls_sw/work/epics/R7.0-net-legacy
+ 
+ # These lines allow developers to override these RELEASE settings
+ # without having to modify this file directly.
+diff --git a/devIocStats/os/RTEMS/devIocStatsOSD.h b/devIocStats/os/RTEMS/devIocStatsOSD.h
+index b21cc0e..8b9c99b 100644
+--- a/devIocStats/os/RTEMS/devIocStatsOSD.h
++++ b/devIocStats/os/RTEMS/devIocStatsOSD.h
+@@ -66,6 +66,9 @@
+ # endif
+ 
+ #include <string.h>
++#if   (__RTEMS_MAJOR__ > 4)
++#undef random
++#endif
+ #include <stdlib.h>
+ 
+ #define sysBootLine rtems_bsdnet_bootp_cmdline
+diff --git a/devIocStats/os/RTEMS/osdCpuUsage.c b/devIocStats/os/RTEMS/osdCpuUsage.c
+index 2daa95e..666fc07 100644
+--- a/devIocStats/os/RTEMS/osdCpuUsage.c
++++ b/devIocStats/os/RTEMS/osdCpuUsage.c
+@@ -47,8 +47,11 @@
+ 
+ #include <devIocStats.h>
+ 
+-# if   (__RTEMS_MAJOR__ > 4) \
+-   || (__RTEMS_MAJOR__ == 4 && __RTEMS_MINOR__ > 7)
++# if   (__RTEMS_MAJOR__ >= 5)
++#include <rtems/score/todimpl.h>
++#include <rtems/score/threadimpl.h>
++#endif
++#if (__RTEMS_MAJOR__ == 4 && __RTEMS_MINOR__ > 7)
+ typedef char objName[13];
+ #define RTEMS_OBJ_GET_NAME(tc,name) rtems_object_get_name((tc)->Object.id, sizeof(name),(name))
+ #ifdef SSRLAPPSMISCUTILS
+@@ -79,7 +82,7 @@ typedef char * objName;
+ 
+ static double prev_total = 0;
+ static double prev_idle  = 0;
+-
++# if   (__RTEMS_MAJOR__ < 5)
+ static void cpu_ticks(double *total, double *idle)
+ {
+     Objects_Information *obj;
+@@ -114,7 +117,65 @@ static void cpu_ticks(double *total, double *idle)
+         }
+     }
+ }
++#else
++typedef struct {
++  Timestamp_Control    total;
++  Timestamp_Control    idle;
++
++} cpu_usage_context;
++
++static bool cpu_usage_visitor2( Thread_Control *the_thread, void *arg)
++{
++	cpu_usage_context *ctx;
++
++	Timestamp_Control  used;
++	char               name[ 38 ];	
++	ctx = arg;
++
++/* thread name to locate IDLE thread */
++		
++	_Thread_Get_name( the_thread, name, sizeof(name) );
++	
++/* CPU time used by this thread since last reset */
++	
++	used = _Thread_Get_CPU_time_used( the_thread);
++
++/* add to total */
++
++	_Timestamp_Add_to(&ctx->total, &used);
++  
++	if (name[0])
++	{
++            if (name[0] == 'I' && name[1] == 'D' &&
++                name[2] == 'L' && name[3] == 'E') {	    
++			
++			ctx->idle = used;
++            }
++	}
++
++	return false;
++}
+ 
++static void cpu_ticks(double *total, double *idle)
++{
++	cpu_usage_context ctx;
++
++/* clear counters */
++
++	_Timestamp_Set_to_zero(&ctx.total);
++	_Timestamp_Set_to_zero(&ctx.idle);
++	
++/* iterate throught all tasks (threads) */
++
++	rtems_task_iterate( cpu_usage_visitor2, &ctx);
++
++/* convert to doubles */
++
++	*idle = _Timestamp_Get_seconds(&ctx.idle) + _Timestamp_Get_nanoseconds(&ctx.idle) / 1e9;
++	*total = _Timestamp_Get_seconds(&ctx.total) + _Timestamp_Get_nanoseconds(&ctx.total) / 1e9;
++}
++
++#endif
+ int devIocStatsInitCpuUsage (void)
+ {
+     cpu_ticks(&prev_total, &prev_idle);
+diff --git a/devIocStats/os/RTEMS/osdSuspTasks.c b/devIocStats/os/RTEMS/osdSuspTasks.c
+index e875f57..30e1f64 100644
+--- a/devIocStats/os/RTEMS/osdSuspTasks.c
++++ b/devIocStats/os/RTEMS/osdSuspTasks.c
+@@ -40,6 +40,50 @@
+ 
+ #include <devIocStats.h>
+ 
++#if (__RTEMS_MAJOR__ >= 5)
++
++#include <taskwd.h>
++
++static int n = 0;
++
++static void Notify(void *usr, epicsThreadId tid, int suspended)
++{
++	if (suspended)
++	{
++		n++;
++	}
++	else
++	{
++		n--;
++	}
++}
++
++/* register to be notified of any changes */
++
++static taskwdMonitor mon;
++
++int devIocStatsInitSuspTasks (void)
++{
++	n = 0;
++	
++	mon.insert = NULL;
++	mon.remove = NULL;
++	mon.notify = Notify;
++	
++	taskwdMonitorAdd(&mon, NULL);
++
++	return 0;
++}
++
++int devIocStatsGetSuspTasks(int *pval)
++{
++	*pval = n;
++
++	return (0);
++}
++
++#else
++
+ int devIocStatsInitSuspTasks (void) { return 0; }
+ 
+ int devIocStatsGetSuspTasks (int *pval)
+@@ -61,3 +105,4 @@ int devIocStatsGetSuspTasks (int *pval)
+     *pval = n;
+     return 0;
+ }
++#endif
+diff --git a/devIocStats/os/RTEMS/osdWorkspaceUsage.c b/devIocStats/os/RTEMS/osdWorkspaceUsage.c
+index 3d0568d..031c167 100644
+--- a/devIocStats/os/RTEMS/osdWorkspaceUsage.c
++++ b/devIocStats/os/RTEMS/osdWorkspaceUsage.c
+@@ -25,6 +25,9 @@
+        
+  -----------------------------------------------------------------------------*/
+ #include <devIocStats.h>
++# if   (__RTEMS_MAJOR__ > 4)
++#include <rtems/score/wkspace.h>
++#endif
+ 
+ int devIocStatsInitWorkspaceUsage (void) { return 0; }
+ 
+@@ -38,8 +41,9 @@ int devIocStatsGetWorkspaceUsage (memInfo *pval)
+     _Heap_Get_information( &_Workspace_Area, &info);  /*_Heap_Get_information is part of the RTEMS API */
+     _RTEMS_Unlock_allocator();
+ #endif /* RTEMS_PROTECTED_HEAP */
+-# if   (__RTEMS_MAJOR__ > 4) \
+-   || (__RTEMS_MAJOR__ == 4 && __RTEMS_MINOR__ > 9)
++# if   (__RTEMS_MAJOR__ > 4)
++	pval->numBytesTotal    = rtems_configuration_get_work_space_size();
++#elif (__RTEMS_MAJOR__ == 4 && __RTEMS_MINOR__ > 9)
+     pval->numBytesTotal    = Configuration.work_space_size;
+ #else
+     pval->numBytesTotal    = _Configuration_Table->work_space_size;
+diff --git a/iocAdmin/Db/iocAdminRTEMS.substitutions b/iocAdmin/Db/iocAdminRTEMS.substitutions
+index c0c7e6d..f1f56d4 100644
+--- a/iocAdmin/Db/iocAdminRTEMS.substitutions
++++ b/iocAdmin/Db/iocAdminRTEMS.substitutions
+@@ -9,7 +9,7 @@
+ file ioc.template
+ {
+ pattern { IOCNAME , TODFORMAT           }
+-	{ "$(IOC)"  , "%m/%d/%Y %H:%M:%S" }
++	{ "$(IOC)"  , "%Y-%m-%d %H:%M:%S" }
+ }
+ file iocGeneralTime.template
+ {
+diff --git a/iocAdmin/Db/iocAdminSoft.substitutions b/iocAdmin/Db/iocAdminSoft.substitutions
+index f273236..f143941 100644
+--- a/iocAdmin/Db/iocAdminSoft.substitutions
++++ b/iocAdmin/Db/iocAdminSoft.substitutions
+@@ -9,7 +9,7 @@
+ file ioc.template
+ {
+ pattern { IOCNAME , TODFORMAT           }
+-	{ "$(IOC)"  , "%m/%d/%Y %H:%M:%S" }
++	{ "$(IOC)"  , "%Y-%m-%d %H:%M:%S" }
+ }
+ file iocGeneralTime.template
+ {
+diff --git a/iocAdmin/Db/iocAdminVxWorks.substitutions b/iocAdmin/Db/iocAdminVxWorks.substitutions
+index a240b55..145ab28 100644
+--- a/iocAdmin/Db/iocAdminVxWorks.substitutions
++++ b/iocAdmin/Db/iocAdminVxWorks.substitutions
+@@ -9,7 +9,7 @@
+ file ioc.template
+ {
+ pattern { IOCNAME , TODFORMAT           }
+-	{ "$(IOC)"  , "%m/%d/%Y %H:%M:%S" }
++	{ "$(IOC)"  , "%Y-%m-%d %H:%M:%S" }
+ }
+ file iocGeneralTime.template
+ {

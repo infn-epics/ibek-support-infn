@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.3/ibek.support.schema.json
+# yaml-language-server: $schema=file:///tmp/ibek.support.schema.json
 
 module: pmac
 
@@ -156,13 +156,74 @@ defs:
           # Configure Model 3 Axes Driver (Controler Port, Axis Count)
           pmacCreateAxes("{{name}}", {{NAXES}})
 
+    pvi:
+      yaml_path: pmacController.pvi.device.yaml
+      pv_prefix: "{{ P }}"
+      ui_macros:
+        P:
+
+  - name: pmacAsynSSHPort
+    description: |-
+      This will create an AsynPort connecting to a PowerPMAC over SSH
+    args:
+      - type: id
+        name: name
+        description: |-
+          Port Name, normally something like SSH_PORT
+
+      - type: str
+        name: IP
+        description: |-
+          IP address of the powerPMAC
+
+      - type: str
+        name: USERNAME
+        description: |-
+          Username for the SSH connection
+        default: root
+
+      - type: str
+        name: PASSWORD
+        description: |-
+          Password for the SSH connection
+        default: deltatau
+
+      - type: int
+        name: PRIORITY
+        description: |-
+          Priority of the port
+        default: 0
+
+      - type: int
+        name: NOAUTOCONNECT
+        description: |-
+          Disable autoconnect if set to 1
+        default: 0
+
+      - type: int
+        name: NOEOS
+        description: |-
+          No EOS used if set to 1
+        default: 0
+
+      - type: str
+        name: simulation
+        description: |-
+          IP port to connect to if in simulation mode
+        default: ""
+
+    pre_init:
+      - value: |
+          # Create SSH Port (PortName, IPAddress, Username, Password, Priority, DisableAutoConnect, noProcessEos)
+          drvAsynPowerPMACPortConfigure("{{name}}", "{{IP}}", "{{USERNAME}}", "{{PASSWORD}}", "{{PRIORITY}}", "{{NOAUTOCONNECT}}", "{{NOEOS}}")
+
   - name: PowerPMAC
     description: |-
       This will create an asyn motor port for a PowerPMAC that we can attach
           motor records to using the model 3 driver
     args:
       - type: object
-        name: Port
+        name: pmacAsynSSHPort
         description: |-
           pmacAsynSSHPort to connect to
 
@@ -216,56 +277,67 @@ defs:
         name: PMAC
         description: |-
           Pmac/Geobrick name
+        default: ""
 
       - type: str
         name: AXIS
         description: |-
           Axis number
+        default: ""
 
       - type: str
         name: PORT
         description: |-
           Asyn port
+        default: "{{name}}"
 
       - type: str
         name: CSG0
         description: |-
           Name for Coordinate System Group 0
+        default: ""
 
       - type: str
         name: CSG1
         description: |-
           Name for Coordinate System Group 1
+        default: ""
 
       - type: str
         name: CSG2
         description: |-
           Name for Coordinate System Group 2
+        default: ""
 
       - type: str
         name: CSG3
         description: |-
           Name for Coordinate System Group 3
+        default: ""
 
       - type: str
         name: CSG4
         description: |-
           Name for Coordinate System Group 4
+        default: ""
 
       - type: str
         name: CSG5
         description: |-
           Name for Coordinate System Group 5
+        default: ""
 
       - type: str
         name: CSG6
         description: |-
           Name for Coordinate System Group 6
+        default: ""
 
       - type: str
         name: CSG7
         description: |-
           Name for Coordinate System Group 7
+        default: ""
 
     databases:
       - file: pmacStatusAxis.template
@@ -298,7 +370,7 @@ defs:
     pre_init:
       - value: |
           # Configure Model 3 Controller Driver (ControlerPort, LowLevelDriverPort, Address, Axes, MovingPoll, IdlePoll)
-          pmacCreateController("{{name}}", "{{PORT}}", 0, {{NAxes}}, {{MovingPoll}}, {{IdlePoll}})
+          pmacCreateController("{{name}}", "{{pmacAsynSSHPort}}", 0, {{NAxes}}, {{MovingPoll}}, {{IdlePoll}})
           # Configure Model 3 Axes Driver (Controler Port, Axis Count)
           pmacCreateAxes("{{name}}", {{NAxes}})
 
@@ -411,6 +483,12 @@ defs:
           PREC:
           PMAC: "{{PmacController.P}}"
           NAxes: "{{PmacController.NAxes}}"
+
+    # pvi:
+    #   yaml_path: pmacTrajectory.pvi.device.yaml
+    #   pv_prefix: "{{ PmacController.P }}"
+    #   ui_macros:
+    #     PMAC:
 
   - name: dls_pmac_asyn_motor
     description: |-
@@ -717,37 +795,6 @@ defs:
         default: "#"
 
     databases:
-      - file: eloss_kill_autohome_records.template
-        enabled: "{{ not is_cs }}"
-        args:
-          PMAC: "{{ Controller.P }}"
-          SPORT: "{{ Controller.pmacAsynPort }}"
-          ALLOW_HOMED_SET:
-          HOME:
-          P:
-          M:
-          ADDR:
-          PORT: "{{ Controller }}"
-          PREC:
-          DESC:
-          EGU:
-
-      # TODO dont use this template if is_cs is true
-      - file: motor_in_cs.template
-        enabled: "{{ not is_cs }}"
-        args:
-          P:
-          M:
-          PORT: "{{ Controller }}"
-          ADDR:
-
-      - file: pmacStatusAxis.template
-        enabled: "{{ not is_cs }}"
-        args:
-          AXIS: "{{ADDR}}"
-          PORT: "{{ Controller }}"
-          PMAC: "{{ Controller.P }}"
-
       - file: "{{ 'dls_pmac_cs_asyn_motor.template' if is_cs else 'dls_pmac_asyn_motor.template' }}"
         args:
           P:
@@ -801,6 +848,14 @@ defs:
           NTM:
           TWV:
           HOMEVISSTR:
+
+    pvi:
+      yaml_path: pmacAxis.pvi.device.yaml
+      pv_prefix: "{{ P }}{{ M }}"
+      ui_macros:
+        P:
+        M:
+        # TODO probably much more required here
 
   - name: autohome
     description: |-
