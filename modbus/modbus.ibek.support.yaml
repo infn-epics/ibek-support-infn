@@ -221,6 +221,15 @@ defs:
           drvAsynIPPortConfigure("{{MODBUSPORT}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
           modbusInterposeConfig("{{MODBUSPORT}}_ASYN",0,{{TIMEOUT}},{{WRITEDELAY}})
           drvModbusAsynConfigure("{{MODBUSPORT}}", "{{MODBUSPORT}}_ASYN", {{SERVER_ADDR}}, {{FUNC_CODE}}, {{STARTADDR}}, {{DATA_LENGTH}}, {{DATA_TYPE}}, {{POLL_DELAY}}, "DefaultModbus")
+        
+          asynSetTraceIOTruncateSize("{{MODBUSPORT}}_ASYN", -1, 1024)
+          asynSetTraceIOMask("{{MODBUSPORT}}_ASYN",0,4)
+          asynSetTraceMask("{{MODBUSPORT}}_ASYN",0,9)
+
+    post_init:
+      - value: |
+          dbl
+
 
 ## modbusSensorTemplate
   - name: modbusFloatReadout
