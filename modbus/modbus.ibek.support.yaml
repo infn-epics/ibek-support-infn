@@ -224,7 +224,7 @@ defs:
         
           asynSetTraceIOTruncateSize("{{MODBUSPORT}}_ASYN", -1, 1024)
           asynSetTraceIOMask("{{MODBUSPORT}}_ASYN",0,4)
-          asynSetTraceMask("{{MODBUSPORT}}_ASYN",0,9)
+          asynSetTraceMask("{{MODBUSPORT}}_ASYN",0,0xF)
 
     post_init:
       - value: |
