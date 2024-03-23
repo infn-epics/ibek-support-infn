@@ -1,0 +1,56 @@
+# define common settings
+
+record(ai, "$(P):$(R):TEMP$(ID)_RB")
+{
+    field(DTYP, "asynInt32")
+    field(DESC, "Temperature Sensor Analog Input")
+    field(INP, "@asynMask($(PORT) $(REGOFFSET) 16)INT16")
+    field(HOPR, "$(HOPR=100)")
+    field(HIHI, "$(HIHI=100)")
+    field(HIGH, "$(HIGH=90)")
+    field(LOW, "$(LOW=20)")
+    field(LOLO, "$(LOLO=0)")
+    field(PREC, "$(PREC=3)")
+    field(LINR, "LINEAR")
+    field(ASLO, "$(SLOPE=1.0)")
+    field(AOFF, "$(OFFSET=0)")
+    field(EGUF, "$(EGUF=100)")
+    field(EGUL, "$(EGUL=-100)")
+    field(SCAN, "$(SCAN=I/O Intr)")
+    field(EGU, "$(EGU=\"degC\")")
+}
+
+record(mbbi, "$(P):$(R):TEMP$(ID)_Status")
+{
+    field(DESC, "Temperature Sensor Status")
+    field(DTYP, "Soft Channel")
+    field(INP, "$(P):$(R):TEMP$(ID)_RB")
+    field(ZRST, "NO_ALARM")
+    field(ZRVL, "0")
+    field(ONST, "HIHI_ALARM")
+    field(TWST, "HIGH_ALARM")
+    field(THST, "LOW_ALARM")
+    field(FRST, "LOLO_ALARM")
+    field(FLNK, "$(P):$(R):TEMP$(ID)_RB")
+}
+
+record(acalcout, "$(P):$(R):TEMP$(ID)_AVG")
+{
+    field(DESC, "Average Temperature Calculation")
+    field(CALC, "AVG(A)")
+    field(INPA, "$(P):$(R):TEMP$(ID)_HISTO")
+    field(EGU, "Degrees Celsius")
+    field(PREC, "3")
+}
+
+record(waveform, "$(P):$(R):TEMP$(ID)_HISTO")
+{
+    field(DESC, "Temperature Sensor History")
+    field(DTYP, "Soft Channel")
+    field(INP, "$(P):$(R):TEMP$(ID)_RB")
+    field(FTVL, "DOUBLE")
+    field(NELM, "100")
+    field(PREC, "3")
+    field(EGU, "Degrees Celsius")
+    field(FLNK, "$(P):$(R):TEMP$(ID)_RB")
+}

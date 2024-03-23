@@ -31,7 +31,7 @@ fi
 
 # compile the support module
 ibek support compile ${NAME}
-
+cp -i ${FOLDER}/db/* ${SUPPORT}/${NAME}/db
 # prepare *.bob, *.pvi, *.ibek.support.yaml for access outside the container.
 ibek support generate-links ${FOLDER}
 
