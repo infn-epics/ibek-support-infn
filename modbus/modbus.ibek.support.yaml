@@ -432,12 +432,12 @@ defs:
           Engineering Units High Limit
         default: 100
       - type: float
-        name: SLOPE
+        name: ASLO
         description: |-
           Conversion Slope
         default: 0.02319 ## good for PT100 on IPDAS 
       - type: float
-        name: OFFSET
+        name: AOFF
         description: |-
           Conversion Offset
         default: 0.0
@@ -461,6 +461,12 @@ defs:
         description: |-
           Control Low Limit
         default: 10.0
+      - type: str
+        name: LINR
+        description: |-
+          Enable = LINEAR Disable=NO CONVERSION Linear Conversion
+        default: "=NO CONVERSION"
+        
      
     databases:
       - file: temperature-sensor.template
@@ -471,7 +477,7 @@ defs:
           PORT:
           REGOFFSET:
           EGU:
-          SLOPE: 
+          ASLO: 
           OFFSET: 
           HOPR:
           LOPR:
