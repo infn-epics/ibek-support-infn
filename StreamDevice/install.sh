@@ -10,7 +10,7 @@ FOLDER=$(dirname $(readlink -f $0))
 set -xe
 
 # prce developer library
-ibek support apt-install --only=dev libpcre3-dev
+ibek support apt-install libpcre3-dev
 
 # get the source and fix up the configure/RELEASE files
 ibek support git-clone ${NAME} ${VERSION} --org https://github.com/paulscherrerinstitute/
@@ -25,6 +25,9 @@ ibek support add-dbds stream-base.dbd stream.dbd
 
 # declare location of the pcre system library
 ibek support add-config-macro ${NAME} PCRE_LIB /usr/lib/x86_64-linux-gnu
+
+# global config settings
+${FOLDER}/../_global/install.sh ${NAME}
 
 # compile the support module
 ibek support compile ${NAME}

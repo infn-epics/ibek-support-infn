@@ -14,7 +14,7 @@ set -xe
 
 # install required system dependencies
 HDF=http://ftp.de.debian.org/debian/pool/main/h/hdf5
-ibek support apt-install --only=dev \
+ibek support apt-install \
     libaec-dev \
     libblosc-dev \
     libglib2.0-dev \
@@ -30,7 +30,7 @@ ibek support apt-install --only=dev \
     $HDF/libhdf5-dev_1.10.4+repack-10_amd64.deb
 
 # declare packages for installation in the Dockerfile's runtime stage
-ibek support apt-install --only=run libtiff5 libsz2 libblosc1 libxml2 libhdf5-103-1
+ibek support add-runtime-packages libtiff5 libsz2 libblosc1 libxml2 libhdf5-103-1
 
 # get the source and fix up the configure/RELEASE files
 ibek support git-clone ${NAME} ${VERSION} --org http://github.com/areaDetector/
@@ -73,6 +73,9 @@ ibek support add-to-config-site ${NAME} "${CONFIG}"
 
 # Sequencer causes problems with the build so we disable it
 ibek support add-release-macro SNCSEQ
+
+# global config settings
+${FOLDER}/../_global/install.sh ${NAME}
 
 # compile the support module
 ibek support compile ${NAME}

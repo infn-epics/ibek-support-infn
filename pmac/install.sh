@@ -21,10 +21,10 @@ ibek support register ${NAME}
 rm -f /epics/support/pmac/configure/CONFIG_SITE.linux-x86_64.Common
 rm -f /epics/support/pmac/configure/RELEASE.linux-x86_64.Common
 
-if [[ ! $TARGET_ARCHITECTURE == "RTEMS"* ]]; then
+if [[ ! $EPICS_TARGET_ARCH == "RTEMS"* ]]; then
 
-    ibek support apt-install --only=dev libssh2-1-dev
-    ibek support apt-install --only=run libssh2-1
+    ibek support apt-install libssh2-1-dev
+    ibek support add-runtime-packages libssh2-1
 
     CONFIG="
 # The following definitions must be changed for each site
@@ -50,7 +50,7 @@ fi
 ibek support add-libs pmacAsynIPPort pmacAsynMotorPort
 ibek support add-dbds pmacAsynIPPort.dbd pmacAsynMotorPort.dbd
 
-if [[ ! $TARGET_ARCHITECTURE == "RTEMS"* ]]; then
+if [[ ! $EPICS_TARGET_ARCH == "RTEMS"* ]]; then
     ibek support add-libs powerPmacAsynPort
     ibek support add-dbds drvAsynPowerPMACPort.dbd
 fi
@@ -58,6 +58,8 @@ fi
 # comment out the test directories from the Makefile
 sed -i -E 's/(^[^#].*(Tests).*$)/# \1/' ${SUPPORT}/${NAME}/pmacApp/Makefile
 
+# global config settings
+${FOLDER}/../_global/install.sh ${NAME}
 
 # compile the support module (don't build parallel as Makefile doesn't work)
 ibek support compile ${NAME} -j 1

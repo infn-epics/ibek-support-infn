@@ -14,7 +14,7 @@ FOLDER=$(dirname $(readlink -f $0))
 set -xe
 
 # install required system dependencies
-ibek support apt-install --only=dev \
+ibek support apt-install \
     libxext-dev \
     libglib2.0-dev \
     libusb-1.0 \
@@ -26,7 +26,7 @@ ibek support apt-install --only=dev \
     xz-utils
 
 # declare packages for installation in the Dockerfile's runtime stage
-ibek support apt-install --only=run libglib2.0-bin libusb-1.0 libxml2
+ibek support add-runtime-packages libglib2.0-bin libusb-1.0 libxml2
 
 # build aravis library
 (
@@ -67,6 +67,9 @@ ARAVIS_INCLUDE  = /usr/local/include/aravis-0.8/
 sed -i '/ADGENICAM/d' ${SUPPORT}/ADAravis/configure/RELEASE
 
 ibek support add-to-config-site ${NAME} "${CONFIG}"
+
+# global config settings
+${FOLDER}/../_global/install.sh ${NAME}
 
 # compile the support module
 ibek support compile ${NAME}
