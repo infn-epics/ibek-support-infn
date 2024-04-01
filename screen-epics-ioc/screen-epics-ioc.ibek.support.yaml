@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
+
+module: screenEpics
+
+defs:
+  - name: create
+    description: |-
+      Creates a screen epics
+
+    args:
+      - type: str
+        name: P
+        description: |-
+          Screen prefix
+
+      - type: str
+        name: R
+        description: |-
+          Screen root
+
+      - type: str
+        name: PREFMOT
+        description: |-
+          Motor PV Prefix
+
+      - type: str
+        name: PREFCAM
+        description: |-
+          Camera Prefix
+
+    databases:
+      - file: screen.db
+        args:
+          P: 
+          R:
+          MTR_CTRL_PREFIX: "{{ PREFMOT }}"
+          CAM_PREFIX: "{{ PREFCAM }}"
+
