@@ -33,7 +33,7 @@ module: motorNewport
 defs:
   - name: SMC100CreateController
     description: |-
-      Creates a SMC100 motion controller
+      Creates a SMC100 motion controller connected to an ethernetToSerialServer
 
     args:
       - type: id
@@ -99,12 +99,18 @@ defs:
           The number of axes to create
 
     pre_init:
-      - value: |
-          # Create Asyn Port
-          drvAsynIPPortConfigure("{{controllerName}}", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
-          SMC100CreateController("SMC100_{{controllerName}}", "{{controllerName}}","{{numAxes}}", "{{POLL}}", 0, "{{EGUXSTEP}}")
 
-  - name: simMotorAxis
+      - value: |
+          # epicsEnvSet "STREAM_PROTOCOL_PATH", "$(MOTORNEWPORT)/protocol/"
+          # Create Asyn Port
+          drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
+          asynInterposeEosConfig("{{controllerName}}_ASYN",0,2000,0)
+          SMC100CreateController("SMC100_{{controllerName}}", "{{controllerName}}_ASYN","{{numAxes}}", "{{POLL}}", 0, "{{EGUXSTEP}}")
+          asynOctetSetInputEos({{controllerName}}_ASYN,0,"\r\n")
+          asynOctetSetOutputEos({{controllerName}}_ASYN,0,"\r\n")
+          asynReport 10
+
+  - name: motorAxis
     description: |-
       Creates a simulation motor axis
 
@@ -180,7 +186,7 @@ defs:
           N: "{{ADDR +1 }}"
           M: "m{{ADDR +1}}"
           DTYP: "asynMotor"
-          PORT: "{{controller}}"
+          PORT: "SMC100_{{controller}}"
           ADDR:
           DESC:
           EGU: "mm"
@@ -196,3 +202,6 @@ defs:
           DHLM: 
           DLLM: 
           INIT: ""
+    pre_init:
+      - value: |
+          dbl

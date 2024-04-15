@@ -15,8 +15,7 @@ ibek support register ${NAME}
 
 # declare the libs and DBDs that are required in ioc/iocApp/src/Makefile
 ibek support add-libs Newport motor asyn
-ibek support add-dbds devNewport.dbd
-
+ibek support add-dbds devNewport.dbd motorRecord.dbd motorSupport.dbd
 # global config settings
 ${FOLDER}/../_global/install.sh ${NAME}
 
