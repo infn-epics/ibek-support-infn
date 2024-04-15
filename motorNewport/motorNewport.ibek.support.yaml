@@ -104,7 +104,7 @@ defs:
           # epicsEnvSet "STREAM_PROTOCOL_PATH", "$(MOTORNEWPORT)/protocol/"
           # Create Asyn Port
           drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
-          asynInterposeEosConfig("{{controllerName}}_ASYN",0,2000,0)
+          # asynInterposeEosConfig("{{controllerName}}_ASYN",0,2000,0)
           SMC100CreateController("SMC100_{{controllerName}}", "{{controllerName}}_ASYN","{{numAxes}}", "{{POLL}}", 0, "{{EGUXSTEP}}")
           asynOctetSetInputEos({{controllerName}}_ASYN,0,"\r\n")
           asynOctetSetOutputEos({{controllerName}}_ASYN,0,"\r\n")
@@ -184,7 +184,7 @@ defs:
         args:
           P: "{{controller.P}}"
           N: "{{ADDR +1 }}"
-          M: "m{{ADDR +1}}"
+          M:
           DTYP: "asynMotor"
           PORT: "SMC100_{{controller}}"
           ADDR:
