@@ -109,6 +109,7 @@ defs:
           asynOctetSetInputEos({{controllerName}}_ASYN,0,"\r\n")
           asynOctetSetOutputEos({{controllerName}}_ASYN,0,"\r\n")
           asynReport 10
+          dbl
 
   - name: motorAxis
     description: |-
@@ -173,6 +174,54 @@ defs:
           Pos: 0
           Neg: 1
 
+      - type: str
+        name: EGU
+        description: |-
+          Engineering Units
+        default: "mm"
+      
+      - type: float
+        name: VBAS
+        description: |-
+          Base Velocity (EGU/s)
+        default: 0.2
+
+      - type: float
+        name: ACCL
+        description: |-
+          Seconds to Velocity
+        default: 0.2
+
+      - type: int
+        name: BDST
+        description: |-
+          BL Distance (EGU)
+        default: 0
+
+      - type: float
+        name: BVEL
+        description: |-
+          BL Velocity (EGU/s)
+        default: 0.5
+
+      - type: float
+        name: BACC
+        description: |-
+          BL Seconds to Veloc.
+        default: 0.2
+
+      - type: float
+        name: MRES
+        description: |-
+          Motor Step Size (EGU)
+        default: 0.00001
+
+      - type: int
+        name: PREC
+        description: |-
+          Display precision (EGU)
+        default: 6
+      
     databases:
       # TODO as this is a simulation I have hard coded some of the DB fields,
       # but these could easily be made into arguments above
@@ -189,16 +238,16 @@ defs:
           PORT: "SMC100_{{controller}}"
           ADDR:
           DESC:
-          EGU: "mm"
+          EGU: 
           DIR:
           VELO:
-          VBAS: ".2"
-          ACCL: ".2"
-          BDST: "0"
-          BVEL: "0.5"
-          BACC: ".2"
-          MRES: "0.00001"
-          PREC: "6"
+          VBAS:
+          ACCL:
+          BDST:
+          BVEL:
+          BACC:
+          MRES: 
+          PREC:
           DHLM: 
           DLLM: 
           INIT: ""
