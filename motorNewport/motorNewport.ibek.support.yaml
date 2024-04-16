@@ -109,11 +109,11 @@ defs:
           asynOctetSetInputEos({{controllerName}}_ASYN,0,"\r\n")
           asynOctetSetOutputEos({{controllerName}}_ASYN,0,"\r\n")
           asynReport 10
-          dbl
+          
 
   - name: motorAxis
     description: |-
-      Creates a simulation motor axis
+      Creates a motor axis
 
     args:
       - type: object
@@ -251,6 +251,6 @@ defs:
           DHLM: 
           DLLM: 
           INIT: ""
-    pre_init:
+    post_init:
       - value: |
           dbl
