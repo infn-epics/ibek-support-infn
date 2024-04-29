@@ -7,7 +7,7 @@
 # ARGUMENTS:
 #  $1 VERSION to install (must match repo tag)
 VERSION=${1}
-NAME=epics-menlo
+NAME=asynInterposeMenlo
 FOLDER=$(dirname $(readlink -f $0))
 
 # log output and abort on failure
@@ -15,12 +15,13 @@ set -xe
 
 # get the source and fix up the configure/RELEASE files
 #ibek support git-clone ${NAME} ${VERSION} --org https://oauth2:9-o1JYch2n9_uyfv5hsR@baltig.infn.it/lnf-da-control/
-git clone https://oauth2:9-o1JYch2n9_uyfv5hsR@baltig.infn.it/lnf-da-control/epics-menlo.git /epics/support/${NAME} --recurse-submodules
+git clone https://oauth2:9-o1JYch2n9_uyfv5hsR@baltig.infn.it/lnf-da-control/epics-asynInterposeMenlo.git /epics/support/${NAME} --recurse-submodules
+
 ibek support register ${NAME}
 
 # declare the libs and DBDs that are required in ioc/iocApp/src/Makefile
 ibek support add-libs asynInterposeMenlo
-ibek support add-dbds asynInterposeMenlo.dbd menlo-syncro.dbd menlo-lac1550.dbd menlo-lfc.dbd
+ibek support add-dbds asynInterposeMenlo.dbd
  
 # Patches to the CONFIG_SITE
 if [[ $EPICS_TARGET_ARCH == "RTEMS"* ]]; then
