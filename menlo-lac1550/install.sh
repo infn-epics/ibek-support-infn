@@ -14,8 +14,8 @@ FOLDER=$(dirname $(readlink -f $0))
 set -xe
 
 # get the source and fix up the configure/RELEASE files
-#ibek support git-clone ${NAME} ${VERSION} --org https://oauth2:9-o1JYch2n9_uyfv5hsR@baltig.infn.it/lnf-da-control/
-git clone https://oauth2:9-o1JYch2n9_uyfv5hsR@baltig.infn.it/lnf-da-control/epics-menlo-lac1550.git /epics/support/${NAME} 
+ibek support git-clone ${NAME} ${VERSION} --org https://oauth2:zt_ALPjGqNRwLPeHMB8_@baltig.infn.it/infn-epics/
+#git clone https://oauth2:9-o1JYch2n9_uyfv5hsR@baltig.infn.it/lnf-da-control/epics-menlo-lac1550.git /epics/support/${NAME} 
 
 ibek support register ${NAME}
 
