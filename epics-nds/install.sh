@@ -13,17 +13,15 @@ FOLDER=$(dirname $(readlink -f $0))
 # log output and abort on failure
 set -xe
 
-ibek support apt-install libboost-dev libcurl4-gnutls-dev
+ibek support apt-install libboost-dev libcurl4-gnutls-dev libboost-filesystem-dev
 # get the source and fix up the configure/RELEASE files
 ibek support git-clone ${NAME} ${VERSION} --org https://oauth2:zt_ALPjGqNRwLPeHMB8_@baltig.infn.it/infn-epics/
-# git clone https://oauth2:zt_ALPjGqNRwLPeHMB8_@baltig.infn.it/infn-epics/ /epics/support/${NAME} --recurse-submodules
-
 ibek support register ${NAME}
+
 
 # declare the libs and DBDs that are required in ioc/iocApp/src/Makefile
 ibek support add-libs nds asyn
 ibek support add-dbds tml.dbd nds.dbd asyn.dbd
- 
 # Patches to the CONFIG_SITE
 if [[ $EPICS_TARGET_ARCH == "RTEMS"* ]]; then
     # don't build the test directories (they don't compile on RTEMS)
