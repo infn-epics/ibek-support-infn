@@ -163,8 +163,11 @@ defs:
         description: |-
           Asyn Addr?
         default: "0"
+    
+    array:
+      - arrayx0
+      - ax1
 
-      
     databases:
       # TODO as this is a simulation I have hard coded some of the DB fields,
       # but these could easily be made into arguments above
@@ -173,7 +176,6 @@ defs:
       # (the most common case - if you contrive to make args and db fields the same.
       # Which is  good idea for ease of transition from traditional IOCs)
 
-      ## dbLoadRecords("$(TML)/db/tmlAxis.template","PREFIX=PHSGUN01, CHANNEL_ID=MOT, CHANNEL_PREFIX=ax0, ASYN_PORT=TMLPPHS, ASYN_ADDR=0, NSTEPS=200, NMICROSTEPS=256, VELO=20, VELO_MIN=0.1, VELO_MAX=50, ACCL=0.5, ACCL_MIN=0.01, ACCL_MAX=1.5, HAR=0.5, HVEL=10, JAR=1, JVEL=5, ENABLED=1, SLSP=0.8, EGU=ustep, TIMEOUT=0")
       - file: tmlAxis.template
         args:
           PREFIX: "{{controller.P}}"
@@ -197,7 +199,10 @@ defs:
           SLSP:
           EGU:
           TIMEOUT:
-
     post_init:
       - value: |
+          {% for intf in array -%}
+          dbLoadRecords("$(TML)/db/tmlAxis.template","PREFIX=PHSGUN01, CHANNEL_ID=MOT, CHANNEL_PREFIX={{intf}}, ASYN_PORT=TMLPPHS, ASYN_ADDR=0, NSTEPS=200, NMICROSTEPS=256, VELO=20, VELO_MIN=0.1, VELO_MAX=50, ACCL=0.5, ACCL_MIN=0.01, ACCL_MAX=1.5, HAR=0.5, HVEL=10, JAR=1, JVEL=5, ENABLED=1, SLSP=0.8, EGU=ustep, TIMEOUT=0")
+          {% endfor %}
+          dbpf("{{controller.P}}:{{CHANNEL_ID}}:MSGRS","START")
           dbl > pv_{{controller.controllerName}}.txt
