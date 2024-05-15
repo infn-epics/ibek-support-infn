@@ -28,6 +28,25 @@ defs:
           The number of axes to create
         default: 1
 
+      - type: int
+        name: hostid
+        description: |-
+          Host ID
+
+      - type: int
+        name: axid
+        description: |-
+          axids ID
+
+      - type: enum
+        name: homing
+        description: |-
+          Homing direction
+        default: LSN
+        values:
+          LSN:
+          LSP:
+          
       - type: str
         name: CONFIG
         description: |-
@@ -36,8 +55,15 @@ defs:
 
     pre_init:
       - value: |
-          ndsCreateDevice "TechnosoftTML", "{{controllerName}}", "FILE=/tmp/{{controllerName}},NAXIS={{numAxes}},DEV_PATH={{TTY}},HOST_ID=255,AXIS_SETUP_0=$(SUPPORT)/motorTechnosoft/tml_lib/config/{{CONFIG}},AXIS_ID_0=255,AXIS_HOMING_SW_0=LSN"
-          
+         {% set cnt = namespace(value=1) %}
+          {% set x = namespace(value="AXIS_SETUP_0=$(SUPPORT)/motorTechnosoft/tml_lib/config/" ~ CONFIG ~ ",AXIS_ID_0=" ~ axid ~ ",AXIS_HOMING_SW_0=" ~ homing) %}
+
+          {% for intf in range(numAxes-1) %}
+              {% set x.value = x.value ~ ",AXIS_SETUP_" ~ cnt.value ~ "=$(SUPPORT)/motorTechnosoft/tml_lib/config/" ~ CONFIG ~ ",AXIS_ID_" ~ cnt.value ~ "=" ~ (axid + cnt.value) ~ ",AXIS_HOMING_SW_" ~ cnt.value ~ "=" ~ homing %}
+              {% set cnt.value = cnt.value + 1 %}
+          {% endfor %}
+
+          ndsCreateDevice "TechnosoftTML", "{{controllerName}}", "FILE=/tmp/{{controllerName}},NAXIS={{numAxes}},DEV_PATH={{TTY}},HOST_ID={{hostid}},{{x.value}}"
 
   - name: motorAxis
     description: |-
@@ -163,10 +189,7 @@ defs:
         description: |-
           Asyn Addr?
         default: "0"
-    
-    array:
-      - arrayx0
-      - ax1
+  
 
     databases:
       # TODO as this is a simulation I have hard coded some of the DB fields,
@@ -201,8 +224,8 @@ defs:
           TIMEOUT:
     post_init:
       - value: |
-          {% for intf in array -%}
-          dbLoadRecords("$(TML)/db/tmlAxis.template","PREFIX=PHSGUN01, CHANNEL_ID=MOT, CHANNEL_PREFIX={{intf}}, ASYN_PORT=TMLPPHS, ASYN_ADDR=0, NSTEPS=200, NMICROSTEPS=256, VELO=20, VELO_MIN=0.1, VELO_MAX=50, ACCL=0.5, ACCL_MIN=0.01, ACCL_MAX=1.5, HAR=0.5, HVEL=10, JAR=1, JVEL=5, ENABLED=1, SLSP=0.8, EGU=ustep, TIMEOUT=0")
+          {% for intf in range(controller.numAxes) -%}
+          dbLoadRecords("$(TOP)/db/tmlAxis.template","PREFIX={{controller.P}}, CHANNEL_ID={{CHANNEL_ID}}, CHANNEL_PREFIX=ax{{intf}}, ASYN_PORT={{controllerName}}, ASYN_ADDR={{ASYN_ADDR}}, NSTEPS={{NSTEPS}}, NMICROSTEPS={{NMICROSTEPS}}, VELO={{VELO}}, VELO_MIN={{VELO_MIN}}, VELO_MAX={{VELO_MAX}}, ACCL={{ACCL}}, ACCL_MIN={{ACCL_MIN}}, ACCL_MAX={{ACCL_MAX}}, HAR={{HAR}}, HVEL={{HVEL}}, JAR={{JAR}}, JVEL={{JVEL}}, ENABLED={{ENABLED}}, SLSP={{SLSP}}, EGU={{EGU}}, TIMEOUT={{TIMEOUT}}")
           {% endfor %}
           dbpf("{{controller.P}}:{{CHANNEL_ID}}:MSGRS","START")
           dbl > pv_{{controller.controllerName}}.txt

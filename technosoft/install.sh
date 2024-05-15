@@ -34,7 +34,10 @@ fi
 ${FOLDER}/../_global/install.sh ${NAME}
 # compile the support module
 ibek support compile ${NAME}
+cp -i ${SUPPORT}/${NAME}/tml_lib/lib/* /usr/lib/x86_64-linux-gnu/
+# socat pty,link=/var/tmp/ttyV0,raw,echo=0,b9600 tcp:192.168.190.55:4001
 # prepare *.bob, *.pvi, *.ibek.support.yaml for access outside the container.
 ibek support generate-links ${FOLDER}
+
 
 
