@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schemas/ibek.support.schema.json
 
 module: motorTML
 
@@ -10,8 +11,7 @@ defs:
       - type: id
         name: controllerName
         description: |-
-          The name of the controller 
-      
+          The name of the controller
       - type: str
         name: P
         description: |-
@@ -21,7 +21,7 @@ defs:
         name: TTY
         description: |-
           TTY
-      
+
       - type: int
         name: numAxes
         description: |-
@@ -33,37 +33,20 @@ defs:
         description: |-
           Host ID
 
-      - type: int
-        name: axid
-        description: |-
-          axids ID
-
-      - type: enum
-        name: homing
-        description: |-
-          Homing direction
-        default: LSN
-        values:
-          LSN:
-          LSP:
-          
       - type: str
         name: CONFIG
         description: |-
           TML Configuration
-        default: star_vat_phs.t.zip
-
+        default: |-
+          FILE=/tmp/,NAXIS={{numAxes}},DEV_PATH={{TTY}},HOST_ID={{hostid}}
+    values:
+      - name: axisConfiguration
+        description: collects the axis configuration from axis entities
+        value: |-
+          {{ __utils__.set_var('motorTML.axisConfiguration',[]) }}
     pre_init:
       - value: |
-         {% set cnt = namespace(value=1) %}
-          {% set x = namespace(value="AXIS_SETUP_0=$(SUPPORT)/motorTechnosoft/tml_lib/config/" ~ CONFIG ~ ",AXIS_ID_0=" ~ axid ~ ",AXIS_HOMING_SW_0=" ~ homing) %}
-
-          {% for intf in range(numAxes-1) %}
-              {% set x.value = x.value ~ ",AXIS_SETUP_" ~ cnt.value ~ "=$(SUPPORT)/motorTechnosoft/tml_lib/config/" ~ CONFIG ~ ",AXIS_ID_" ~ cnt.value ~ "=" ~ (axid + cnt.value) ~ ",AXIS_HOMING_SW_" ~ cnt.value ~ "=" ~ homing %}
-              {% set cnt.value = cnt.value + 1 %}
-          {% endfor %}
-
-          ndsCreateDevice "TechnosoftTML", "{{controllerName}}", "FILE=/tmp/{{controllerName}},NAXIS={{numAxes}},DEV_PATH={{TTY}},HOST_ID={{hostid}},{{x.value}}"
+          ndsCreateDevice "TechnosoftTML", "{{controllerName}}", "{{CONFIG}}{{"".join(__utils__.get_var('motorTML.axisConfiguration')) }}"
 
   - name: motorAxis
     description: |-
@@ -87,6 +70,25 @@ defs:
           The axis ID
         default: MOT
 
+      - type: int
+        name: axid
+        description: |-
+          The axis ID
+
+      - type: str
+        name: axconf
+        description: |-
+          The axis configuration
+        default: star_vat_phs.t.zip
+
+      - type: enum
+        name: homing
+        description: |-
+          Homing direction
+        default: LSN
+        values:
+          LSN:
+          LSP:
 
       - type: int
         name: NSTEPS
@@ -151,21 +153,21 @@ defs:
       - type: int
         name: JAR
         description: |-
-         JAR 
+          JAR
         default: 1
 
       - type: int
         name: JVEL
         description: |-
-         JVEL
+          JVEL
         default: 5
-       
+
       - type: str
         name: EGU
         description: |-
           Engineering Units
         default: "ustep"
-      
+
       - type: float
         name: SLSP
         description: |-
@@ -183,49 +185,63 @@ defs:
         description: |-
           Timeout
         default: 0
-      
+
       - type: str
         name: ASYN_ADDR
         description: |-
           Asyn Addr?
         default: "0"
-  
 
-    databases:
-      # TODO as this is a simulation I have hard coded some of the DB fields,
-      # but these could easily be made into arguments above
-      #
-      # Note: supplying no value means that the argument of the same name is used
-      # (the most common case - if you contrive to make args and db fields the same.
-      # Which is  good idea for ease of transition from traditional IOCs)
+      - type: str
+        name: CONFIG
+        description: |-
+          Axis configuration string to add to the controller configuration
+        default: |-
+          {%- set num = __utils__.counter("motorTML.axisCount", start=0) -%}
+          ,AXIS_SETUP_{{num}}=$(SUPPORT)/motorTechnosoft/tml_lib/config/{{axconf}},AXIS_ID_{{num}}={{axid}},AXIS_HOMING_SW_{{num}}={{homing}}
+    values:
+      - name: axisConfiguration
+        description: Adds an axis configuration entry to the controller's list
+        value: |-
+          {{ __utils__.get_var('motorTML.axisConfiguration').append(CONFIG) }}
 
-      - file: tmlAxis.template
-        args:
-          PREFIX: "{{controller.P}}"
-          ASYN_PORT: "{{controller.controllerName}}"
-          CHANNEL_ID:
-          CHANNEL_PREFIX: 
-          ASYN_ADDR:
-          NSTEPS:
-          NMICROSTEPS:
-          VELO:
-          VELO_MIN:
-          VELO_MAX:
-          ACCL: 
-          ACCL_MIN:
-          ACCL_MAX: 
-          HAR: 
-          HVEL:
-          JAR:
-          JVEL:
-          ENABLED:
-          SLSP:
-          EGU:
-          TIMEOUT:
+    pre_init:
+      - value: |
+          dbLoadRecords("$(SUPPORT)/motorTechnosoft/db/tmlAxis.template","PREFIX={{controller.P}}, CHANNEL_ID={{CHANNEL_ID}}, CHANNEL_PREFIX=ax{{num}}, ASYN_PORT={{controllerName}}, ASYN_ADDR={{ASYN_ADDR}}, NSTEPS={{NSTEPS}}, NMICROSTEPS={{NMICROSTEPS}}, VELO={{VELO}}, VELO_MIN={{VELO_MIN}}, VELO_MAX={{VELO_MAX}}, ACCL={{ACCL}}, ACCL_MIN={{ACCL_MIN}}, ACCL_MAX={{ACCL_MAX}}, HAR={{HAR}}, HVEL={{HVEL}}, JAR={{JAR}}, JVEL={{JVEL}}, ENABLED={{ENABLED}}, SLSP={{SLSP}}, EGU={{EGU}}, TIMEOUT={{TIMEOUT}}")
+
+    # databases:
+    #   # TODO as this is a simulation I have hard coded some of the DB fields,
+    #   # but these could easily be made into arguments above
+    #   #
+    #   # Note: supplying no value means that the argument of the same name is used
+    #   # (the most common case - if you contrive to make args and db fields the same.
+    #   # Which is  good idea for ease of transition from traditional IOCs)
+
+    #   - file: tmlAxis.template
+    #     args:
+    #       PREFIX: "{{controller.P}}"
+    #       ASYN_PORT: "{{controller.controllerName}}"
+    #       CHANNEL_ID:
+    #       CHANNEL_PREFIX:
+    #       ASYN_ADDR:
+    #       NSTEPS:
+    #       NMICROSTEPS:
+    #       VELO:
+    #       VELO_MIN:
+    #       VELO_MAX:
+    #       ACCL:
+    #       ACCL_MIN:
+    #       ACCL_MAX:
+    #       HAR:
+    #       HVEL:
+    #       JAR:
+    #       JVEL:
+    #       ENABLED:
+    #       SLSP:
+    #       EGU:
+    #       TIMEOUT:
     post_init:
       - value: |
-          {% for intf in range(controller.numAxes) -%}
-          dbLoadRecords("$(TOP)/db/tmlAxis.template","PREFIX={{controller.P}}, CHANNEL_ID={{CHANNEL_ID}}, CHANNEL_PREFIX=ax{{intf}}, ASYN_PORT={{controllerName}}, ASYN_ADDR={{ASYN_ADDR}}, NSTEPS={{NSTEPS}}, NMICROSTEPS={{NMICROSTEPS}}, VELO={{VELO}}, VELO_MIN={{VELO_MIN}}, VELO_MAX={{VELO_MAX}}, ACCL={{ACCL}}, ACCL_MIN={{ACCL_MIN}}, ACCL_MAX={{ACCL_MAX}}, HAR={{HAR}}, HVEL={{HVEL}}, JAR={{JAR}}, JVEL={{JVEL}}, ENABLED={{ENABLED}}, SLSP={{SLSP}}, EGU={{EGU}}, TIMEOUT={{TIMEOUT}}")
-          {% endfor %}
+
           dbpf("{{controller.P}}:{{CHANNEL_ID}}:MSGRS","START")
-          dbl > pv_{{controller.controllerName}}.txt
+          dbl
