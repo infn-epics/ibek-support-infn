@@ -38,7 +38,7 @@ defs:
         description: |-
           TML Configuration
         default: |-
-          FILE=/tmp/,NAXIS={{numAxes}},DEV_PATH={{TTY}},HOST_ID={{hostid}}
+          FILE=/tmp/q{{controllerName}},NAXIS={{numAxes}},DEV_PATH={{TTY}},HOST_ID={{hostid}}
     values:
       - name: axisConfiguration
         description: collects the axis configuration from axis entities
