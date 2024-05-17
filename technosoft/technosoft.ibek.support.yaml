@@ -207,6 +207,7 @@ defs:
 
     pre_init:
       - value: |
+          {%- set num = __utils__.counter("motorTML.axisCount") - controller.numAxes  -%}
           dbLoadRecords("$(SUPPORT)/motorTechnosoft/db/tmlAxis.template","PREFIX={{controller.P}}, CHANNEL_ID={{CHANNEL_ID}}, CHANNEL_PREFIX=ax{{num}}, ASYN_PORT={{controller.controllerName}}, ASYN_ADDR={{ASYN_ADDR}}, NSTEPS={{NSTEPS}}, NMICROSTEPS={{NMICROSTEPS}}, VELO={{VELO}}, VELO_MIN={{VELO_MIN}}, VELO_MAX={{VELO_MAX}}, ACCL={{ACCL}}, ACCL_MIN={{ACCL_MIN}}, ACCL_MAX={{ACCL_MAX}}, HAR={{HAR}}, HVEL={{HVEL}}, JAR={{JAR}}, JVEL={{JVEL}}, ENABLED={{ENABLED}}, SLSP={{SLSP}}, EGU={{EGU}}, TIMEOUT={{TIMEOUT}}")
 
     # databases:
