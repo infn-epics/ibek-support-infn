@@ -40,4 +40,6 @@ ibek support compile ${NAME}
 ibek support generate-links ${FOLDER}
 
 echo "${SUPPORT}/${NAME}/tml_lib/lib" > /etc/ld.so.conf.d/usr.conf && cd && ldconfig
+mkdir -p /assets/support/motorTechnosoft/
+cp -r /epics/support/motorTechnosoft/tml_lib /assets/support/motorTechnosoft/
 
