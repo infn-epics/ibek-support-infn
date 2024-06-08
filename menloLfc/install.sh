@@ -7,7 +7,7 @@
 # ARGUMENTS:
 #  $1 VERSION to install (must match repo tag)
 VERSION=${1}
-NAME=menlo-lfc
+NAME=menloLfc
 FOLDER=$(dirname $(readlink -f $0))
 
 # log output and abort on failure

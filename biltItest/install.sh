@@ -21,7 +21,6 @@ ibek support register ${NAME}
 # declare the libs and DBDs that are required in ioc/iocApp/src/Makefile
 ibek support add-libs asyn
 ibek support add-dbds asyn.dbd
-
 # global config settings
 ${FOLDER}/../_global/install.sh ${NAME}
 
