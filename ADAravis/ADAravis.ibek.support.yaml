@@ -33,9 +33,11 @@ defs:
           Camera class for custom commands
         values:
           Basler-a2A2600-20gmBAS:
+          Basler-a2A1920-51gcBAS:
           Basler-scA1400-30gm:
           Basler-scA1300-32gm:
           Basler-scA640-70gm:
+          Basler-scA640-74gm:
           Basler-acA640-90gm:
           Basler-acA640-300gm:
           Basler-acA1300-30gm:

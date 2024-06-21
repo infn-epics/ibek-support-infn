@@ -123,7 +123,7 @@ defs:
         default: N
 
     databases:
-      - file: $(MENLOSYNCRO)/db/menlo_syncro.db
+      - file: $(MENLOSYNCRO)/db/menlo_syncro_theta.db
         args:
           P:
           ASYNPORT: "{{ controllerName }}"
