@@ -485,3 +485,7 @@ defs:
           EGUL:
           EGUF:
           SCAN:
+          LOW:
+          LOLO:
+          HIGH:
+          HIHI:
