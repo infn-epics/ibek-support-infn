@@ -43,14 +43,34 @@ record(acalcout, "$(P):$(R):$(ID)_AVG")
     field(PREC, "3")
 }
 
+# Waveform record with macro for number of elements
 record(waveform, "$(P):$(R):$(ID)_HISTO")
 {
     field(DESC, "Temperature Sensor History")
     field(DTYP, "Soft Channel")
     field(INP, "$(P):$(R):$(ID)_RB")
-    field(FTVL, "DOUBLE")
-    field(NELM, "60")
+    field(FTVL, "DOUBLE")  # Field type
+    field(NELM, "$(NELM=60)")  # Number of elements, default to 60 if not provided
+    field(PREC, "3")       # Display precision
+    field(EGU, "degC")     # Engineering units
+}
+
+# Calculate Maximum Value
+record(calcout, "$(P):$(R):$(ID)_MAX")
+{
+    field(DESC, "Max Temperature Calculation")
+    field(CALC, "MAX(A)")
+    field(INPA, "$(P):$(R):$(ID)_HISTO")
+    field(EGU, "degC")
     field(PREC, "3")
-    field(EGU, "Degrees Celsius")
-    field(FLNK, "$(P):$(R):$(ID)_RB")
+}
+
+# Calculate Minimum Value
+record(calcout, "$(P):$(R):$(ID)_MIN")
+{
+    field(DESC, "Min Temperature Calculation")
+    field(CALC, "MIN(A)")
+    field(INPA, "$(P):$(R):$(ID)_HISTO")
+    field(EGU, "degC")
+    field(PREC, "3")
 }

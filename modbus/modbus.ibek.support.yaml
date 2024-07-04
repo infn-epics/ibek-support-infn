@@ -416,6 +416,12 @@ defs:
         description: |-
           Precision
         default: 3
+      - type: int
+        name: NELM
+        description: |-
+          History for average, max and min
+        default: 60
+        
       - type: str
         name: SCAN
         description: |-
@@ -489,3 +495,4 @@ defs:
           LOLO:
           HIGH:
           HIHI:
+          NELM:
