@@ -24,33 +24,33 @@ record(mbbi, "$(P):$(R):TEMP$(ID)_Status")
 {
     field(DESC, "Temperature Sensor Status")
     field(DTYP, "Soft Channel")
-    field(INP, "$(P):$(R):TEMP$(ID)_RB")
+    field(INP, "$(P):$(R):$(ID)_RB")
     field(ZRST, "NO_ALARM")
     field(ZRVL, "0")
     field(ONST, "HIHI_ALARM")
     field(TWST, "HIGH_ALARM")
     field(THST, "LOW_ALARM")
     field(FRST, "LOLO_ALARM")
-    field(FLNK, "$(P):$(R):TEMP$(ID)_RB")
+    field(FLNK, "$(P):$(R):$(ID)_RB")
 }
 
-record(acalcout, "$(P):$(R):TEMP$(ID)_AVG")
+record(acalcout, "$(P):$(R):$(ID)_AVG")
 {
     field(DESC, "Average Temperature Calculation")
     field(CALC, "AVG(A)")
-    field(INPA, "$(P):$(R):TEMP$(ID)_HISTO")
+    field(INPA, "$(P):$(R):$(ID)_HISTO")
     field(EGU, "Degrees Celsius")
     field(PREC, "3")
 }
 
-record(waveform, "$(P):$(R):TEMP$(ID)_HISTO")
+record(waveform, "$(P):$(R):$(ID)_HISTO")
 {
     field(DESC, "Temperature Sensor History")
     field(DTYP, "Soft Channel")
-    field(INP, "$(P):$(R):TEMP$(ID)_RB")
+    field(INP, "$(P):$(R):$(ID)_RB")
     field(FTVL, "DOUBLE")
     field(NELM, "100")
     field(PREC, "3")
     field(EGU, "Degrees Celsius")
-    field(FLNK, "$(P):$(R):TEMP$(ID)_RB")
+    field(FLNK, "$(P):$(R):$(ID)_RB")
 }
