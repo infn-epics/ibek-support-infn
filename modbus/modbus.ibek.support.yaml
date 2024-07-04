@@ -465,7 +465,7 @@ defs:
         name: LINR
         description: |-
           Enable = LINEAR Disable=NO CONVERSION Linear Conversion
-        default: "=NO CONVERSION"
+        default: "NO CONVERSION"
         
 
     databases:
