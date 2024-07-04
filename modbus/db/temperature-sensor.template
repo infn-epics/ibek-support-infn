@@ -20,7 +20,7 @@ record(ai, "$(P):$(R):$(ID)_RB")
     field(EGU, "$(EGU=\"degC\")")
 }
 
-record(mbbi, "$(P):$(R):TEMP$(ID)_Status")
+record(mbbi, "$(P):$(R):$(ID)_Status")
 {
     field(DESC, "Temperature Sensor Status")
     field(DTYP, "Soft Channel")
@@ -49,7 +49,7 @@ record(waveform, "$(P):$(R):$(ID)_HISTO")
     field(DTYP, "Soft Channel")
     field(INP, "$(P):$(R):$(ID)_RB")
     field(FTVL, "DOUBLE")
-    field(NELM, "100")
+    field(NELM, "60")
     field(PREC, "3")
     field(EGU, "Degrees Celsius")
     field(FLNK, "$(P):$(R):$(ID)_RB")
