@@ -420,8 +420,8 @@ defs:
         name: NELM
         description: |-
           History for average, max and min
-        default: 60
-        
+        default: 65
+
       - type: str
         name: SCAN
         description: |-
