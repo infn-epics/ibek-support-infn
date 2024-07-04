@@ -34,7 +34,7 @@ record(mbbi, "$(P):$(R):$(ID)_Status")
     field(THVL, "3")
     field(FRST, "LOLO_ALARM")
     field(FRVL, "4")
-    field(FLNK, "$(P):$(R):$(ID)_AVG")  # Forward link to process the average calculation next
+    field(FLNK, "$(P):$(R):$(ID)_HISTO")  # Forward link to process the average calculation next
 }
 
 record(acalcout, "$(P):$(R):$(ID)_AVG")
@@ -56,7 +56,7 @@ record(waveform, "$(P):$(R):$(ID)_HISTO")
     field(NELM, "$(NELM=60)")  # Number of elements, default to 60 if not provided
     field(PREC, "3")       # Display precision
     field(EGU, "degC")     # Engineering units
-    field(FLNK, "$(P):$(R):$(ID)_MIN")  # Forward link to process the min calculation next
+    field(FLNK, "$(P):$(R):$(ID)_AVG")  # Forward link to process the min calculation next
 }
 
 # Calculate Maximum Value
@@ -67,6 +67,8 @@ record(calcout, "$(P):$(R):$(ID)_MAX")
     field(INPA, "$(P):$(R):$(ID)_HISTO")
     field(EGU, "degC")
     field(PREC, "3")
+    field(FLNK, "$(P):$(R):$(ID)_MIN")  # Forward link to process the min calculation next
+
 }
 
 # Calculate Minimum Value
