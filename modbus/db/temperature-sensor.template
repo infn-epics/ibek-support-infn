@@ -34,49 +34,87 @@ record(mbbi, "$(P):$(R):$(ID)_Status")
     field(THVL, "3")
     field(FRST, "LOLO_ALARM")
     field(FRVL, "4")
-    field(FLNK, "$(P):$(R):$(ID)_HISTO")  # Forward link to process the average calculation next
+    field(FLNK, "$(P):$(R):$(ID)_AVG")  # Forward link to process the average calculation next
 }
 
-record(acalcout, "$(P):$(R):$(ID)_AVG")
+record(compress, "$(P):$(R):$(ID)_AVG")
 {
     field(DESC, "Average Temperature Calculation")
-    field(CALC, "AVG(A)")
-    field(INPA, "$(P):$(R):$(ID)_HISTO")
+    field(ALG, 3)
+    field(N,"$(NELM=60)")
+    field(NSAM,"$(NELM=60)")
+
+    field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
     field(PREC, "3")
     field(FLNK, "$(P):$(R):$(ID)_MAX")  # Forward link to process the max calculation next
 }
-
-record(waveform, "$(P):$(R):$(ID)_HISTO")
-{
-    field(DESC, "Temperature Sensor History")
-    field(DTYP, "Soft Channel")
-    field(INP, "$(P):$(R):$(ID)_RB")
-    field(FTVL, "DOUBLE")  # Field type
-    field(NELM, "$(NELM=60)")  # Number of elements, default to 60 if not provided
-    field(PREC, "3")       # Display precision
-    field(EGU, "degC")     # Engineering units
-    field(FLNK, "$(P):$(R):$(ID)_AVG")  # Forward link to process the min calculation next
-}
-
-# Calculate Maximum Value
-record(calcout, "$(P):$(R):$(ID)_MAX")
+record(compress, "$(P):$(R):$(ID)_MAX")
 {
     field(DESC, "Max Temperature Calculation")
-    field(CALC, "MAX(A)")
-    field(INPA, "$(P):$(R):$(ID)_HISTO")
+
+    field(ALG, 1)
+    field(N,"$(NELM=60)")
+    field(NSAM,"$(NELM=60)")
+
+    field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
     field(PREC, "3")
-    field(FLNK, "$(P):$(R):$(ID)_MIN")  # Forward link to process the min calculation next
-
+    field(FLNK, "$(P):$(R):$(ID)_MIN")  # Forward link to process the max calculation next
 }
-
-# Calculate Minimum Value
-record(calcout, "$(P):$(R):$(ID)_MIN")
+record(compress, "$(P):$(R):$(ID)_MIN")
 {
     field(DESC, "Min Temperature Calculation")
-    field(CALC, "MIN(A)")
-    field(INPA, "$(P):$(R):$(ID)_HISTO")
+
+    field(ALG, 0)
+    field(N,"$(NELM=60)")
+    field(NSAM,"$(NELM=60)")
+
+    field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
     field(PREC, "3")
 }
+
+# record(acalcout, "$(P):$(R):$(ID)_AVG")
+# {
+#     field(DESC, "Average Temperature Calculation")
+#     field(CALC, "AVG(A)")
+#     field(INPA, "$(P):$(R):$(ID)_HISTO")
+#     field(EGU, "degC")
+#     field(PREC, "3")
+#     field(FLNK, "$(P):$(R):$(ID)_MAX")  # Forward link to process the max calculation next
+# }
+
+# record(waveform, "$(P):$(R):$(ID)_HISTO")
+# {
+#     field(DESC, "Temperature Sensor History")
+#     field(DTYP, "Soft Channel")
+#     field(INP, "$(P):$(R):$(ID)_RB")
+#     field(FTVL, "DOUBLE")  # Field type
+#     field(NELM, "$(NELM=60)")  # Number of elements, default to 60 if not provided
+#     field(PREC, "3")       # Display precision
+#     field(EGU, "degC")     # Engineering units
+#     field(FLNK, "$(P):$(R):$(ID)_AVG")  # Forward link to process the min calculation next
+# }
+
+# # Calculate Maximum Value
+# record(calcout, "$(P):$(R):$(ID)_MAX")
+# {
+#     field(DESC, "Max Temperature Calculation")
+#     field(CALC, "MAX(A)")
+#     field(INPA, "$(P):$(R):$(ID)_HISTO")
+#     field(EGU, "degC")
+#     field(PREC, "3")
+#     field(FLNK, "$(P):$(R):$(ID)_MIN")  # Forward link to process the min calculation next
+
+# }
+
+# # Calculate Minimum Value
+# record(calcout, "$(P):$(R):$(ID)_MIN")
+# {
+#     field(DESC, "Min Temperature Calculation")
+#     field(CALC, "MIN(A)")
+#     field(INPA, "$(P):$(R):$(ID)_HISTO")
+#     field(EGU, "degC")
+#     field(PREC, "3")
+# }
