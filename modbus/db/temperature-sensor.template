@@ -40,7 +40,7 @@ record(mbbi, "$(P):$(R):$(ID)_Status")
 record(compress, "$(P):$(R):$(ID)_AVG")
 {
     field(DESC, "Average Temperature Calculation")
-    field(ALG, "AVERAGE")
+    field(ALG, "N to 1 Average")
     field(N,"$(NELM=60)")
 
     field(INP, "$(P):$(R):$(ID)_RB")
@@ -51,7 +51,7 @@ record(compress, "$(P):$(R):$(ID)_MAX")
 {
     field(DESC, "Max Temperature Calculation")
 
-    field(ALG, "1")
+    field(ALG, "N to 1 High Value")
     field(N,"$(NELM=60)")
 
     field(INP, "$(P):$(R):$(ID)_RB")
@@ -62,7 +62,7 @@ record(compress, "$(P):$(R):$(ID)_MIN")
 {
     field(DESC, "Min Temperature Calculation")
 
-    field(ALG, "0")
+    field(ALG, "N to 1 Low Value")
     field(N,"$(NELM=60)")
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
