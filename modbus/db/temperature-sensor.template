@@ -16,46 +16,46 @@ record(ai, "$(P):$(R):$(ID)_RB")
     field(EGUL, "$(EGUL=-100)")
     field(SCAN, "$(SCAN=I/O Intr)")
     field(EGU, "degC")
-    field(FLNK, "$(P):$(R):$(ID)_Status")  // Forward link to process the status record next
+    field(FLNK, "$(P):$(R):$(ID)_Status") 
 }
 
 record(seq, "$(P):$(R):$(ID)_Status")
 {
     field(DESC, "Sequence Record for Status and Calculations")
     field(DOL1, "$(P):$(R):$(ID)_RB")  
-    field(LNK1, "$(P):$(R):$(ID)_AVG")  // Forward link to average calculation
+    field(LNK1, "$(P):$(R):$(ID)_AVG")  
     field(DOL2, "$(P):$(R):$(ID)_RB")  
-    field(LNK2, "$(P):$(R):$(ID)_MAX")  // Forward link to max calculation
+    field(LNK2, "$(P):$(R):$(ID)_MAX")  
     field(DOL3, "$(P):$(R):$(ID)_RB")  
-    field(LNK3, "$(P):$(R):$(ID)_MIN")  // Forward link to min calculation
+    field(LNK3, "$(P):$(R):$(ID)_MIN")
 }
 
 record(compress, "$(P):$(R):$(ID)_AVG")
 {
     field(DESC, "Average Temperature Calculation")
-    field(ALG, "3")  // N to 1 Average
+    field(ALG, "3")
     field(N, "$(NELM=60)")
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
     field(PREC, "3")
-    field(FLNK, "$(P):$(R):$(ID)_MAX")  // Forward link to max calculation
+    field(FLNK, "$(P):$(R):$(ID)_MAX") 
 }
 
 record(compress, "$(P):$(R):$(ID)_MAX")
 {
     field(DESC, "Max Temperature Calculation")
-    field(ALG, "1")  // N to 1 High Value
+    field(ALG, "1")
     field(N, "$(NELM=60)")
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
     field(PREC, "3")
-    field(FLNK, "$(P):$(R):$(ID)_MIN")  // Forward link to min calculation
+    field(FLNK, "$(P):$(R):$(ID)_MIN")
 }
 
 record(compress, "$(P):$(R):$(ID)_MIN")
 {
     field(DESC, "Min Temperature Calculation")
-    field(ALG, "0")  // N to 1 Low Value
+    field(ALG, "0")
     field(N, "$(NELM=60)")
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
