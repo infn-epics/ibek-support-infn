@@ -51,7 +51,7 @@ record(compress, "$(P):$(R):$(ID)_MAX")
 {
     field(DESC, "Max Temperature Calculation")
 
-    field(ALG, "NTOlHIGH")
+    field(ALG, "1")
     field(N,"$(NELM=60)")
 
     field(INP, "$(P):$(R):$(ID)_RB")
@@ -62,7 +62,7 @@ record(compress, "$(P):$(R):$(ID)_MIN")
 {
     field(DESC, "Min Temperature Calculation")
 
-    field(ALG, "NTOlLOW")
+    field(ALG, "0")
     field(N,"$(NELM=60)")
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")

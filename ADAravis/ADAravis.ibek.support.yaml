@@ -101,7 +101,6 @@ defs:
         description: |-
           Asyn Port address, default 0
         default: 0
-
     databases:
       - file: $(ADARAVIS)/db/aravisCamera.template
         args:
