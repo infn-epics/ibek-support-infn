@@ -16,107 +16,48 @@ record(ai, "$(P):$(R):$(ID)_RB")
     field(EGUL, "$(EGUL=-100)")
     field(SCAN, "$(SCAN=I/O Intr)")
     field(EGU, "degC")
-    field(FLNK, "$(P):$(R):$(ID)_Status")  # Forward link to process the status record next
+    field(FLNK, "$(P):$(R):$(ID)_Status")  // Forward link to process the status record next
 }
 
-# record(mbbi, "$(P):$(R):$(ID)_Status")
-# {
-#     field(DESC, "Temperature Sensor Status")
-#     field(DTYP, "Soft Channel")
-#     field(INP, "$(P):$(R):$(ID)_RB")
-#     field(ZRST, "NO_ALARM")
-#     field(ZRVL, "0")
-#     field(ONST, "HIHI_ALARM")
-#     field(ONVL, "1")
-#     field(TWST, "HIGH_ALARM")
-#     field(TWVL, "2")
-#     field(THST, "LOW_ALARM")
-#     field(THVL, "3")
-#     field(FRST, "LOLO_ALARM")
-#     field(FRVL, "4")
-#     field(FLNK, "$(P):$(R):$(ID)_AVG")  # Forward link to process the average calculation next
-# }
-
-record(seq, "$(P):$(R):$(ID)_Status") {
+record(seq, "$(P):$(R):$(ID)_Status")
+{
     field(DESC, "Sequence Record for Status and Calculations")
     field(DOL1, "$(P):$(R):$(ID)_RB")  
-    field(LNK1, "$(P):$(R):$(ID)_AVG")          // Forward link to average calculation
+    field(LNK1, "$(P):$(R):$(ID)_AVG")  // Forward link to average calculation
     field(DOL2, "$(P):$(R):$(ID)_RB")  
-    field(LNK2, "$(P):$(R):$(ID)_MAX")          // Forward link to max calculation
+    field(LNK2, "$(P):$(R):$(ID)_MAX")  // Forward link to max calculation
     field(DOL3, "$(P):$(R):$(ID)_RB")  
-    field(LNK3, "$(P):$(R):$(ID)_MIN")          // Forward link to min calculation
+    field(LNK3, "$(P):$(R):$(ID)_MIN")  // Forward link to min calculation
 }
 
 record(compress, "$(P):$(R):$(ID)_AVG")
 {
     field(DESC, "Average Temperature Calculation")
-    field(ALG, "N to 1 Average")
-    field(N,"$(NELM=60)")
-
+    field(ALG, "3")  // N to 1 Average
+    field(N, "$(NELM=60)")
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
+    field(PREC, "3")
+    field(FLNK, "$(P):$(R):$(ID)_MAX")  // Forward link to max calculation
 }
+
 record(compress, "$(P):$(R):$(ID)_MAX")
 {
     field(DESC, "Max Temperature Calculation")
-
-    field(ALG, "N to 1 High Value")
-    field(N,"$(NELM=60)")
-
+    field(ALG, "1")  // N to 1 High Value
+    field(N, "$(NELM=60)")
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
+    field(PREC, "3")
+    field(FLNK, "$(P):$(R):$(ID)_MIN")  // Forward link to min calculation
 }
+
 record(compress, "$(P):$(R):$(ID)_MIN")
 {
     field(DESC, "Min Temperature Calculation")
-
-    field(ALG, "N to 1 Low Value")
-    field(N,"$(NELM=60)")
+    field(ALG, "0")  // N to 1 Low Value
+    field(N, "$(NELM=60)")
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
     field(PREC, "3")
 }
-
-# record(acalcout, "$(P):$(R):$(ID)_AVG")
-# {
-#     field(DESC, "Average Temperature Calculation")
-#     field(CALC, "AVG(A)")
-#     field(INPA, "$(P):$(R):$(ID)_HISTO")
-#     field(EGU, "degC")
-#     field(PREC, "3")
-#     field(FLNK, "$(P):$(R):$(ID)_MAX")  # Forward link to process the max calculation next
-# }
-
-# record(waveform, "$(P):$(R):$(ID)_HISTO")
-# {
-#     field(DESC, "Temperature Sensor History")
-#     field(DTYP, "Soft Channel")
-#     field(INP, "$(P):$(R):$(ID)_RB")
-#     field(FTVL, "DOUBLE")  # Field type
-#     field(NELM, "$(NELM=60)")  # Number of elements, default to 60 if not provided
-#     field(PREC, "3")       # Display precision
-#     field(EGU, "degC")     # Engineering units
-#     field(FLNK, "$(P):$(R):$(ID)_AVG")  # Forward link to process the min calculation next
-# }
-
-# # Calculate Maximum Value
-# record(calcout, "$(P):$(R):$(ID)_MAX")
-# {
-#     field(DESC, "Max Temperature Calculation")
-#     field(CALC, "MAX(A)")
-#     field(INPA, "$(P):$(R):$(ID)_HISTO")
-#     field(EGU, "degC")
-#     field(PREC, "3")
-#     field(FLNK, "$(P):$(R):$(ID)_MIN")  # Forward link to process the min calculation next
-
-# }
-
-# # Calculate Minimum Value
-# record(calcout, "$(P):$(R):$(ID)_MIN")
-# {
-#     field(DESC, "Min Temperature Calculation")
-#     field(CALC, "MIN(A)")
-#     field(INPA, "$(P):$(R):$(ID)_HISTO")
-#     field(EGU, "degC")
-#     field(PREC, "3")
-# }
