@@ -42,7 +42,6 @@ record(compress, "$(P):$(R):$(ID)_AVG")
     field(DESC, "Average Temperature Calculation")
     field(ALG, "AVERAGE")
     field(N,"$(NELM=60)")
-    field(NSAM,"$(NELM=60)")
 
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
@@ -54,7 +53,6 @@ record(compress, "$(P):$(R):$(ID)_MAX")
 
     field(ALG, "NTOlHIGH")
     field(N,"$(NELM=60)")
-    field(NSAM,"$(NELM=60)")
 
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
@@ -66,8 +64,6 @@ record(compress, "$(P):$(R):$(ID)_MIN")
 
     field(ALG, "NTOlLOW")
     field(N,"$(NELM=60)")
-    field(NSAM,"$(NELM=60)")
-
     field(INP, "$(P):$(R):$(ID)_RB")
     field(EGU, "degC")
     field(PREC, "3")
