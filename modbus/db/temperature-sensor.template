@@ -21,7 +21,6 @@ record(ai, "$(P):$(R):$(ID)_RB")
 
 record(seq, "$(P):$(R):$(ID)_Status")
 {
-    field(DESC, "Sequence Record for Status and Calculations")
     field(DOL1, "$(P):$(R):$(ID)_RB")  
     field(LNK1, "$(P):$(R):$(ID)_AVG")  
     field(DOL2, "$(P):$(R):$(ID)_RB")  
