@@ -18,8 +18,8 @@ ibek support git-clone ${NAME} ${VERSION}
 ibek support register ${NAME}
 
 # declare the libs and DBDs that are required in ioc/iocApp/src/Makefile
-ibek support add-libs modbus
-ibek support add-dbds modbusSupport.dbd
+ibek support add-libs modbus seq
+ibek support add-dbds seq.dbd modbusSupport.dbd
 
 # Patches to the CONFIG_SITE
 if [[ $EPICS_TARGET_ARCH == "RTEMS"* ]]; then
