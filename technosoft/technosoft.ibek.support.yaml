@@ -190,8 +190,8 @@ defs:
       - type: float
         name: USTEP2MM
         description: |-
-          Coefficient to convert usteps to mm
-        default: 1.0
+          Coefficient to convert usteps to mm (default zero produce NaN is used)
+        default: 0.0
 
       - type: str
         name: CONFIG
