@@ -9,7 +9,6 @@
 VERSION=${1}
 NAME=motorTechnosoft
 FOLDER=$(dirname $(readlink -f $0))
-
 # log output and abort on failure
 set -xe
 ibek support add-runtime-packages libboost-dev socat
