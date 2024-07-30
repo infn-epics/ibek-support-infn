@@ -219,3 +219,4 @@ defs:
     post_init:
       - value: |
           dbpf("{{controller.P}}:{{name}}:MSGRS","START")
+          dbpf("{{controller.P}}:{{name}}:MSGS","START")
