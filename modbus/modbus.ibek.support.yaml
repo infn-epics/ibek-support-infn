@@ -222,9 +222,9 @@ defs:
           modbusInterposeConfig("{{MODBUSPORT}}_ASYN",0,{{TIMEOUT}},{{WRITEDELAY}})
           drvModbusAsynConfigure("{{MODBUSPORT}}", "{{MODBUSPORT}}_ASYN", {{SERVER_ADDR}}, {{FUNC_CODE}}, {{STARTADDR}}, {{DATA_LENGTH}}, {{DATA_TYPE}}, {{POLL_DELAY}}, "DefaultModbus")
         
-          asynSetTraceIOTruncateSize("{{MODBUSPORT}}_ASYN", -1, 1024)
-          asynSetTraceIOMask("{{MODBUSPORT}}_ASYN",0,4)
-          asynSetTraceMask("{{MODBUSPORT}}_ASYN",0,0xF)
+          # asynSetTraceIOTruncateSize("{{MODBUSPORT}}_ASYN", -1, 1024)
+          # asynSetTraceIOMask("{{MODBUSPORT}}_ASYN",0,4)
+          # asynSetTraceMask("{{MODBUSPORT}}_ASYN",0,0xF)
 
     post_init:
       - value: |
@@ -416,6 +416,12 @@ defs:
         description: |-
           Precision
         default: 3
+      - type: int
+        name: NELM
+        description: |-
+          History for average, max and min
+        default: 65
+
       - type: str
         name: SCAN
         description: |-
@@ -465,7 +471,7 @@ defs:
         name: LINR
         description: |-
           Enable = LINEAR Disable=NO CONVERSION Linear Conversion
-        default: "=NO CONVERSION"
+        default: "NO CONVERSION"
         
 
     databases:
@@ -485,3 +491,8 @@ defs:
           EGUL:
           EGUF:
           SCAN:
+          LOW:
+          LOLO:
+          HIGH:
+          HIHI:
+          NELM:

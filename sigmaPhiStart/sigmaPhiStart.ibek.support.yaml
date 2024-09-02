@@ -1,0 +1,117 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
+
+module: sigmaPhiStart
+
+# drvAsynIPPortConfigure("{{ASYNPORT}}", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
+# modbusInterposeConfig("{{ASYNPORT}}",{{MODBUSLINK}},{{TIMEOUT}},{{WRITEDELAY}})
+# drvModbusAsynConfigure("{{MODBUSPORT}}", "{{ASYNPORT}}", {{SERVER_ADDR}}, {{FUNC_CODE}}, {{STARTADDR}}, {{DATA_LENGTH}}, {{DATA_TYPE}}, {{POLL_DELAY}}, "{{MODBUS_TYPE}}")
+
+defs:
+
+  - name: configure
+    description: |-
+      This will create an AsynPort connecting to the module
+    args:
+      - type: id
+        name: controllerName
+        description: |-
+          controller and ASYN PORT name
+
+      - type: str
+        name: P
+        description: |-
+          controller PREFIX
+
+      - type: str
+        name: IP
+        description: |-
+          IP address of the Controller
+
+      - type: int
+        name: TCPPORT
+        description: |-
+          IP PORT
+        default: 502
+
+      - type: int
+        name: ASYNPRIO
+        description: |-
+          ASYN   PRIORITY, Default : 0
+        default: 0
+
+      - type: int
+        name: AUTOCONNECT
+        description: |-
+          Asyn auto connect
+          0: Auto connection
+          1: no Auto connection
+        default: 0
+
+      - type: int
+        name: NOPRECESSESOS
+        description: |-
+          ASYN   noProcessEos, Default : 0
+          https://epics.anl.gov/tech-talk/2020/msg01705.php
+        default: 0
+
+      - type: int
+        name: MODBUSLINK
+        description: |-
+          MODBUS linktype, Default : 0
+          0 : TCP/IP
+          1 : RTU
+          2 : ASCII 
+        default: 0
+        
+      - type: int
+        name: TIMEOUT
+        description: |-
+           MODBUS timeout (ms), Default : 2000
+        default: 2000
+        
+      - type: int
+        name: WRITEDELAY
+        description: |-
+          MODBUS write delay ms for Serial RTU, Default : 0
+        default: 0
+
+      - type: int
+        name: POLL_DELAY
+        description: |-
+          Read  function : Polling delay time in ms for the polling thread
+          Write function : a non-zero value means that the Modbus data should be read once
+        default: 1000
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{controllerName}}", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
+          modbusInterposeConfig ("{{controllerName}}", {{MODBUSLINK}}, {{TIMEOUT}}, {{WRITEDELAY}})
+
+          drvModbusAsynConfigure ("{{controllerName}}_RD",  "{{controllerName}}", 1,  3, 1, 13, 0, {{POLL_DELAY}}, "SigmaPhi")
+          drvModbusAsynConfigure ("{{controllerName}}_CMD",  "{{controllerName}}", 1,  6, 0,  1, 0, {{POLL_DELAY}}, "SigmaPhi")
+          drvModbusAsynConfigure ("{{controllerName}}_SET",  "{{controllerName}}", 1, 16, 5,  2, 0, {{POLL_DELAY}}, "SigmaPhi")
+
+  - name: device
+    description: |-
+      This will create a device instance
+    args:
+      - type: object
+        name: controller
+        description: |-
+          a reference to the PS controller
+      - type: str
+        name: P
+        description: Device Prefix
+      - type: int
+        name: max
+        description: Max Current
+  
+    databases:
+      - file: $(SIGMAPHISTART)/db/sigmaPhiStart.template
+        args:
+          device: "{{ controller.P }}:{{ P }}"
+          rd_port: "{{ controller.controllerName }}_RD"
+          cmd_port: "{{ controller.controllerName }}_CMD"
+          set_port: "{{ controller.controllerName }}_SET"
+          max: "{{max}}"
+
