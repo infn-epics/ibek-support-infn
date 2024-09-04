@@ -1,29 +1,21 @@
 # yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
 
-
-## Create asyn IP port for communication over TCP/IP
-#drvAsynIPPortConfigure ("$(RFM1_PORT)", "$(ADDR)")
-
-##asynSetTraceMask($(RFM1_PORT),0,ASYN_TRACEIO_DRIVER)
-##asynSetTraceIOMask($(RFM1_PORT),0,ASYN_TRACEIO_ASCII|ASYN_TRACEIO_ESCAPE)
-
-## Load record instances
-##dbLoadRecords("../../db/N1911AIOC.db","user=prelz")
-
-#dbLoadRecords("../../db/n1911a.template","DEVICE=RFM1, PORT=$(RFM1_PORT)")
-
-
+# epicsEnvSet ("STREAM_PROTOCOL_PATH", "$(TOP)/agilentXgs600App/protocol")
+# drvAsynIPPortConfigure ("MOXA1","192.168.190.55:4002",0,0,0)
+# dbLoadRecords("$(TOP)/db/agilentXgs600Ctlr.template","device=GEN-CS-GP08:VGCON03, port=MOXA1")
+# dbLoadRecords("$(TOP)/db/agilentXgs600Img.template","device=LEL-VAC-GAUG10:CC, port=MOXA1, sensor=T1,tcauto=T3")
+# #
 
 
 module: AgilentXgs600
 
 defs:
-  - name: CreateAgilentGauge
+  - name: CreateCtrl
     description: |-
-      Create a AgilentXgs600 gauge
+      Create a AgilentXgs600 gauge controller
     args:
       - type: id
-        name: controllerName
+        name: name
         description: |-
           The name of the controller and its Asyn Port Name
       
@@ -43,7 +35,8 @@ defs:
         description: |-
           Port of the ethernet2serial
         default: 4001
-            - type: int
+
+      - type: int
         name: ASYNPRIO
         description: |-
           ASYN   PRIORITY, Default : 0
@@ -65,101 +58,98 @@ defs:
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
     databases:
-      # TODO as this is a simulation I have hard coded some of the DB fields,
-      # but these could easily be made into arguments above
-      #
-      # Note: supplying no value means that the argument of the same name is used
-      # (the most common case - if you contrive to make args and db fields the same.
-      # Which is  good idea for ease of transition from traditional IOCs)
-      - file: agilentXgs600Ctlr.template
+      - file: agilentXgs600Ctrl.template
         args:
-          device: "{{controller.P}}"
-      - file: agilentXgs600Spt.template
-        args:
-          device: "{{controller.P}}"
-          port: "{{controllerName}}_ASYN"
-
-
+          device: "{{P}}"
+          port: "{{name}}"
 
     pre_init:
       - value: |
-
-          drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
-          CreateAgilentGauge("XGS600_{{controllerName}}", "{{controllerName}}_ASYN","{{IP}}", "{{TCPPORT}}",{{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
+          drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
       
     post_init:
       - value: |
-          dbl    
+          dbl
 
-  - name: SensorCNV
+  - name: SensorTC
     description: |-
       Template database for the the Agilent XGS-600 CNV Sensor
     args:
-      - type: int
-        name: GaugeNumber
+      - type: object
+        name: controller
         description: |-
-          Gauge Number
-
-      
+          a reference to the controller
       - type: str
-        name: Sensor
+        name: P
         description: |-
           T1 .. T4
-    databases:    
-        - file: agilentXgs600Cnv.template
+      
+      - type: str
+        name: sensor
+        description: |-
+          T1 .. T4
+    databases:
+      - file: agilentXgs600Cnv.template
         args:
-          device: "{{controller.P}}"
-          port: "{{controllerName}}_ASYN"
-          number: {{GaugeNumber}}
-          sensor: {{Sensor}}
-
-   
-
-  
+          device: "{{P}}"
+          port: "{{controller.name}}"
+          sensor:
 
   - name: SetPoint
     description: |-
       Template database for Agilent XGS-600 Setpoint
     args:
+      - type: object
+        name: controller
+        description: |-
+          a reference to the controller
+      - type: str
+        name: P
+        description: |-
+          sensor setpoint prefix
       - type: int
-        name: GaugeNumber
+        name: number
         description: |-
           Gauge Number
-
-      
       - type: str
-        name: Sensor
+        name: sensor
         description: |-
-          T1 .. T4
-     databases:    
-        - file: agilentXgs600Spt.template
+          I1 .. I8
+    databases:
+      - file: agilentXgs600Spt.template
         args:
-          device: "{{controller.P}}"
-          port: "{{controllerName}}_ASYN"
-          number: {{GaugeNumber}}
-          sensor: {{Sensor}}
+          device: "{{P}}"
+          port: "{{controller.name}}"
+          number:
+          sensor:
 
-  - name: InvertedMagnetronGauge
-  description: |-
-    Template database for the the Agilent XGS-600 Inverted Megnetron Gauge
-  args:
-    
-    - type: str
-      name: Sensor
-      description: |-
-        I1 .. I4
+  - name: SensorCC
+    description: |-
+      Template database for the the Agilent XGS-600 CC Sensor
+    args:
+      - type: object
+        name: controller
+        description: |-
+          a reference to the controller
+      - type: str
+        name: P
+        description: |-
+          sensor prefix
+      - type: str
+        name: sensor
+        description: |-
+          I1..I4
+      - type: str
+        name: tcauto
+        description: |-
+          tcauto
+        default: "T3"
 
-    - type: str
-      name: tcauto
-      description: |-
-        TC auto on sensor T1 .. T4
-
-    
-  databases:    
-      - file: agilentXgs600Img.template
-      args:
-        device: "{{controller.P}}"
-        port: "{{controllerName}}_ASYN"
-        sensor: {{Sensor}}
-        tcauto: {{tcauto}}
+    databases:
+      - file: agilentXgs600Cnv.template
+        args:
+          device: "{{P}}"
+          port: "{{controller.name}}"
+          sensor:
+          tcauto:
 
