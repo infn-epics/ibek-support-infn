@@ -280,3 +280,73 @@ defs:
           PORTMIN: "{{NAME}}_AIMIN"
           PORTMAX: "{{NAME}}_AIMAX"
           PORTINFO: "{{NAME}}_INFO"
+
+
+  - name: icp7267
+    description: |-
+      Relay 8 outputs
+    args:
+      - type: id
+        name: NAME
+        description: |-
+          Will be the modbus Port Name 
+
+      - type: str
+        name: IP
+        description: |-
+          IP address of the Modbus
+        default: 127.0.0.1 ## localhost
+
+      - type: int
+        name: TCPPORT
+        description: |-
+          ASYN   MODBUS Port, Default : 502
+        default: 502
+      
+      - type: str
+        name: P
+        description: Prefix
+
+      - type: str
+        name: R
+        description: Device Suffix
+      
+      - type: int
+        name: POLL_DELAY
+        description: |-
+          Read  function : Polling delay time in ms for the polling thread
+          Write function : a non-zero value means that the Modbus data should be read once
+        default: 1000
+
+      - type: int
+        name: TIMEOUT
+        description: |-
+           MODBUS timeout (ms), Default : 2000
+        default: 2000
+
+      - type: int
+        name: WRITEDELAY
+        description: |-
+          MODBUS write delay ms for Serial RTU, Default : 0
+        default: 0
+    pre_init:
+      - value: |
+          # Create Modbus Port & Asyn Port (modbusportname_ASYN)  
+          drvAsynIPPortConfigure("{{NAME}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+          modbusInterposeConfig("{{NAME}}_ASYN",0,{{TIMEOUT}},{{WRITEDELAY}})
+          # Write Relays
+          drvModbusAsynConfigure("{{NAME}}_set_port", "{{NAME}}_ASYN", 1,5, 0, 8, 0, {{POLL_DELAY}}, "ICPDAS7267")
+          ## Read Relay Status
+          drvModbusAsynConfigure("{{NAME}}_get_port", "{{NAME}}_ASYN", 1,1, 0, 8, 0, {{POLL_DELAY}}, "ICPDAS7267")
+          #read once or epics events
+          drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 350, 4, 0, {{POLL_DELAY}}, "ICPDAS7267")
+
+    databases:
+      - file: icp7267.db
+        args:
+          P:
+          R:
+          NUM: "{{NUM}}"
+          get_port: "{{NAME}}_get_port"
+          set_port: "{{NAME}}_set_port"
+          PORT: "{{NAME}}_INFO"
