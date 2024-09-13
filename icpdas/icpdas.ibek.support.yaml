@@ -346,7 +346,8 @@ defs:
         args:
           P:
           R:
-          NUM: "{{NUM}}"
           get_port: "{{NAME}}_get_port"
           set_port: "{{NAME}}_set_port"
           PORT: "{{NAME}}_INFO"
+
+  
