@@ -426,6 +426,12 @@ defs:
         description: |-
           NDOverlay Device Suffix
 
+      - type: int
+        name: NOverlays
+        description: |-
+          Maximum number of overlays
+        default: 1
+        
       - type: str
         name: NAME
         description: |-
