@@ -1,0 +1,80 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
+
+# epicsEnvSet ("STREAM_PROTOCOL_PATH", "$(TOP)/agilentXgs600App/protocol")
+# drvAsynIPPortConfigure ("MOXA1","192.168.190.55:4002",0,0,0)
+# dbLoadRecords("$(TOP)/db/agilentXgs600Ctlr.template","device=GEN-CS-GP08:VGCON03, port=MOXA1")
+# dbLoadRecords("$(TOP)/db/agilentXgs600Img.template","device=LEL-VAC-GAUG10:CC, port=MOXA1, sensor=T1,tcauto=T3")
+# #
+
+
+module: TPG366
+
+defs:
+  - name: CreateCtrl
+    description: |-
+      Create a TPG366 gauge controller
+    args:
+      - type: id
+        name: name
+        description: |-
+          The name of the controller and its Asyn Port Name
+      
+      - type: str
+        name: P
+        description: |-
+          Device PV Prefix
+
+      - type: str
+        name: IP
+        description: |-
+          IP address of the ethernet2serial
+        default: 127.0.0.1 ## localhost
+
+      - type: int
+        name: TCPPORT
+        description: |-
+          Port of the ethernet2serial
+        default: 4001
+
+      - type: int
+        name: ASYNPRIO
+        description: |-
+          ASYN   PRIORITY, Default : 0
+        default: 0
+
+      - type: int
+        name: AUTOCONNECT
+        description: |-
+          Asyn auto connect
+          0: Auto connection
+          1: no Auto connection
+        default: 0
+
+      - type: int
+        name: NOPRECESSESOS
+        description: |-
+          ASYN   noProcessEos, Default : 0
+          https://epics.anl.gov/tech-talk/2020/msg01705.php
+        default: 0
+
+      - type: str
+        name: charLabel
+        description: |-
+          label del sensore
+  
+    pre_init:
+      - value: |
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "$(TPG366)/iocBoot/ioctest/"
+          drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+
+    databases:
+      - file: TPG366.db
+        args:
+          CONTROLLER: "{{P}}:{{name}}"
+          PORT: "{{name}}"
+          S1: "GAUGE1"
+          S2: "GAUGE2" 
+          S3: "GAUGE3"
+          S4: "GAUGE4"
+          S5: "GAUGE5"
+          S6: "GAUGE6"
