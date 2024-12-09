@@ -560,7 +560,7 @@ defs:
           ## 2 discrete input registers
           drvModbusAsynConfigure("{{NAME}}_DI", "{{NAME}}_ASYN", 1,    2, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7226")
           #read once or epics events
-          drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 350, 4, 0, {{POLL_DELAY*10}}, "ICPDAS7226")
+          drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 350, 3, 0, {{POLL_DELAY*10}}, "ICPDAS7226")
 
     databases:
       - file: icp7226.db
