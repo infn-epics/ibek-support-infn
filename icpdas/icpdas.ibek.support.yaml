@@ -458,7 +458,6 @@ defs:
           Read  function : Polling delay time in ms for the polling thread
           Write function : a non-zero value means that the Modbus data should be read once
         default: 1000
-
       - type: int
         name: TIMEOUT
         description: |-
