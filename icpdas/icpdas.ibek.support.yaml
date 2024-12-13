@@ -551,7 +551,7 @@ defs:
           drvModbusAsynConfigure("{{NAME}}_AIMIN", "{{NAME}}_ASYN", 1, 4, 268, 6, 0, {{POLL_DELAY}}, "ICPDAS7226")
 
           ## 2 holding registers
-          drvModbusAsynConfigure("{{NAME}}_AO", "{{NAME}}_ASYN", 1,    3, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7226")
+          drvModbusAsynConfigure("{{NAME}}_AO", "{{NAME}}_ASYN", 1,    6, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7226")
 
           ## 2 coil registers
           drvModbusAsynConfigure("{{NAME}}_DO", "{{NAME}}_ASYN", 1,    5, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7226")
