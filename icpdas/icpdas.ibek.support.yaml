@@ -256,8 +256,10 @@ defs:
           drvModbusAsynConfigure("{{NAME}}_AIMAX", "{{NAME}}_ASYN", 1, 4, 236, 6, 0, {{POLL_DELAY}}, "ICPDAS7026")
           drvModbusAsynConfigure("{{NAME}}_AIMIN", "{{NAME}}_ASYN", 1, 4, 268, 6, 0, {{POLL_DELAY}}, "ICPDAS7026")
 
-          ## 2 holding registers
-          drvModbusAsynConfigure("{{NAME}}_AO", "{{NAME}}_ASYN", 1,    3, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7026")
+          ## 2 write holding registers
+          drvModbusAsynConfigure("{{NAME}}_WAO", "{{NAME}}_ASYN", 1,    6, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7026")
+          ## 2 read holding registers
+          drvModbusAsynConfigure("{{NAME}}_RAO", "{{NAME}}_ASYN", 1,    3, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7026")
 
           ## 2 coil registers
           drvModbusAsynConfigure("{{NAME}}_DO", "{{NAME}}_ASYN", 1,    5, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7026")
@@ -273,7 +275,8 @@ defs:
           P: 
           R: 
           AIPORT: "{{NAME}}_AI"
-          AOPORT: "{{NAME}}_AO"
+          WAOPORT: "{{NAME}}_WAO"
+          RAOPORT: "{{NAME}}_RAO"
           CNTPORT: "{{NAME}}_DICNT"
           DIPORT: "{{NAME}}_DI"
           DOPORT: "{{NAME}}_DO"
@@ -550,8 +553,10 @@ defs:
           drvModbusAsynConfigure("{{NAME}}_AIMAX", "{{NAME}}_ASYN", 1, 4, 236, 6, 0, {{POLL_DELAY}}, "ICPDAS7226")
           drvModbusAsynConfigure("{{NAME}}_AIMIN", "{{NAME}}_ASYN", 1, 4, 268, 6, 0, {{POLL_DELAY}}, "ICPDAS7226")
 
-          ## 2 holding registers
-          drvModbusAsynConfigure("{{NAME}}_AO", "{{NAME}}_ASYN", 1,    6, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7226")
+          ## 2 write holding registers
+          drvModbusAsynConfigure("{{NAME}}_WAO", "{{NAME}}_ASYN", 1,    6, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7226")
+          ## 2 read holding registers
+          drvModbusAsynConfigure("{{NAME}}_RAO", "{{NAME}}_ASYN", 1,    3, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7226")
 
           ## 2 coil registers
           drvModbusAsynConfigure("{{NAME}}_DO", "{{NAME}}_ASYN", 1,    5, 0, 2, 0, {{POLL_DELAY}}, "ICPDAS7226")
@@ -567,7 +572,8 @@ defs:
           P: 
           R: 
           AIPORT: "{{NAME}}_AI"
-          AOPORT: "{{NAME}}_AO"
+          WAOPORT: "{{NAME}}_WAO"
+          RAOPORT: "{{NAME}}_RAO"
           CNTPORT: "{{NAME}}_DICNT"
           DIPORT: "{{NAME}}_DI"
           DOPORT: "{{NAME}}_DO"
