@@ -61,7 +61,7 @@ defs:
       - file: agilentXgs600Ctrl.template
         args:
           device: "{{P}}"
-          port: "{{name}}"
+          port: "{{name}}_ASYN"
 
     pre_init:
       - value: |
@@ -71,7 +71,7 @@ defs:
       - value: |
           dbl
 
-  - name: SensorTC
+  - name: SensorCNV
     description: |-
       Template database for the the Agilent XGS-600 CNV Sensor
     args:
@@ -82,18 +82,26 @@ defs:
       - type: str
         name: P
         description: |-
-          T1 .. T4
+          Prefix of the device
       
+      - type: int
+        name: number
+        description: |-
+          Gauge Number
+
       - type: str
         name: sensor
         description: |-
           T1 .. T4
+
     databases:
       - file: agilentXgs600Cnv.template
         args:
           device: "{{P}}"
-          port: "{{controller.name}}"
-          sensor:
+          port: "{{controller.name}}_ASYN"
+          sensor: "{{sensor}}"
+          number: "{{number}}"
+          
 
   - name: SetPoint
     description: |-
@@ -119,13 +127,13 @@ defs:
       - file: agilentXgs600Spt.template
         args:
           device: "{{P}}"
-          port: "{{controller.name}}"
+          port: "{{controller.name}}_ASYN"
           number:
           sensor:
 
-  - name: SensorCC
+  - name: SensorIMG
     description: |-
-      Template database for the the Agilent XGS-600 CC Sensor
+       database for the the Agilent XGS-600 Inverted Megnetron Gauge
     args:
       - type: object
         name: controller
@@ -149,7 +157,7 @@ defs:
       - file: agilentXgs600Cnv.template
         args:
           device: "{{P}}"
-          port: "{{controller.name}}"
+          port: "{{controller.name}}_ASYN"
           sensor:
           tcauto:
 
