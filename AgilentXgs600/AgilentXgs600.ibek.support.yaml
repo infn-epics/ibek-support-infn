@@ -7,10 +7,10 @@
 # #
 
 
-module: AgilentXgs600
+module: AgilentXggs600
 
 defs:
-  - name: CreateCtrl
+  - name: agilent.xgs600
     description: |-
       Create a AgilentXgs600 gauge controller
     args:
@@ -71,7 +71,7 @@ defs:
       - value: |
           dbl
 
-  - name: SensorCNV
+  - name: xgs600.cnvsensor
     description: |-
       Template database for the the Agilent XGS-600 CNV Sensor
     args:
@@ -84,11 +84,6 @@ defs:
         description: |-
           Prefix of the device
       
-      - type: int
-        name: number
-        description: |-
-          Gauge Number
-
       - type: str
         name: sensor
         description: |-
@@ -100,10 +95,9 @@ defs:
           device: "{{P}}"
           port: "{{controller.name}}_ASYN"
           sensor: "{{sensor}}"
-          number: "{{number}}"
           
 
-  - name: SetPoint
+  - name: xgs600.setpoint
     description: |-
       Template database for Agilent XGS-600 Setpoint
     args:
@@ -131,7 +125,7 @@ defs:
           number:
           sensor:
 
-  - name: SensorIMG
+  - name: xgs600.imgsensor
     description: |-
        database for the the Agilent XGS-600 Inverted Megnetron Gauge
     args:
@@ -154,7 +148,7 @@ defs:
         default: "T3"
 
     databases:
-      - file: agilentXgs600Cnv.template
+      - file: agilentXgs600Img.template
         args:
           device: "{{P}}"
           port: "{{controller.name}}_ASYN"
