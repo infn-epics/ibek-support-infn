@@ -7,7 +7,7 @@
 # #
 
 
-module: AgilentXggs600
+module: AgilentXgs600
 
 defs:
   - name: agilent.xgs600
@@ -127,7 +127,7 @@ defs:
 
   - name: xgs600.imgsensor
     description: |-
-       database for the the Agilent XGS-600 Inverted Megnetron Gauge
+       database for the the Agilent XGS-600 Inverted Magnetron Gauge
     args:
       - type: object
         name: controller
