@@ -7,10 +7,10 @@
 # #
 
 
-module: AgilentXgs600
+module: agilent.xgs600
 
 defs:
-  - name: agilent.xgs600
+  - name: controller
     description: |-
       Create a AgilentXgs600 gauge controller
     args:
@@ -71,7 +71,7 @@ defs:
       - value: |
           dbl
 
-  - name: xgs600.cnvsensor
+  - name: cnvsensor
     description: |-
       Template database for the the Agilent XGS-600 CNV Sensor
     args:
@@ -97,7 +97,7 @@ defs:
           sensor: "{{sensor}}"
           
 
-  - name: xgs600.setpoint
+  - name: setpoint
     description: |-
       Template database for Agilent XGS-600 Setpoint
     args:
@@ -125,7 +125,7 @@ defs:
           number:
           sensor:
 
-  - name: xgs600.imgsensor
+  - name: imgsensor
     description: |-
        database for the the Agilent XGS-600 Inverted Magnetron Gauge
     args:
