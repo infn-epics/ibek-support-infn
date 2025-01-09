@@ -90,9 +90,7 @@ defs:
           ASYN   noProcessEos, Default : 0
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
-
-      
-
+        
       - type: int
         name: numAxes
         description: |-
@@ -251,6 +249,4 @@ defs:
           DHLM: 
           DLLM: 
           INIT: ""
-    post_init:
-      - value: |
-          dbl
+    
