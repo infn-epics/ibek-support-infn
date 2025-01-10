@@ -15,12 +15,12 @@ FOLDER=$(dirname $(readlink -f $0))
 set -xe
 
 # get the source and fix up the configure/RELEASE files
-ibek support git-clone --org https://github.com/CAENels/ ${NAME} ${VERSION}
+ibek support git-clone --org https://baltig.infn.it/infn-epics/ ${NAME} ${VERSION}
 ibek support register ${NAME}
 
 # declare the libs and DBDs that are required in ioc/iocApp/src/Makefile
 ibek support add-libs asyn devEasyDriver
-ibek support add-dbds asyn.dbd drvAsynIPPort.dbd drvAsynSerialPort.dbd devEasyDriver.dbd
+ibek support add-dbds asyn.dbd drvAsynIPPort.dbd devEasyDriver.dbd
 
 
 # Patches to the CONFIG_SITE

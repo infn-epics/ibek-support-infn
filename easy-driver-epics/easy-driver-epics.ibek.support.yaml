@@ -43,6 +43,7 @@ defs:
 
     pre_init:
       - value: |
+          asynSetTraceIOMask("L1_TCP",-1,0x2)
           devEasyDriverConfigure("{{P}}", "{{IP}}:{{TCPPORT}}", 0x1)
     databases:
       - file: $(SUPPORT)/easy-driver-epics/db/asynRecord.db
@@ -59,5 +60,4 @@ defs:
           R:
           PORT: "{{P}}"
           RANGE:
-          NELM: "10000"
-          
+                    
