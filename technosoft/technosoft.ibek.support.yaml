@@ -188,10 +188,22 @@ defs:
         default: "0"
       
       - type: float
-        name: USTEP2MM
+        name: EGU2MM
         description: |-
-          Coefficient to convert usteps to mm (default zero produce NaN is used)
+          Coefficient to convert EGU to mm (default zero produce NaN is used)
         default: 0.0
+      
+      - type: float
+        name: POS_MAX
+        description: |-
+          Maximum position in EGU
+        default: 100000000
+
+      - type: float
+        name: POS_MIN
+        description: |-
+          Maximum position in EGU
+        default: 0
 
       - type: str
         name: CONFIG
@@ -214,7 +226,7 @@ defs:
 
     pre_init:
       - value: |
-          dbLoadRecords("$(SUPPORT)/motorTechnosoft/db/tmlAxis.template","PREFIX={{controller.P}}, CHANNEL_ID={{name}}, CHANNEL_PREFIX=ax{{num}}, ASYN_PORT={{controller.controllerName}}, ASYN_ADDR={{ASYN_ADDR}}, NSTEPS={{NSTEPS}}, NMICROSTEPS={{NMICROSTEPS}}, VELO={{VELO}}, VELO_MIN={{VELO_MIN}}, VELO_MAX={{VELO_MAX}}, ACCL={{ACCL}}, ACCL_MIN={{ACCL_MIN}}, ACCL_MAX={{ACCL_MAX}}, HAR={{HAR}}, HVEL={{HVEL}}, JAR={{JAR}}, JVEL={{JVEL}}, ENABLED={{ENABLED}}, SLSP={{SLSP}}, EGU={{EGU}}, TIMEOUT={{TIMEOUT}},USTEP2MM={{USTEP2MM}}")
+          dbLoadRecords("$(SUPPORT)/motorTechnosoft/db/tmlAxis.template","PREFIX={{controller.P}}, CHANNEL_ID={{name}}, CHANNEL_PREFIX=ax{{num}}, ASYN_PORT={{controller.controllerName}}, ASYN_ADDR={{ASYN_ADDR}}, NSTEPS={{NSTEPS}}, NMICROSTEPS={{NMICROSTEPS}}, VELO={{VELO}}, VELO_MIN={{VELO_MIN}}, VELO_MAX={{VELO_MAX}}, ACCL={{ACCL}}, ACCL_MIN={{ACCL_MIN}}, ACCL_MAX={{ACCL_MAX}}, HAR={{HAR}}, HVEL={{HVEL}}, JAR={{JAR}}, JVEL={{JVEL}}, ENABLED={{ENABLED}}, SLSP={{SLSP}}, EGU={{EGU}}, TIMEOUT={{TIMEOUT}},EGU2MM={{EGU2MM}},POS_MAX={{POS_MAX}},POS_MIN={{POS_MIN}}")
 
     post_init:
       - value: |
