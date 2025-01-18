@@ -193,13 +193,13 @@ defs:
           Coefficient to convert EGU to mm (default zero produce NaN is used)
         default: 0.0
       
-      - type: float
+      - type: int
         name: POS_MAX
         description: |-
           Maximum position in EGU
         default: 100000000
 
-      - type: float
+      - type: int
         name: POS_MIN
         description: |-
           Maximum position in EGU

@@ -25,6 +25,7 @@ if [[ $EPICS_TARGET_ARCH == "RTEMS"* ]]; then
     sed -i '/DIRS += ${SUPPORT}/${NAME}.*test/d' Makefile
 else
     ibek support add-config-macro ${NAME} TIRPC YES
+
 fi
 
 # global config settings
