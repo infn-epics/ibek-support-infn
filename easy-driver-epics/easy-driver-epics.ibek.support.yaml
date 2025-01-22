@@ -59,4 +59,10 @@ defs:
           R:
           PORT: "{{P}}{{R}}"
           RANGE:
+      ## unimag interface overlay
+      - file: $(SUPPORT)/easy-driver-epics/db/unimag.db
+        args:
+          P:
+          R:
+          
                     
