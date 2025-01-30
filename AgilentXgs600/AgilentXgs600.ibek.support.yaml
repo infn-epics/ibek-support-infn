@@ -58,7 +58,7 @@ defs:
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
     databases:
-      - file: agilentXgs600Ctrl.template
+      - file: agilentXgs600Ctlr.template
         args:
           device: "{{P}}"
           port: "{{name}}_ASYN"
