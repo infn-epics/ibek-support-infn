@@ -17,7 +17,7 @@
 
 
 
-module: agilent.agilent4uhv
+module: agilent.4uhv
 
 defs:
   - name: controller
