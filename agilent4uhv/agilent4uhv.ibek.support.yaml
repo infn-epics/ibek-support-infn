@@ -102,5 +102,5 @@ defs:
         args:
           device: "{{controller.P}}:{{P}}"
           port: "{{controller.name}}_ASYN"
-          chan: "{{channel}}"
+          chan: {{channel}}
           
