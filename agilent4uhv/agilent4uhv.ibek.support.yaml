@@ -100,7 +100,7 @@ defs:
     databases:
       - file: agilent4uhv.template
         args:
-          device: "{{controller.P}}:{{P}}"
+          device: "{{controller.P}}:{{name}}"
           port: "{{controller.name}}_ASYN"
-          chan: {{channel}}
+          chan: "{{channel}}"
           
