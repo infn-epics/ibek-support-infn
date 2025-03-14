@@ -1,0 +1,92 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
+
+
+module: kima
+
+defs:
+  - name: KimaUndulatorCreateController 
+    description: |-
+      Create a kima undulator controller
+    args:
+      - type: id
+        name: name
+        description: |-
+          The name of the controller and its Asyn Port Name
+      
+      - type: str
+        name: P
+        description: |-
+          Device PV Prefix
+      - type: str
+        name: R
+        description: Device Suffix
+      
+      - type: int
+        name: POLL_DELAY
+        description: |-
+          Read  function : Polling delay time in ms for the polling thread
+          Write function : a non-zero value means that the Modbus data should be read once
+        default: 1000
+
+      - type: str
+        name: IP
+        description: |-
+          IP address of the ethernet2serial
+        default: 127.0.0.1 ## localhost
+
+      - type: int
+        name: TCPPORT
+        description: |-
+          Port of the ethernet2serial
+        default: 4001
+
+      - type: int
+        name: ASYNPRIO
+        description: |-
+          ASYN   PRIORITY, Default : 0
+        default: 0
+
+      - type: int
+        name: AUTOCONNECT
+        description: |-
+          Asyn auto connect
+          0: Auto connection
+          1: no Auto connection
+        default: 0
+
+      - type: int
+        name: NOPRECESSESOS
+
+        description: |-
+          ASYN   noProcessEos, Default : 0
+          https://epics.anl.gov/tech-talk/2020/msg01705.php
+        default: 0
+    databases:
+      - file: kimaUndulator.db
+        args:
+          P:
+          R:
+          device: "{{P}}"
+          port: "{{name}}_ASYN"
+          AIPORT: "{{name}}_AI"
+          AIPORT2: "{{name}}2_AI"
+          AOPORT: "{{name}}_AO"
+          DOPORT: "{{name}}_DO"
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
+          modbusInterposeConfig("{{name}}_ASYN", 0, 2000, 0)
+          # Create the asyn MODBUS interfaces
+          ## write coil registers
+          drvModbusAsynConfigure("{{name}}_DO", "{{name}}_ASYN", 1, 5, 0, 40, 0, 1000, "kimaUndulator")
+          ## write single holding register
+          drvModbusAsynConfigure("{{name}}_AO", "{{name}}_ASYN", 1, 6, 0, 100, 0, 1000, "kimaUndulator")
+
+          ## read input registers
+          drvModbusAsynConfigure("{{name}}_AI", "{{name}}_ASYN", 1, 4, 0, 100, 0, 1000, "kimaUndulator")
+          ## read input registers2
+          drvModbusAsynConfigure("{{name}}2_AI", "{{name}}_ASYN", 1, 4, 880, 100, 0, 1000, "kimaUndulator")
+          asynSetTraceMask("{{name}}_AI", -1, 0xFF)    # Full tracing for analog inputs
+          asynSetTraceIOMask("{{name}}_AI", -1, 0x3)  # Log I/O traffic
+          asynReport(10, "{{name}}_AI")
