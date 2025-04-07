@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
+# drvAsynSerialPortConfigure("STAR4UHV_PORT", "/var/tmp/ttyV0", 0, 0, 0)
+# asynSetOption("STAR4UHV_PORT", -1, "baud", "9600")
+# asynSetOption("STAR4UHV_PORT", -1, "bits", "8")
+# asynSetOption("STAR4UHV_PORT", -1, "parity", "none")
+# asynSetOption("STAR4UHV_PORT", -1, "stop", "1")
+# asynSetOption("STAR4UHV_PORT", -1, "clocal", "Y")
+# asynSetOption("STAR4UHV_PORT", -1, "crtscts", "N")
+
+
+# # Load section for driver 'Agilent-4UHV'
+
+# dbLoadRecords("$(TOP)/db/agilent4uhv.template","device=$(PREFIX):IONP01, port=STAR4UHV_PORT, chan=1")
+# dbLoadRecords("$(TOP)/db/agilent4uhv.template","device=$(PREFIX):IONP02, port=STAR4UHV_PORT, chan=2")
+# dbLoadRecords("$(TOP)/db/agilent4uhv.template","device=$(PREFIX):IONP03, port=STAR4UHV_PORT, chan=3")
+# dbLoadRecords("$(TOP)/db/agilent4uhv.template","device=$(PREFIX):IONP04, port=STAR4UHV_PORT, chan=4")
+
+
+
+module: agilent.ipcmini
+
+defs:
+  - name: controller
+    description: |-
+      Create a AgilentIpcMini pump controller
+    args:
+      - type: id
+        name: name
+        description: |-
+          The name of the controller and its Asyn Port Name
+      
+      - type: str
+        name: P
+        description: |-
+          Device PV Prefix
+
+      - type: str
+        name: IP
+        description: |-
+          IP address of the ethernet2serial
+        default: 127.0.0.1 ## localhost
+
+      - type: int
+        name: TCPPORT
+        description: |-
+          Port of the ethernet2serial
+        default: 4001
+
+      - type: int
+        name: ASYNPRIO
+        description: |-
+          ASYN   PRIORITY, Default : 0
+        default: 0
+
+      - type: int
+        name: AUTOCONNECT
+        description: |-
+          Asyn auto connect
+          0: Auto connection
+          1: no Auto connection
+        default: 0
+
+      - type: int
+        name: NOPRECESSESOS
+
+        description: |-
+          ASYN   noProcessEos, Default : 0
+          https://epics.anl.gov/tech-talk/2020/msg01705.php
+        default: 0
+    databases:
+      - file: ipc.template
+        args:
+          device: "{{P}}"
+          port: "{{name}}_ASYN"
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "$(AGILENTIPCMINI)/db/"
+
+
+ 
