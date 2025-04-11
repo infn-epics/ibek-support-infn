@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: epics-nds
+# TODO I used the current main branch HEAD commit but this should really be
+# a release tag.
+# I did not use main because that will mean rebuilding the container is not
+# deterministic.
+version: 842f89796c6fb75122b372bf5efada989f9139ac
+
+dbds:
+  - nds.dbd
+libs:
+  - nds
+
+organization: https://baltig.infn.it/infn-epics/
+
+macro: EPICS_NDS
+
+apt_developer:
+  - libboost-dev
+  - libcurl4-gnutls-dev
+  - libboost-filesystem-dev
+
+# TODO - probably do not need dev packages at runtime!
+apt_runtime:
+  - libboost-dev
+  - libcurl4-gnutls-dev
+  - libboost-filesystem-dev

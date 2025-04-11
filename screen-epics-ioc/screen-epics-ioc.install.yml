@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: screen-epics-ioc
+version: v1.3.1
+
+dbds:
+  - screen.dbd
+
+organization: https://github.com/lnls-dig
+
+macro: SCREEN_EPICS_IOC

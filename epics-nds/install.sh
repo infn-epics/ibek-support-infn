@@ -15,6 +15,8 @@ set -xe
 ibek support add-runtime-packages libboost-dev libcurl4-gnutls-dev libboost-filesystem-dev
 ibek support apt-install libboost-dev libcurl4-gnutls-dev libboost-filesystem-dev
 # get the source and fix up the configure/RELEASE files
+
+# TODO WARNING - looks like you leaked a token here?
 ibek support git-clone ${NAME} ${VERSION} --org https://oauth2:zt_ALPjGqNRwLPeHMB8_@baltig.infn.it/infn-epics/
 ibek support register ${NAME}
 

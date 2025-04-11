@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: kima-undulator-ioc
+# TODO this should be a release tag to ensure deterministic builds.
+version: main
+
+# this module uses modbus so requires none of its own libs/dbds
+organization: https://baltig.infn.it/infn-epics/
+
+macro: KIMA_UNDULATOR_IOC

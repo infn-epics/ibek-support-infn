@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: easy-driver-epics
+# TODO this should be a tag to make rebuilding the container deterministic
+version: master
+
+dbds:
+  - devEasyDriver.dbd
+libs:
+  - devEasyDriver
+
+organization: https://baltig.infn.it/infn-epics/
