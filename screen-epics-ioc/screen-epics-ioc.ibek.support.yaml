@@ -2,37 +2,36 @@
 
 module: screenEpics
 
-defs:
+entity_models:
   - name: create
     description: |-
       Creates a screen epics
-
-    args:
-      - type: str
-        name: P
+    parameters:
+      P:
+        type: str
         description: |-
           Screen prefix
 
-      - type: str
-        name: R
+      R:
+        type: str
         description: |-
           Screen root
 
-      - type: str
-        name: PREFMOT
+      PREFMOT:
+        type: str
         description: |-
           Motor PV Prefix
 
-      - type: str
-        name: PREFCAM
+      PREFCAM:
+        type: str
         description: |-
           Camera Prefix
 
     databases:
       - file: screen.db
         args:
-          P: 
+          P:
           R:
-          MTR_CTRL_PREFIX: "{{ PREFMOT }}"
-          CAM_PREFIX: "{{ PREFCAM }}"
+          MTR_CTRL_PREFIX: '{{ PREFMOT }}'
+          CAM_PREFIX: '{{ PREFCAM }}'
 

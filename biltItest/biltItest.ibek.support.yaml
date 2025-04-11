@@ -1,49 +1,49 @@
-# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.0/ibek.support.schema.json
 
 module: biltItest
 
-defs:
+entity_models:
   - name: configure
     description: |-
       This will create an AsynPort connecting to the module
-    args:
-      - type: id
-        name: controllerName
+    parameters:
+      controllerName:
+        type: id
         description: |-
           controller and ASYN PORT name
 
-      - type: str
-        name: P
+      P:
+        type: str
         description: |-
           controller PREFIX
 
-      - type: str
-        name: IP
+      IP:
+        type: str
         description: |-
           IP address of the Controller
 
-      - type: int
-        name: TCPPORT
+      TCPPORT:
+        type: int
         description: |-
           IP PORT
         default: 5025
 
-      - type: int
-        name: ASYNPRIO
+      ASYNPRIO:
+        type: int
         description: |-
           ASYN   PRIORITY, Default : 0
         default: 0
 
-      - type: int
-        name: AUTOCONNECT
+      AUTOCONNECT:
+        type: int
         description: |-
           Asyn auto connect
           0: Auto connection
           1: no Auto connection
         default: 0
 
-      - type: int
-        name: NOPRECESSESOS
+      NOPRECESSESOS:
+        type: int
         description: |-
           ASYN   noProcessEos, Default : 0
           https://epics.anl.gov/tech-talk/2020/msg01705.php
@@ -53,25 +53,25 @@ defs:
       - value: |
           drvAsynIPPortConfigure("{{controllerName}}", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
           epicsEnvSet "STREAM_PROTOCOL_PATH", "$(BILTITEST)/biltItestApp/protocol/"
-  
+
   - name: device
     description: |-
       This will create a device instance
-    args:
-      - type: object
-        name: controller
+    parameters:
+      controller:
+        type: object
         description: |-
           a reference to the PS controller
-      - type: str
-        name: P
+      P:
+        type: str
         description: Device Prefix
-      - type: int
-        name: id
+      id:
+        type: int
         description: Module ID
-      - type: int
-        name: max
+      max:
+        type: int
         description: Max Current
-     
+
     databases:
       - file: $(BILTITEST)/db/biltItest.template
         args:
@@ -79,4 +79,3 @@ defs:
           port: "{{ controller.controllerName }}"
           module: "{{id}}"
           max: "{{max}}"
-

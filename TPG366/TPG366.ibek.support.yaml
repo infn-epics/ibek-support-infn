@@ -9,59 +9,59 @@
 
 module: TPG366
 
-defs:
+entity_models:
   - name: CreateCtrl
     description: |-
       Create a TPG366 gauge controller
-    args:
-      - type: id
-        name: name
+    parameters:
+      name:
+        type: id
         description: |-
           The name of the controller and its Asyn Port Name
-      
-      - type: str
-        name: P
+
+      P:
+        type: str
         description: |-
           Device PV Prefix
 
-      - type: str
-        name: IP
+      IP:
+        type: str
         description: |-
           IP address of the ethernet2serial
         default: 127.0.0.1 ## localhost
 
-      - type: int
-        name: TCPPORT
+      TCPPORT:
+        type: int
         description: |-
           Port of the ethernet2serial
         default: 4001
 
-      - type: int
-        name: ASYNPRIO
+      ASYNPRIO:
+        type: int
         description: |-
           ASYN   PRIORITY, Default : 0
         default: 0
 
-      - type: int
-        name: AUTOCONNECT
+      AUTOCONNECT:
+        type: int
         description: |-
           Asyn auto connect
           0: Auto connection
           1: no Auto connection
         default: 0
 
-      - type: int
-        name: NOPRECESSESOS
+      NOPRECESSESOS:
+        type: int
         description: |-
           ASYN   noProcessEos, Default : 0
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
 
-      - type: str
-        name: charLabel
+      charLabel:
+        type: str
         description: |-
           label del sensore
-  
+
     pre_init:
       - value: |
           epicsEnvSet "STREAM_PROTOCOL_PATH", "$(TPG366)/iocBoot/ioctest/"
@@ -70,11 +70,11 @@ defs:
     databases:
       - file: TPG366.db
         args:
-          CONTROLLER: "{{P}}:{{name}}"
-          PORT: "{{name}}"
-          S1: "GAUGE1"
-          S2: "GAUGE2" 
-          S3: "GAUGE3"
-          S4: "GAUGE4"
-          S5: "GAUGE5"
-          S6: "GAUGE6"
+          CONTROLLER: '{{P}}:{{name}}'
+          PORT: '{{name}}'
+          S1: GAUGE1
+          S2: GAUGE2
+          S3: GAUGE3
+          S4: GAUGE4
+          S5: GAUGE5
+          S6: GAUGE6

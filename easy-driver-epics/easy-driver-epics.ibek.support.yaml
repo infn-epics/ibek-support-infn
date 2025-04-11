@@ -3,40 +3,40 @@
 module: caenels
 # yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/1.5.0/ibek.support.schema.json
 
-defs:
+entity_models:
   - name: easydriver
     description: |-
       This will create an instance of standard CAEN Easy Power Supply
-    args:
-      - type: str
-        name: P
+    parameters:
+      P:
+        type: str
         description: Device Prefix
-      - type: str
-        name: R
+      R:
+        type: str
         description: Device Suffix
-      - type: str
-        name: IP
+      IP:
+        type: str
         description: |-
           IP address of the Power Supply
         default: 127.0.0.1 ## localhost
-      - type: int
-        name: TCPPORT
+      TCPPORT:
+        type: int
         description: |-
           TCP PORT of the Power Supply
         default: 10001
 
-      - type: int 
-        name: RANGE
+      RANGE:
+        type: int
         description: |-
           Current channels range
         default: 1
-      - type: int 
-        name: OMAX
+      OMAX:
+        type: int
         description: |-
           Output MAX
         default: 0
-      - type: int 
-        name: IMAX
+      IMAX:
+        type: int
         description: |-
           Current MAX
         default: 0
@@ -52,17 +52,14 @@ defs:
       #     PORT: "{{P}}_TCP"
       #     OMAX:
       #     IMAX:
-    
       - file: $(SUPPORT)/easy-driver-epics/db/devEasyDriver.db
         args:
           P:
           R:
-          PORT: "{{P}}{{R}}"
+          PORT: '{{P}}{{R}}'
           RANGE:
       ## unimag interface overlay
       - file: $(SUPPORT)/easy-driver-epics/db/unimag.db
         args:
           P:
           R:
-          
-                    

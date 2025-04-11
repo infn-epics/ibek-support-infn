@@ -9,71 +9,70 @@
 
 module: smc
 
-defs:
+entity_models:
   - name: CreateCtrl
     description: |-
       Create a smc chiller controller
-    args:
-      - type: id
-        name: name
+    parameters:
+      name:
+        type: id
         description: |-
           The name of the controller and its Asyn Port Name
-      
-      - type: str
-        name: P
+
+      P:
+        type: str
         description: |-
           Device PV Prefix
 
-      - type: str
-        name: IP
+      IP:
+        type: str
         description: |-
           IP address of the ethernet2serial
         default: 127.0.0.1 ## localhost
 
-      - type: int
-        name: TCPPORT
+      TCPPORT:
+        type: int
         description: |-
           Port of the ethernet2serial
         default: 4001
 
-      - type: int
-        name: ASYNPRIO
+      ASYNPRIO:
+        type: int
         description: |-
           ASYN   PRIORITY, Default : 0
         default: 0
 
-      - type: int
-        name: AUTOCONNECT
+      AUTOCONNECT:
+        type: int
         description: |-
           Asyn auto connect
           0: Auto connection
           1: no Auto connection
         default: 0
 
-      - type: int
-        name: NOPRECESSESOS
+      NOPRECESSESOS:
+        type: int
         description: |-
           ASYN   noProcessEos, Default : 0
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
 
-      - type: int
-        name: DEV_ID
+      DEV_ID:
+        type: int
         description: |-
           Device ID on Daisy Chain
         default: 01
-    
-  
+
+
     pre_init:
-      - value: |
-          
+      - value: |2
+
           epicsEnvSet "STREAM_PROTOCOL_PATH", "$(CHILLERSMCHECR)/iocBoot/smc-hecr-ioc/"
           drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
 
     databases:
       - file: smc-hecr.db
         args:
-          P: "{{P}}:{{name}}"
-          PORT: "{{name}}_ASYN"
-          ADDR: "{{DEV_ID}}"
-          
+          P: '{{P}}:{{name}}'
+          PORT: '{{name}}_ASYN'
+          ADDR: '{{DEV_ID}}'

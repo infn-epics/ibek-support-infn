@@ -3,76 +3,63 @@
 
 module: kima
 
-defs:
-  - name: KimaUndulatorCreateController 
+entity_models:
+  - name: KimaUndulatorCreateController
     description: |-
       Create a kima undulator controller
-    args:
-      - type: id
-        name: name
+    parameters:
+      name:
+        type: id
         description: |-
           The name of the controller and its Asyn Port Name
-      
-      - type: str
-        name: P
+
+      P:
+        type: str
         description: |-
           Device PV Prefix
-      - type: str
-        name: R
+      R:
+        type: str
         description: Device Suffix
-      
-      - type: int
-        name: POLL_DELAY
+
+      POLL_DELAY:
+        type: int
         description: |-
           Read  function : Polling delay time in ms for the polling thread
           Write function : a non-zero value means that the Modbus data should be read once
         default: 1000
 
-      - type: str
-        name: IP
+      IP:
+        type: str
         description: |-
           IP address of the ethernet2serial
         default: 127.0.0.1 ## localhost
 
-      - type: int
-        name: TCPPORT
+      TCPPORT:
+        type: int
         description: |-
           Port of the ethernet2serial
         default: 4001
 
-      - type: int
-        name: ASYNPRIO
+      ASYNPRIO:
+        type: int
         description: |-
           ASYN   PRIORITY, Default : 0
         default: 0
 
-      - type: int
-        name: AUTOCONNECT
+      AUTOCONNECT:
+        type: int
         description: |-
           Asyn auto connect
           0: Auto connection
           1: no Auto connection
         default: 0
 
-      - type: int
-        name: NOPRECESSESOS
-
+      NOPRECESSESOS:
+        type: int
         description: |-
           ASYN   noProcessEos, Default : 0
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
-    databases:
-      - file: kimaUndulator.db
-        args:
-          P:
-          R:
-          device: "{{P}}"
-          port: "{{name}}_ASYN"
-          AIPORT: "{{name}}_AI"
-          AIPORT2: "{{name}}2_AI"
-          AOPORT: "{{name}}_AO"
-          DOPORT: "{{name}}_DO"
-
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
@@ -90,3 +77,15 @@ defs:
           asynSetTraceMask("{{name}}_AI", -1, 0xFF)    # Full tracing for analog inputs
           asynSetTraceIOMask("{{name}}_AI", -1, 0x3)  # Log I/O traffic
           asynReport(10, "{{name}}_AI")
+    databases:
+      - file: kimaUndulator.db
+        args:
+          P:
+          R:
+          device: '{{P}}'
+          port: '{{name}}_ASYN'
+          AIPORT: '{{name}}_AI'
+          AIPORT2: '{{name}}2_AI'
+          AOPORT: '{{name}}_AO'
+          DOPORT: '{{name}}_DO'
+

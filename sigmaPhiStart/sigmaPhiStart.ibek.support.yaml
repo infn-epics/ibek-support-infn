@@ -6,77 +6,76 @@ module: sigmaPhiStart
 # modbusInterposeConfig("{{ASYNPORT}}",{{MODBUSLINK}},{{TIMEOUT}},{{WRITEDELAY}})
 # drvModbusAsynConfigure("{{MODBUSPORT}}", "{{ASYNPORT}}", {{SERVER_ADDR}}, {{FUNC_CODE}}, {{STARTADDR}}, {{DATA_LENGTH}}, {{DATA_TYPE}}, {{POLL_DELAY}}, "{{MODBUS_TYPE}}")
 
-defs:
-
+entity_models:
   - name: configure
     description: |-
       This will create an AsynPort connecting to the module
-    args:
-      - type: id
-        name: controllerName
+    parameters:
+      controllerName:
+        type: id
         description: |-
           controller and ASYN PORT name
 
-      - type: str
-        name: P
+      P:
+        type: str
         description: |-
           controller PREFIX
 
-      - type: str
-        name: IP
+      IP:
+        type: str
         description: |-
           IP address of the Controller
 
-      - type: int
-        name: TCPPORT
+      TCPPORT:
+        type: int
         description: |-
           IP PORT
         default: 502
 
-      - type: int
-        name: ASYNPRIO
+      ASYNPRIO:
+        type: int
         description: |-
           ASYN   PRIORITY, Default : 0
         default: 0
 
-      - type: int
-        name: AUTOCONNECT
+      AUTOCONNECT:
+        type: int
         description: |-
           Asyn auto connect
           0: Auto connection
           1: no Auto connection
         default: 0
 
-      - type: int
-        name: NOPRECESSESOS
+      NOPRECESSESOS:
+        type: int
         description: |-
           ASYN   noProcessEos, Default : 0
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
 
-      - type: int
-        name: MODBUSLINK
+      MODBUSLINK:
+        type: int
         description: |-
           MODBUS linktype, Default : 0
           0 : TCP/IP
           1 : RTU
           2 : ASCII 
         default: 0
-        
-      - type: int
-        name: TIMEOUT
+
+      TIMEOUT:
+        type: int
         description: |-
-           MODBUS timeout (ms), Default : 2000
+          MODBUS timeout (ms), Default : 2000
         default: 2000
-        
-      - type: int
-        name: WRITEDELAY
+
+      WRITEDELAY:
+        type: int
         description: |-
           MODBUS write delay ms for Serial RTU, Default : 0
         default: 0
 
-      - type: int
-        name: POLL_DELAY
+      POLL_DELAY:
+        type: int
         description: |-
           Read  function : Polling delay time in ms for the polling thread
           Write function : a non-zero value means that the Modbus data should be read once
@@ -94,24 +93,24 @@ defs:
   - name: device
     description: |-
       This will create a device instance
-    args:
-      - type: object
-        name: controller
+    parameters:
+      controller:
+        type: object
         description: |-
           a reference to the PS controller
-      - type: str
-        name: P
+      P:
+        type: str
         description: Device Prefix
-      - type: int
-        name: max
+      max:
+        type: int
         description: Max Current
-  
+
     databases:
       - file: $(SIGMAPHISTART)/db/sigmaPhiStart.template
         args:
-          device: "{{ controller.P }}:{{ P }}"
-          rd_port: "{{ controller.controllerName }}_RD"
-          cmd_port: "{{ controller.controllerName }}_CMD"
-          set_port: "{{ controller.controllerName }}_SET"
-          max: "{{max}}"
+          device: '{{ controller.P }}:{{ P }}'
+          rd_port: '{{ controller.controllerName }}_RD'
+          cmd_port: '{{ controller.controllerName }}_CMD'
+          set_port: '{{ controller.controllerName }}_SET'
+          max: '{{max}}'
 
