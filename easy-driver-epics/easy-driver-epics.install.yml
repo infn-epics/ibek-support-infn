@@ -10,3 +10,5 @@ libs:
   - devEasyDriver
 
 organization: https://baltig.infn.it/infn-epics/
+
+macro: EASY_DRIVER_EPICS
