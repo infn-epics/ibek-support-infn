@@ -13,8 +13,6 @@ FOLDER=$(dirname $(readlink -f $0))
 set -xe
 ibek support add-runtime-packages libboost-dev socat
 
-#TODO the technosoft repo has an illegal macro in configure/RELEASE
-ibek support add-release-macro EPICS-NDS --no-replace
 
 # ibek support apt-install libboost-dev socat
 # get the source and fix up the configure/RELEASE files
@@ -23,14 +21,19 @@ ibek support register ${NAME}
 # declare the libs and DBDs that are required in ioc/iocApp/src/Makefile
 ibek support add-libs nds seq FLGShift tml
 ibek support add-dbds tml.dbd nds.dbd asyn.dbd FLGShift.dbd
-# Patches to the CONFIG_SITE
-if [[ $EPICS_TARGET_ARCH == "RTEMS"* ]]; then
-    # don't build the test directories (they don't compile on RTEMS)
-    sed -i '/DIRS += ${SUPPORT}/${NAME}.*test/d' Makefile
-else
-    ibek support add-config-macro ${NAME} TIRPC YES
 
-fi
+#TODO the technosoft repo has an illegal macro EPICS-NDS in configure/RELEASE
+sed -i '/EPICS-NDS/d' /epics/support/${NAME}/configure/RELEASE
+
+# TODO below is not needed - that is an asyn thing that asyn will have done already
+# # Patches to the CONFIG_SITE
+# if [[ $EPICS_TARGET_ARCH == "RTEMS"* ]]; then
+#     # don't build the test directories (they don't compile on RTEMS)
+#     sed -i '/DIRS += ${SUPPORT}/${NAME}.*test/d' Makefile
+# else
+#     ibek support add-config-macro ${NAME} TIRPC YES
+
+# fi
 
 # global config settings
 ${FOLDER}/../_global/install.sh ${NAME}
