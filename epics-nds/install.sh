@@ -20,7 +20,7 @@ ibek support register ${NAME}
 
 # declare the libs and DBDs that are required in ioc/iocApp/src/Makefile
 ibek support add-libs nds asyn
-ibek support add-dbds tml.dbd nds.dbd asyn.dbd
+ibek support add-dbds nds.dbd asyn.dbd
 # Patches to the CONFIG_SITE
 if [[ $EPICS_TARGET_ARCH == "RTEMS"* ]]; then
     # don't build the test directories (they don't compile on RTEMS)
