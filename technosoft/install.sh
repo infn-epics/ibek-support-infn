@@ -12,6 +12,10 @@ FOLDER=$(dirname $(readlink -f $0))
 # log output and abort on failure
 set -xe
 ibek support add-runtime-packages libboost-dev socat
+
+#TODO the technosoft repo has an illegal macro in configure/RELEASE
+ibek support add-release-macro EPICS-NDS --no-replace
+
 # ibek support apt-install libboost-dev socat
 # get the source and fix up the configure/RELEASE files
 ibek support git-clone ${NAME} ${VERSION} --org https://oauth2:zt_ALPjGqNRwLPeHMB8_@baltig.infn.it/infn-epics/
