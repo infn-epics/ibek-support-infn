@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: menloLfc
+# TODO this should be a release tag to ensure deterministic builds.
+version: main
+
+# this module uses modbus so requires none of its own libs/dbds
+organization: https://baltig.infn.it/infn-epics/
+
+dbds:
+  - menlo-lfc.dbd
+
+# TODO remove this when the module is fixed
+force_build: true
+# some modules (menlo*) have been checked in with build output files
+# TODO remove O.* from these repos and also update .gitignore to look like this:
+#
+# *~
+# O.*
+# *.swp
+# *BAK.adl
+# bin/
+# db/
+# dbd/
+# html/
+# include/
+# lib/
+# templates/
+# cdCommands
+# envPaths
+# dllPath.bat
+# auto_settings.sav*
+# auto_positions.sav*
+# RELEASE.local
