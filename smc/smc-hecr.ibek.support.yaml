@@ -67,7 +67,8 @@ entity_models:
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
-
+          ## because not automated
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
     databases:
       - file: smc-hecr.db
         args:
