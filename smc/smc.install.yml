@@ -17,3 +17,6 @@ libs:
   - stream
   - asyn
 
+protocol_files:
+  - iocBoot/smc-hecr-ioc/smc-hecr.proto
+
