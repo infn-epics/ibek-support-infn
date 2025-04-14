@@ -65,9 +65,7 @@ entity_models:
 
 
     pre_init:
-      - value: |2
-
-          epicsEnvSet "STREAM_PROTOCOL_PATH", "$(CHILLERSMCHECR)/iocBoot/smc-hecr-ioc/"
+      - value: |
           drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
 
     databases:
