@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: ChillerSmcHecr
+# TODO this should be a release tag to ensure deterministic builds.
+version: main
+
+# this module uses modbus so requires none of its own libs/dbds
+organization: https://baltig.infn.it/lnf-da-control/
+
+dbds:
+  - modbusSupport.dbd
+  - asyn.dbd
+  - stream.dbd
+
+libs:
+  - modbus
+  - stream
+  - asyn
+
