@@ -58,7 +58,7 @@ entity_models:
         default: 0
 
       DEV_ID:
-        type: string
+        type: str
         description: |-
           Device ID on Daisy Chain
         default: "01"
