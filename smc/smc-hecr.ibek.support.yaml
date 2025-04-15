@@ -73,5 +73,5 @@ entity_models:
       - file: smc-hecr.db
         args:
           P:
-          PORT: '{{name}}_ASYN'
-          ADDR: '{{DEV_ID}}'
+          PORT: "{{name}}_ASYN"
+          ADDR: "{{DEV_ID}}"

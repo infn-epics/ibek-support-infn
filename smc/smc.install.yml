@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
 
-module: ChillerSmcHecr
+module: chiller-smc-hecr
 # TODO this should be a release tag to ensure deterministic builds.
 version: main
 
