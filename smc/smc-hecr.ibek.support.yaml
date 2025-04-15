@@ -58,10 +58,10 @@ entity_models:
         default: 0
 
       DEV_ID:
-        type: int
+        type: string
         description: |-
           Device ID on Daisy Chain
-        default: 01
+        default: "01"
 
 
     pre_init:
