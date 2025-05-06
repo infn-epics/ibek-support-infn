@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: agilentipcmini
+# TODO this should be a release tag to ensure deterministic builds.
+version: main
+
+# this module uses modbus so requires none of its own libs/dbds
+organization: https://baltig.infn.it/infn-epics/
+
+dbds:
+  - asyn.dbd
+
+libs:
+  - asyn
+
+protocol_files:
+  - db/ipc.proto
