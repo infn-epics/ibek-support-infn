@@ -74,7 +74,7 @@ entity_models:
     databases:
       - file: ipc.template
         args:
-          DEVICE: "{{P}}:{{name}}"
+          DEVICE: "{{P}}"
           PORT: "{{name}}_ASYN"
           ADDR: "{{CHANADDR}}"
 
