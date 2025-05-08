@@ -83,7 +83,7 @@ entity_models:
         type: str
         description: |-
           pump name
-
+        
       channel:
         type: int
         description: |-
@@ -96,5 +96,5 @@ entity_models:
         args:
           DEVICE: '{{controller.P}}:{{name}}'
           PORT: '{{controller.name}}_ASYN'
-          ADDR: {{channel}}
+          ADDR: "{{channel}}"
 
