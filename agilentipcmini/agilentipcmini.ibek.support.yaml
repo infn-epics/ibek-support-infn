@@ -65,23 +65,36 @@ entity_models:
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
       
-      CHANADDR:
-        type: int
-        description: |-
-          Address of the RS485 chain. 0x80 is the base address for RS232
-          The value for the RS485 is 0x80 + the address of the chain
-        default: 0x80
-    databases:
-      - file: ipc.template
-        args:
-          DEVICE: "{{P}}"
-          PORT: "{{name}}_ASYN"
-          ADDR: "{{CHANADDR}}"
-
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
           epicsEnvSet "STREAM_PROTOCOL_PATH", "$(AGILENTIPCMINI)/db/"
 
 
- 
+  - name: pump
+    description: |-
+      Template database for the the Agilent Pump channel
+    parameters:
+      controller:
+        type: object
+        description: |-
+          a reference to the controller
+      name:
+        type: str
+        description: |-
+          pump name
+
+      channel:
+        type: int
+        description: |-
+          Address of the RS485 chain. 0x80 is the base address for RS232
+          The value for the RS485 is 0x80 + the address of the chain
+        default: 0x80
+
+    databases:
+      - file: ipc.template
+        args:
+          DEVICE: '{{controller.P}}:{{name}}'
+          PORT: '{{controller.name}}_ASYN'
+          ADDR: {{channel}}
+
