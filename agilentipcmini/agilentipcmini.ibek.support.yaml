@@ -98,7 +98,7 @@ entity_models:
           PORT: '{{controller.name}}_ASYN'
           ADDR: "{{channel}}"
 
-      - file: asynrecord.db
+      - file: asynRecord.db
         args:
           P: '{{controller.P}}:{{name}}:'
           R: 'ASYNRECORD'
