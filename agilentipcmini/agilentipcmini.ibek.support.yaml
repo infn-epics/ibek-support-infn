@@ -98,3 +98,15 @@ entity_models:
           PORT: '{{controller.name}}_ASYN'
           ADDR: "{{channel}}"
 
+      - file: asynrecord.db
+        args:
+          P: '{{controller.P}}:{{name}}:'
+          R: 'ASYNRECORD'
+          PORT: '{{controller.name}}_ASYN'
+          ADDR: "{{channel}}"
+          IMAX: "100"
+          OMAX: "100
+    post_init:
+      - value: |
+          dbpf "{{controller.P}}:{{name}}:MODEL_RB.PROC" 1
+          dbpf "{{controller.P}}:{{name}}:SERNUM_RB.PROC" 1
