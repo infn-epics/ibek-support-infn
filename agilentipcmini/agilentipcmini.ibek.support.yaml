@@ -105,7 +105,7 @@ entity_models:
           PORT: '{{controller.name}}_ASYN'
           ADDR: "{{channel}}"
           IMAX: "100"
-          OMAX: "100
+          OMAX: "100"
     post_init:
       - value: |
           dbpf "{{controller.P}}:{{name}}:MODEL_RB.PROC" 1
