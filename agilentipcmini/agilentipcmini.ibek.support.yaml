@@ -108,5 +108,6 @@ entity_models:
           OMAX: "100"
     post_init:
       - value: |
+          epicsThreadSleep(1.5)
           dbpf "{{controller.P}}:{{name}}:MODEL_RB.PROC" 1
           dbpf "{{controller.P}}:{{name}}:SERNUM_RB.PROC" 1
