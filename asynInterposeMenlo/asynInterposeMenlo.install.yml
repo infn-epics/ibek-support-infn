@@ -9,7 +9,8 @@ organization: https://baltig.infn.it/infn-epics/
 
 dbds:
   - asynInterposeMenlo.dbd
-
+libs:
+  - asynInterposeMenlo
 # TODO remove this when the module is fixed
 force_build: true
 # some modules (menlo*) have been checked in with build output files
