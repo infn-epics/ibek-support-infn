@@ -12,7 +12,7 @@ dbds:
 libs:
   - nds
 
-organization: https://baltig.infn.it/infn-epics/
+organization: https://github.com/infn-epics
 
 macro: EPICS_NDS
 
