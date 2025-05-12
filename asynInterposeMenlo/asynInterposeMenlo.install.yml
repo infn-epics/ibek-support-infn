@@ -5,7 +5,7 @@ module: asynInterposeMenlo
 version: master
 
 # this module uses modbus so requires none of its own libs/dbds
-organization: https://baltig.infn.it/infn-epics/
+organization: https://github.com/infn-epics
 
 dbds:
   - asynInterposeMenlo.dbd

@@ -5,7 +5,7 @@ module: menloSyncro
 version: main
 
 # this module uses modbus so requires none of its own libs/dbds
-organization: https://baltig.infn.it/infn-epics/
+organization: https://github.com/infn-epics
 
 dbds:
   - menlo-syncro.dbd
