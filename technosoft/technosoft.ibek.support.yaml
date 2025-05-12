@@ -196,7 +196,21 @@ entity_models:
         description: |-
           Asyn Addr?
         default: "0"
-
+      EGU2MM:
+        type: float
+        description: |-
+          Coefficient to convert EGU to mm (default zero produce NaN is used)
+        default: 0.0
+      POS_MAX:
+        type: int
+        description: |-
+          Maximum position in EGU
+        default: 100000000
+      POS_MIN:
+        type: int
+        description: |-
+          Maximum position in EGU
+        default: 0
       CONFIG:
         type: str
         description: |-
