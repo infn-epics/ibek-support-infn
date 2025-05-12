@@ -69,7 +69,7 @@ entity_models:
           The axis prefix
         default: ax0
 
-      CHANNEL_ID:
+      name:
         type: str
         description: |-
           The axis ID
@@ -79,6 +79,7 @@ entity_models:
         type: int
         description: |-
           The axis ID
+        default: 0
 
       axconf:
         type: str
@@ -211,7 +212,7 @@ entity_models:
 
     pre_init:
       - value: |
-          dbLoadRecords("$(SUPPORT)/motorTechnosoft/db/tmlAxis.template","PREFIX={{controller.P}}, CHANNEL_ID={{CHANNEL_ID}}, CHANNEL_PREFIX=ax{{num}}, ASYN_PORT={{controller.controllerName}}, ASYN_ADDR={{ASYN_ADDR}}, NSTEPS={{NSTEPS}}, NMICROSTEPS={{NMICROSTEPS}}, VELO={{VELO}}, VELO_MIN={{VELO_MIN}}, VELO_MAX={{VELO_MAX}}, ACCL={{ACCL}}, ACCL_MIN={{ACCL_MIN}}, ACCL_MAX={{ACCL_MAX}}, HAR={{HAR}}, HVEL={{HVEL}}, JAR={{JAR}}, JVEL={{JVEL}}, ENABLED={{ENABLED}}, SLSP={{SLSP}}, EGU={{EGU}}, TIMEOUT={{TIMEOUT}}")
+          dbLoadRecords("$(SUPPORT)/motorTechnosoft/db/tmlAxis.template","PREFIX={{controller.P}}, CHANNEL_ID={{name}}, CHANNEL_PREFIX=ax{{num}}, ASYN_PORT={{controller.controllerName}}, ASYN_ADDR={{ASYN_ADDR}}, NSTEPS={{NSTEPS}}, NMICROSTEPS={{NMICROSTEPS}}, VELO={{VELO}}, VELO_MIN={{VELO_MIN}}, VELO_MAX={{VELO_MAX}}, ACCL={{ACCL}}, ACCL_MIN={{ACCL_MIN}}, ACCL_MAX={{ACCL_MAX}}, HAR={{HAR}}, HVEL={{HVEL}}, JAR={{JAR}}, JVEL={{JVEL}}, ENABLED={{ENABLED}}, SLSP={{SLSP}}, EGU={{EGU}}, TIMEOUT={{TIMEOUT}},EGU2MM={{EGU2MM}},POS_MAX={{POS_MAX}},POS_MIN={{POS_MIN}}")
 
     
     post_init:
