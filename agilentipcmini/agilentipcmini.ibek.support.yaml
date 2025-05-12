@@ -89,6 +89,6 @@ entity_models:
           R: 'ASYNRECORD'
           PORT: '{{controller.name}}_ASYN'
           ADDR: "{{channel}}"
-          IMAX: 100
-          OMAX: 100
+          IMAX: "100"
+          OMAX: "100"
 

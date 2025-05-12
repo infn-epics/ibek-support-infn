@@ -2,13 +2,13 @@
 
 module: easy-driver-epics
 # TODO this should be a tag to make rebuilding the container deterministic
-version: master
+version: main
 
 dbds:
   - devEasyDriver.dbd
 libs:
   - devEasyDriver
 
-organization: https://baltig.infn.it/infn-epics/
+organization: https://github.com/infn-epics/
 
 macro: EASY_DRIVER_EPICS

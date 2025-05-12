@@ -1,18 +1,30 @@
 # yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
 
-module: biltItest
+module: motorTechnosoft
 # TODO this should be a release tag to ensure deterministic builds.
 version: main
 
 # this module uses modbus so requires none of its own libs/dbds
-organization: https://github.com/infn-epics/
+organization: https://github.com/infn-epics
 
 dbds:
-  - modbusSupport.dbd
+  - nds.dbd
   - asyn.dbd
 
 libs:
-  - modbus
+  - nds
   - asyn
+  - seq
+  - tml
 
+apt_developer:
+  - libboost-dev
+  - socat
 
+apt_runtime:
+  - libboost-dev
+  - socat
+
+comment_out:
+  - path: configure/RELEASE
+    regexp: "EPICS-NDS"

@@ -1,17 +1,19 @@
 # yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
 
-module: agilentipcmini
+module: agilent4uhv
 # TODO this should be a release tag to ensure deterministic builds.
 version: main
 
 # this module uses modbus so requires none of its own libs/dbds
-organization: https://github.com/infn-epics/
+organization: https://github.com/infn-epics
 
 dbds:
   - asyn.dbd
+  - stream.dbd
 
 libs:
   - asyn
+  - stream
 
 protocol_files:
-  - db/ipc.proto
+  - agilent4uhvApp/protocol/agilent4uhv.proto
