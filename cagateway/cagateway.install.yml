@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: ca-gateway
+# TODO this should be a release tag to ensure deterministic builds.
+version: master
+
+# this module uses modbus so requires none of its own libs/dbds
+organization: https://github.com/epics-extensions/
+
+
+
