@@ -4,7 +4,6 @@ module: ca-gateway
 # TODO this should be a release tag to ensure deterministic builds.
 version: master
 
-# this module uses modbus so requires none of its own libs/dbds
 organization: https://github.com/epics-extensions/
 
 
