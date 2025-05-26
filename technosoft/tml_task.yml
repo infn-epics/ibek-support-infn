@@ -1,0 +1,6 @@
+- name: Finalize TML installation
+  ansible.builtin.shell:
+    cmd: |
+      echo "{{ local_path }}/tml_lib/lib" > /etc/ld.so.conf.d/tml.conf && cd && ldconfig
+    executable: /bin/bash
+    chdir: /usr/local

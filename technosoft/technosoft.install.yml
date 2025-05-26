@@ -8,14 +8,20 @@ version: main
 organization: https://github.com/infn-epics
 
 dbds:
+  - tml.dbd
   - nds.dbd
   - asyn.dbd
+  - FLGShift.dbd
 
 libs:
   - nds
+  - tml
   - asyn
   - seq
-  - tml
+  - FLGShift
+
+tasks:
+  - path: tml_task.yml
 
 apt_developer:
   - libboost-dev
@@ -24,6 +30,9 @@ apt_developer:
 apt_runtime:
   - libboost-dev
   - socat
+
+runtime_files:
+  - "{{ local_path }}/tml_lib/lib"
 
 comment_out:
   - path: configure/RELEASE
