@@ -9,9 +9,11 @@ organization: https://github.com/infn-epics/
 
 dbds:
   - asyn.dbd
+  - stream.dbd
 
 libs:
   - asyn
+  - stream
 
 protocol_files:
   - agilentXgs600App/protocol/agilentXgs600.proto

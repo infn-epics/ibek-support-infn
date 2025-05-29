@@ -9,7 +9,6 @@ organization: https://github.com/infn-epics/
 
 dbds:
   - asyn.dbd
-  - stream-scalcout.dbd
   - stream.dbd
 
 libs:
@@ -17,8 +16,9 @@ libs:
   - stream
 
 protocol_files:
-  - vac_ctrl_tpg300_500.proto
-  - devTPG300.proto
-  - devTPG500.proto
-  - devTPGx00.proto
-  - devTPG36x.proto
+  - vac_ctrl_tpg300_500App/Db/vac_ctrl_tpg300_500.proto
+  - TPGSup/devTPG300.proto
+  - TPGSup/devTPG500.proto
+  - TPGSup/devTPGx00.proto
+  - TPGSup/TPG36x.proto
+  - TPGSup/TPG26x.proto
