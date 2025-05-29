@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: tpg300_500
+# TODO this should be a release tag to ensure deterministic builds.
+version: master
+
+# this module uses modbus so requires none of its own libs/dbds
+organization: https://github.com/infn-epics/
+
+dbds:
+  - asyn.dbd
+  - stream-scalcout.dbd
+  - stream.dbd
+
+libs:
+  - asyn
+  - stream
+
+protocol_files:
+  - vac_ctrl_tpg300_500.proto
+  - devTPG300.proto
+  - devTPG500.proto
+  - devTPGx00.proto
+  - devTPG36x.proto
