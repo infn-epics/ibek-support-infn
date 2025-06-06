@@ -57,7 +57,7 @@ entity_models:
           drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
 
     databases:
-      - file: devTPG300.db
+      - file: devTPG300_base.db
         args:
           P: 
           PORT: '{{name}}'
