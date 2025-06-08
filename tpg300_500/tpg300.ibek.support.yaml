@@ -12,12 +12,10 @@ entity_models:
         type: id
         description: |-
           The name of the controller and its Asyn Port Name
-
       P:
         type: str
         description: |-
           Device PV Prefix
-
       IP:
         type: str
         description: |-
@@ -87,7 +85,7 @@ entity_models:
           B2:
 
     databases:
-      - file: $(TPG300_500)/TPGSup/TPG300_channels.template
+      - file: $(TPG300_500)/tgpApp/Db/TPG300_channels.template
         args:
           P: '{{controller.P}}'
           NAME: '{{name}}'
