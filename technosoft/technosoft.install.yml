@@ -32,8 +32,10 @@ apt_runtime:
   - socat
 
 runtime_files:
-  - "{{ local_path }}/tml_lib/lib"
+  - tml_lib/lib"
+  - /usr/local/lib/x86_64-linux-gnu
 
 comment_out:
   - path: configure/RELEASE
     regexp: "EPICS-NDS"
+

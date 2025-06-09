@@ -49,16 +49,63 @@ entity_models:
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
 
+      TPG_UNDERRANGE_ALARM_SEVERITY_A1:
+        type: enum
+        description: |-
+            underrange severity A1
+        values:
+          MINOR:
+          MAJOR:
+          NO_ALARM:
+        default: MINOR
+      
+      TPG_UNDERRANGE_ALARM_SEVERITY_A2:
+        type: enum
+        description: |-
+            underrange severity A2
+        values:
+          MINOR:
+          MAJOR:
+          NO_ALARM:
+        default: MINOR
+      
+      TPG_UNDERRANGE_ALARM_SEVERITY_B1:
+        type: enum
+        description: |-
+            underrange severity 
+        values:
+          MINOR:
+          MAJOR:
+          NO_ALARM:
+        default: MINOR
 
+      TPG_UNDERRANGE_ALARM_SEVERITY_B2:
+        type: enum
+        description: |-
+            underrange severity 
+        values:
+          MINOR:
+          MAJOR:
+          NO_ALARM:
+        default: MINOR
+        
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
 
+    
+        
+ 
     databases:
       - file: TPG300_base.db
         args:
           P: 
           PORT: '{{name}}'
+          TPG_UNDERRANGE_ALARM_SEVERITY_A1:
+          TPG_UNDERRANGE_ALARM_SEVERITY_A2:
+          TPG_UNDERRANGE_ALARM_SEVERITY_B1:
+          TPG_UNDERRANGE_ALARM_SEVERITY_B2:
           
 
   - name: channel
@@ -83,6 +130,17 @@ entity_models:
           A2:
           B1:
           B2:
+      
+      TPG_UNDERRANGE_ALARM_SEVERITY:
+        type: enum
+        description: |-
+            underrange severity 
+        values:
+          MINOR:
+          MAJOR:
+          NO_ALARM:
+        default: MINOR
+
 
     databases:
       - file: $(TPG300_500)/tgpApp/Db/TPG300_channels.template
@@ -90,6 +148,7 @@ entity_models:
           P: '{{controller.P}}'
           NAME: '{{name}}'
           CHAN: '{{channel}}'
-
+          PORT: '{{controller.name}}'
+          TPG_UNDERRANGE_ALARM_SEVERITY:
 
 
