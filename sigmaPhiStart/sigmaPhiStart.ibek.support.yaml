@@ -113,7 +113,8 @@ entity_models:
           cmd_port: '{{ controller.controllerName }}_CMD'
           set_port: '{{ controller.controllerName }}_SET'
           max: '{{max}}'
-
+      
+      
       - file: $(SIGMAPHISTART)/db/unimag.db
         args:
           device: '{{ controller.P }}:{{ P }}'
