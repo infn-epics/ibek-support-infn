@@ -79,3 +79,7 @@ entity_models:
           port: "{{ controller.controllerName }}"
           module: "{{id}}"
           max: "{{max}}"
+
+      - file: $(SIGMAPHISTART)/db/unimag.db
+        args:
+          device: '{{ controller.P }}:{{ P }}'
