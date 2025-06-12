@@ -16,12 +16,13 @@ dbds:
 libs:
   - nds
   - tml
+  - tmlcomm
+  - TML_lib
   - asyn
-  - seq
   - FLGShift
 
-tasks:
-  - path: tml_task.yml
+# tasks:
+#   - path: tml_task.yml
 
 apt_developer:
   - libboost-dev
@@ -32,10 +33,18 @@ apt_runtime:
   - socat
 
 runtime_files:
-  - tml_lib/lib"
-  - /usr/local/lib/x86_64-linux-gnu
+  - /epics/support/motorTechnosoft/lib/linux-x86_64/libtml.so
+  - /epics/support/motorTechnosoft/lib/linux-x86_64/libtmlcomm.so
+  - /epics/support/motorTechnosoft/lib/linux-x86_64/libFLGShift.so
+  - /epics/support/motorTechnosoft/lib/linux-x86_64/libTML_lib.so
+
+
+# remove_macros:
+#   - SNCSEQ
 
 comment_out:
   - path: configure/RELEASE
     regexp: "EPICS-NDS"
+  # - path: configure/RELEASE
+  #   regexp: "SNCSEQ"
 
