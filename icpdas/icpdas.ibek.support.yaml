@@ -55,12 +55,12 @@ entity_models:
           drvAsynIPPortConfigure("{{NAME}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
           modbusInterposeConfig("{{NAME}}_ASYN",0,{{TIMEOUT}},{{WRITEDELAY}})
           # Read Input Registers temperature
-          drvModbusAsynConfigure("{{NAME}}", "{{NAME}}_ASYN", 1, 4, 0, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
+          drvModbusAsynConfigure("{{NAME}}_RTD", "{{NAME}}_ASYN", 1, 4, 0, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
           ## Read Input Registers MIN  histo
 
-          drvModbusAsynConfigure("{{NAME}}_MIN", "{{NAME}}_ASYN", 1, 4, 268, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
+          drvModbusAsynConfigure("{{NAME}}_RTDMIN", "{{NAME}}_ASYN", 1, 4, 268, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
           ## Read Input Registers MAX histo
-          drvModbusAsynConfigure("{{NAME}}_MAX", "{{NAME}}_ASYN", 1, 4, 236, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
+          drvModbusAsynConfigure("{{NAME}}_RTDMAX", "{{NAME}}_ASYN", 1, 4, 236, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
           #read once or epics events
           drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 350, 4, 0, {{POLL_DELAY*10}}, "ICPDAS7215")
 
@@ -69,9 +69,9 @@ entity_models:
         args:
           P:
           R:
-          PORT: '{{NAME}}'
-          PORTMIN: '{{NAME}}_MIN'
-          PORTMAX: '{{NAME}}_MAX'
+          PORT: '{{NAME}}_RTD'
+          PORTMIN: '{{NAME}}_RTDMIN'
+          PORTMAX: '{{NAME}}_RTDMAX'
           PORTINFO: '{{NAME}}_INFO'
   - name: icp7215temp
     description: |-
@@ -80,7 +80,7 @@ entity_models:
       icpctrl:
         type: object
         description: |-
-          ICP controller reference
+          ICP icpctrl reference
       ID:
         type: str
         description: Temperature sensor ID
@@ -194,8 +194,6 @@ entity_models:
           HIGH:
           HIHI:
           NELM:
-
-
   - name: icp7026
     description: |-
       ICPDAS 7026 6AI 2AO 2DI 2DO
@@ -422,6 +420,179 @@ entity_models:
           DIPORT: '{{NAME}}_DI'
           CNTPORT: '{{NAME}}_DICNT'
           PORT: '{{NAME}}_INFO'
+  
+  - name: rly
+    description: |-
+      Template database for a relay channel
+    parameters:
+      icpctrl:
+        type: object
+        description: |-
+          a reference to the icpctrl
+      name:
+        type: str
+        description: |-
+          channel name
+        
+      channel:
+        type: int
+        description: |-
+          channel index
+
+    databases:
+      - file: icprly.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{name}}'
+          REGOFFSET: '{{channel}}'
+          get_port: '{{icpctrl.NAME}}_get_port'
+          set_port: '{{icpctrl.NAME}}_set_port'
+
+  - name: di
+    description: |-
+      Template database for a digital input channel
+    parameters:
+      icpctrl:
+        type: object
+        description: |-
+          a reference to the icpctrl
+      name:
+        type: str
+        description: |-
+          channel name
+        
+      channel:
+        type: int
+        description: |-
+          channel index
+
+    databases:
+      - file: icpdi.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{name}}'
+          REGOFFSET: '{{channel}}'
+          REGOFFSET2X: '{{channel * 2}}'
+          PORT: '{{icpctrl.NAME}}_DI'
+          PORTCNT: '{{icpctrl.NAME}}_DICNT'
+
+  - name: do
+    description: |-
+      Template database for a digital output channel
+    parameters:
+      icpctrl:
+        type: object
+        description: |-
+          a reference to the icpctrl
+      name:
+        type: str
+        description: |-
+          channel name
+        
+      channel:
+        type: int
+        description: |-
+          channel index
+
+    databases:
+      - file: icpdo.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{name}}'
+          REGOFFSET: '{{channel}}'
+          PORT: '{{icpctrl.NAME}}_DO'
+
+
+  - name: ai
+    description: |-
+      Template database for an analog input channel
+    parameters:
+      icpctrl:
+        type: object
+        description: |-
+          a reference to the icpctrl
+      name:
+        type: str
+        description: |-
+          channel name
+        
+      channel:
+        type: int
+        description: |-
+          channel index
+
+    databases:
+      - file: icpai.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{name}}'
+          REGOFFSET: '{{channel}}'
+          PORT: '{{icpctrl.NAME}}_AI'
+          PORTMAX: '{{icpctrl.NAME}}_AIMAX'
+          PORTMIN: '{{icpctrl.NAME}}_AIMIN'
+
+  - name: rtd
+    description: |-
+      Template database for a RTD channel(pt100)
+    parameters:
+      icpctrl:
+        type: object
+        description: |-
+          a reference to the icpctrl
+      name:
+        type: str
+        description: |-
+          channel name
+        
+      channel:
+        type: int
+        description: |-
+          channel index
+
+    databases:
+      - file: icpao.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{name}}'
+          REGOFFSET: '{{channel}}'
+          PORT: '{{icpctrl.NAME}}_RTD'
+          PORTMAX: '{{icpctrl.NAME}}_RTDMAX'
+          PORTMIN: '{{icpctrl.NAME}}_RTDMIN'
+
+  - name: ao
+    description: |-
+      Template database for an analog output channel
+    parameters:
+      icpctrl:
+        type: object
+        description: |-
+          a reference to the icpctrl
+      name:
+        type: str
+        description: |-
+          channel name
+        
+      channel:
+        type: int
+        description: |-
+          channel index
+
+    databases:
+      - file: icpao.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{name}}'
+          REGOFFSET: '{{channel}}'
+          WAOPORT: '{{icpctrl.NAME}}_WAO'
+          RAOPORT: '{{icpctrl.NAME}}_RAO'
+          PORTMAX: '{{icpctrl.NAME}}_AIMAX'
+          PORTMIN: '{{icpctrl.NAME}}_AIMIN'
 
   - name: icp7250
     description: |-
