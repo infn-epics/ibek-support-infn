@@ -73,6 +73,7 @@ entity_models:
           PORTMIN: '{{NAME}}_RTDMIN'
           PORTMAX: '{{NAME}}_RTDMAX'
           PORTINFO: '{{NAME}}_INFO'
+
   - name: icp7215temp
     description: |-
       Single Temperature sensor
@@ -439,15 +440,20 @@ entity_models:
         description: |-
           channel index
 
-    databases:
-      - file: icprly.template
-        args:
-          P: '{{icpctrl.P}}'
-          R: '{{icpctrl.R}}'
-          ID: '{{name}}'
-          REGOFFSET: '{{channel}}'
-          get_port: '{{icpctrl.NAME}}_get_port'
-          set_port: '{{icpctrl.NAME}}_set_port'
+    pre_init:
+      - value: |
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:RLY{{channel}}_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:RLY{{channel}}_SP","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_sp")
+
+    # databases:
+    #   - file: icprly.template
+    #     args:
+    #       P: '{{icpctrl.P}}'
+    #       R: '{{icpctrl.R}}'
+    #       ID: '{{name}}'
+    #       REGOFFSET: '{{channel}}'
+    #       get_port: '{{icpctrl.NAME}}_get_port'
+    #       set_port: '{{icpctrl.NAME}}_set_port'
 
   - name: di
     description: |-
@@ -466,17 +472,20 @@ entity_models:
         type: int
         description: |-
           channel index
-
-    databases:
-      - file: icpdi.template
-        args:
-          P: '{{icpctrl.P}}'
-          R: '{{icpctrl.R}}'
-          ID: '{{name}}'
-          REGOFFSET: '{{channel}}'
-          REGOFFSET2X: '{{channel * 2}}'
-          PORT: '{{icpctrl.NAME}}_DI'
-          PORTCNT: '{{icpctrl.NAME}}_DICNT'
+    pre_init:
+      - value: |
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:DI{{channel}}_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:DI{{channel}}_CNT_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_cnt_rb")
+    # databases:
+    #   - file: icpdi.template
+    #     args:
+    #       P: '{{icpctrl.P}}'
+    #       R: '{{icpctrl.R}}'
+    #       ID: '{{name}}'
+    #       REGOFFSET: '{{channel}}'
+    #       REGOFFSET2X: '{{channel * 2}}'
+    #       PORT: '{{icpctrl.NAME}}_DI'
+    #       PORTCNT: '{{icpctrl.NAME}}_DICNT'
 
   - name: do
     description: |-
@@ -495,15 +504,18 @@ entity_models:
         type: int
         description: |-
           channel index
-
-    databases:
-      - file: icpdo.template
-        args:
-          P: '{{icpctrl.P}}'
-          R: '{{icpctrl.R}}'
-          ID: '{{name}}'
-          REGOFFSET: '{{channel}}'
-          PORT: '{{icpctrl.NAME}}_DO'
+    pre_init:
+      - value: |
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:DO{{channel}}","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_sp")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:DO{{channel}}","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
+    # databases:
+    #   - file: icpdo.template
+    #     args:
+    #       P: '{{icpctrl.P}}'
+    #       R: '{{icpctrl.R}}'
+    #       ID: '{{name}}'
+    #       REGOFFSET: '{{channel}}'
+    #       PORT: '{{icpctrl.NAME}}_DO'
 
 
   - name: ai
@@ -524,16 +536,27 @@ entity_models:
         description: |-
           channel index
 
-    databases:
-      - file: icpai.template
-        args:
-          P: '{{icpctrl.P}}'
-          R: '{{icpctrl.R}}'
-          ID: '{{name}}'
-          REGOFFSET: '{{channel}}'
-          PORT: '{{icpctrl.NAME}}_AI'
-          PORTMAX: '{{icpctrl.NAME}}_AIMAX'
-          PORTMIN: '{{icpctrl.NAME}}_AIMIN'
+    pre_init:
+      - value: |
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}_MAX_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_max_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}_MIN_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_min_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_MAX_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_max_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_MIN_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_min_rb")
+
+    
+    # databases:
+    #   - file: icpai.template
+    #     args:
+    #       P: '{{icpctrl.P}}'
+    #       R: '{{icpctrl.R}}'
+    #       ID: '{{name}}'
+    #       REGOFFSET: '{{channel}}'
+    #       PORT: '{{icpctrl.NAME}}_AI'
+    #       PORTMAX: '{{icpctrl.NAME}}_AIMAX'
+    #       PORTMIN: '{{icpctrl.NAME}}_AIMIN'
 
   - name: rtd
     description: |-
@@ -552,17 +575,118 @@ entity_models:
         type: int
         description: |-
           channel index
-
+      EGU:
+        type: str
+        description: |-
+          Engineering Units
+        default: degC
+      HOPR:
+        type: int
+        description: |-
+          High Limit
+        default: 0
+      LOPR:
+        type: int
+        description: |-
+          Low Limit
+        default: 0
+      PREC:
+        type: int
+        description: |-
+          Precision
+        default: 3
+      NELM:
+        type: int
+        description: |-
+          History for average, max and min
+        default: 65
+      SCAN:
+        type: str
+        description: |-
+          Scan Mode 
+        default: I/O Intr
+      EGUL:
+        type: float
+        description: |-
+          Engineering Units Low Limit
+        default: -100
+      EGUF:
+        type: float
+        description: |-
+          Engineering Units High Limit
+        default: 100
+      ASLO:
+        type: float
+        description: |-
+          Conversion Slope
+        default: 0.02319 ## good for PT100 on IPDAS 
+      AOFF:
+        type: float
+        description: |-
+          Conversion Offset
+        default: 0.0
+      HIHI:
+        type: float
+        description: |-
+          Control High High Limit
+        default: 100.0
+      HIGH:
+        type: float
+        description: |-
+          Control High  Limit
+        default: 90.0
+      LOLO:
+        type: float
+        description: |-
+          Control Low Low Limit
+        default: 0.0
+      LOW:
+        type: float
+        description: |-
+          Control Low Limit
+        default: 10.0
+      LINR:
+        type: str
+        description: |-
+          Enable = LINEAR Disable=NO CONVERSION Linear Conversion
+        default: NO CONVERSION
+    
+      
     databases:
-      - file: icpao.template
+      - file: icprtdsensor.template
         args:
           P: '{{icpctrl.P}}'
           R: '{{icpctrl.R}}'
           ID: '{{name}}'
+          PORT: '{{icpctrl.NAME}}'
+          PORTMIN: '{{icpctrl.NAME}}_MIN'
+          PORTMAX: '{{icpctrl.NAME}}_MAX'
           REGOFFSET: '{{channel}}'
-          PORT: '{{icpctrl.NAME}}_RTD'
-          PORTMAX: '{{icpctrl.NAME}}_RTDMAX'
-          PORTMIN: '{{icpctrl.NAME}}_RTDMIN'
+          EGU:
+          ASLO:
+          AOFF:
+          HOPR:
+          LOPR:
+          PREC:
+          EGUL:
+          EGUF:
+          SCAN:
+          LOW:
+          LOLO:
+          HIGH:
+          HIHI:
+          NELM:
+      
+    # databases:
+    #   - file: icprtd.template
+    #     args:
+    #       P: '{{icpctrl.P}}'
+    #       R: '{{icpctrl.R}}'
+    #       ID: '{{name}}'
+    #       REGOFFSET: '{{channel}}'
+    #       PORT: '{{icpctrl.NAME}}_RTD'
+    #       PORTMAX: '{{icpctrl.NAME}}_RTDMAX'
+    #       PORTMIN: '{{icpctrl.NAME}}_RTDMIN'
 
   - name: ao
     description: |-
@@ -582,17 +706,25 @@ entity_models:
         description: |-
           channel index
 
-    databases:
-      - file: icpao.template
-        args:
-          P: '{{icpctrl.P}}'
-          R: '{{icpctrl.R}}'
-          ID: '{{name}}'
-          REGOFFSET: '{{channel}}'
-          WAOPORT: '{{icpctrl.NAME}}_WAO'
-          RAOPORT: '{{icpctrl.NAME}}_RAO'
-          PORTMAX: '{{icpctrl.NAME}}_AIMAX'
-          PORTMIN: '{{icpctrl.NAME}}_AIMIN'
+    pre_init:
+      - value: |
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_sp")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}:VOLT","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_sp")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}:VOLT_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}:VOLT_MAX_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_max_rb")
+          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}:VOLT_MIN_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_min_rb")
+    # databases:
+    #   - file: icpao.template
+    #     args:
+    #       P: '{{icpctrl.P}}'
+    #       R: '{{icpctrl.R}}'
+    #       ID: '{{name}}'
+    #       REGOFFSET: '{{channel}}'
+    #       WAOPORT: '{{icpctrl.NAME}}_WAO'
+    #       RAOPORT: '{{icpctrl.NAME}}_RAO'
+    #       PORTMAX: '{{icpctrl.NAME}}_AIMAX'
+    #       PORTMIN: '{{icpctrl.NAME}}_AIMIN'
 
   - name: icp7250
     description: |-
