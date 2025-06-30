@@ -13,7 +13,7 @@ dbds:
   - calc.dbd
   - asSupport.dbd
   - sscan.dbd
-  - incrementor.dbd
+  - TEKMSO58LP.dbd
 
 libs:
   - asyn
@@ -21,6 +21,7 @@ libs:
   - calc
   - autosave
   - sscan
+  - TEKMSO58LPiocSupport
 
 protocol_files:
   - db/devTektronix_MSO58LP.proto
