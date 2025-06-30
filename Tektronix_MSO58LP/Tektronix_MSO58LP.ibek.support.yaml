@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+
+module: Tektronix_MSO68LP
+
+entity_models:
+  - name: controller
+    description: |-
+      Create a Tektronix oscilloscope controller
+    parameters:
+      name:
+        type: id
+        description: |-
+          The name of the controller and its Asyn Port Name
+      P:  
+        type: str
+        description: |-
+          Device PV Prefix
+      IP:
+        type: str
+        description: |-
+          IP address of the ethernet2serial
+        default: 127.0.0.1 ## localhost
+
+      TCPPORT:
+        type: int
+        description: |-
+          Port of the ethernet2serial
+        default: 4001
+
+      ASYNPRIO:
+        type: int
+        description: |-
+          ASYN   PRIORITY, Default : 0
+        default: 0
+
+      AUTOCONNECT:
+        type: int
+        description: |-
+          Asyn auto connect
+          0: Auto connection
+          1: no Auto connection
+        default: 0
+
+      NOPRECESSESOS:
+        type: int
+        description: |-
+          ASYN   noProcessEos, Default : 0
+          https://epics.anl.gov/tech-talk/2020/msg01705.php
+        default: 0
+     
+    pre_init:
+      - value: |
+          epicsEnvSet "EPICS_CA_MAX_ARRAY_BYTES" "100000"
+          drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "$(TEKTRONIX_MSO58LP)/db/"
+
+    
+
+
+    databases:
+      - file: devTektronix_MSO58LP.db
+        args:
+          P: 
+          PORT: '{{name}}_ASYN'
+          SCANTIME: 1 second
+
+  
+   

@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: Tektronix_MSO58LP
+# TODO this should be a release tag to ensure deterministic builds.
+version: main
+
+# this module uses modbus so requires none of its own libs/dbds
+organization: https://github.com/infn-epics/
+
+dbds:
+  - asyn.dbd
+  - stream.dbd
+  - calc.dbd
+  - asSupport.dbd
+  - sscan.dbd
+
+libs:
+  - asyn
+  - stream
+  - calc
+  - autosave
+  - sscan
+
+protocol_files:
+  - db/devTektronix_MSO58LP.proto
