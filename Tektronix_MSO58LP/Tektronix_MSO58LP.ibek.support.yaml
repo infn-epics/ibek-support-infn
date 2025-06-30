@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
 
 
-module: Tektronix_MSO68LP
+module: tektronix
 
 entity_models:
-  - name: controller
+  - name: mso58lp
     description: |-
       Create a Tektronix oscilloscope controller
     parameters:
@@ -19,14 +19,20 @@ entity_models:
       IP:
         type: str
         description: |-
-          IP address of the ethernet2serial
+          IP address 
         default: 127.0.0.1 ## localhost
 
       TCPPORT:
         type: int
         description: |-
-          Port of the ethernet2serial
-        default: 4001
+          Server port
+        default: 4000
+
+      SAMPLES:
+        type: int
+        description: |-
+          Number of samples for the X axis
+        default: 10000
 
       ASYNPRIO:
         type: int
@@ -56,14 +62,63 @@ entity_models:
           epicsEnvSet "STREAM_PROTOCOL_PATH", "$(TEKTRONIX_MSO58LP)/db/"
 
     
-
-
     databases:
-      - file: devTektronix_MSO58LP.db
+      - file: dev_msoxx.template 
         args:
           P: 
           PORT: '{{name}}_ASYN'
-          SCANTIME: 1 second
+          NELM: "{{SAMPLES}}"
+      # - file: devTektronix_MSO58LP.db
+      #   args:
+      #     P: 
+      #     PORT: '{{name}}_ASYN'
+      #     SCANTIME: 1 second
 
   
    
+  - name: channel
+    description: |-
+      channel entrin
+    parameters:
+      ctrl:
+        type: object
+        description: |-
+          a reference to the main
+      name:
+        type: str
+        description: |-
+          channel name
+        
+      channel:
+        type: int
+        description: |-
+          channel index
+      
+      samples:
+        type: int
+        description: |-
+          samples
+
+      rate:
+        type: enum
+        description: |-
+          Specified scan rate for channel
+        values:
+          .1 second:
+          1 second:
+          10 second:
+          5 second:
+          Passive:
+          2 second:
+          .2 second:
+          .5 second:
+        default: 1 second
+        
+    databases:
+      - file: channel.template
+        args:
+          P: '{{icpctrl.P}}'
+          CHANNEL: '{{channel}}'
+          SCANTIME: '{{rate}}'
+          NELM: '{{samples}}'
+          PORT: '{{ctrl.name}}_ASYN'

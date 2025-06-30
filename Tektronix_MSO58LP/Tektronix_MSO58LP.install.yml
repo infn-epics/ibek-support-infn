@@ -13,6 +13,7 @@ dbds:
   - calc.dbd
   - asSupport.dbd
   - sscan.dbd
+  - incrementor.dbd
 
 libs:
   - asyn
