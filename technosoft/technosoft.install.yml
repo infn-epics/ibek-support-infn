@@ -21,8 +21,8 @@ libs:
   - asyn
   - FLGShift
 
-# tasks:
-#   - path: tml_task.yml
+tasks:
+   - path: tml_task.yml
 
 apt_developer:
   - libboost-dev
