@@ -42,7 +42,7 @@ entity_models:
 
     pre_init:
       - value: |
-          drvAsynIPPortConfigure("{{P}}{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
+          drvAsynIPPortConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
           epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
 
     databases:
@@ -50,7 +50,7 @@ entity_models:
         args:
           P:
           R:
-          PORT: '{{P}}{{R}}_ASYN'
+          PORT: '{{R}}_ASYN'
           RANGE:
 
       ## unimag interface overlay

@@ -42,7 +42,7 @@ entity_models:
 
     pre_init:
       - value: |
-          devEasyDriverConfigure("{{P}}{{R}}", "{{IP}}:{{TCPPORT}}", 0x1)
+          devEasyDriverConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0x1)
     databases:
       # - file: $(SUPPORT)/easy-driver-epics/db/asynRecord.db
       #   args:
@@ -55,7 +55,7 @@ entity_models:
         args:
           P:
           R:
-          PORT: '{{P}}{{R}}'
+          PORT: '{{R}}_ASYN'
           RANGE:
       ## unimag interface overlay
       - file: $(SUPPORT)/easy-driver-epics/db/unimag.db
