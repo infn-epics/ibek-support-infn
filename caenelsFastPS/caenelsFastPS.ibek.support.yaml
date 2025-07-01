@@ -43,7 +43,7 @@ entity_models:
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{P}}{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
-          epicsEnvSet "STREAM_PROTOCOL_PATH", "$(CAENELSFASTPS)/protocols/"
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
 
     databases:
       - file: fastps.db
