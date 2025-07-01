@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: caenels
+
+entity_models:
+  - name: fastps
+    description: |-
+      This will create an instance of standard CAEN Easy Power Supply
+    parameters:
+      P:
+        type: str
+        description: Device Prefix
+      R:
+        type: str
+        description: Device Suffix
+      IP:
+        type: str
+        description: |-
+          IP address of the Power Supply
+        default: 127.0.0.1 ## localhost
+      TCPPORT:
+        type: int
+        description: |-
+          TCP PORT of the Power Supply
+        default: 10001
+
+      RANGE:
+        type: int
+        description: |-
+          Current channels range
+        default: 1
+      OMAX:
+        type: int
+        description: |-
+          Output MAX
+        default: 0
+      IMAX:
+        type: int
+        description: |-
+          Current MAX
+        default: 0
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{P}}{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "$(CAENELSFASTPS)/protocols/"
+
+    databases:
+      - file: fastps.db
+        args:
+          P:
+          R:
+          PORT: '{{P}}{{R}}_ASYN'
+          RANGE:
+
+      ## unimag interface overlay
+      - file: unimag-fastps.db
+        args:
+          P:
+          R:

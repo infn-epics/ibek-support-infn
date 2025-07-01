@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: caenelsFastPS
+organization: https://github.com/infn-epics/
+
+# TODO this should be a tag to make rebuilding the container deterministic
+version: master
+
+protocol_files:
+  - protocols/fastps.proto
+
+dbds:
+  - asyn.dbd
+  - stream.dbd
+
+libs:
+  - asyn
+  - stream
+
+remove_macros:
+   - STREAM
