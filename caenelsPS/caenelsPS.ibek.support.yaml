@@ -1,0 +1,123 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: caenels
+
+entity_models:
+  - name: histar
+    description: |-
+      This will create an instance of standard CAENELS HiStar PS
+    parameters:
+      P:
+        type: str
+        description: Device Prefix
+      R:
+        type: str
+        description: Device Suffix
+      IP:
+        type: str
+        description: |-
+          IP address of the Power Supply
+        default: 127.0.0.1 ## localhost
+      TCPPORT:
+        type: int
+        description: |-
+          TCP PORT of the Power Supply
+        default: 10001
+
+      range:
+        type: int
+        description: |-
+          Current channels range
+        default: 30
+      
+      OMAX:
+        type: int
+        description: |-
+          Output MAX
+        default: 0
+      IMAX:
+        type: int
+        description: |-
+          Current MAX
+        default: 0
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
+
+    databases:
+      - file: caenels-hs.db
+        args:
+          P:
+          R:
+          PORT: '{{R}}_ASYN'
+          RANGE: '{{range}}'
+
+      ## unimag interface overlay
+      - file: unimag-caenels.db
+        args:
+          P:
+          R:
+          
+  - name: fastps
+    description: |-
+      This will create an instance of standard CAENELS FASTPS
+    parameters:
+      P:
+        type: str
+        description: Device Prefix
+      R:
+        type: str
+        description: Device Suffix
+      IP:
+        type: str
+        description: |-
+          IP address of the Power Supply
+        default: 127.0.0.1 ## localhost
+      TCPPORT:
+        type: int
+        description: |-
+          TCP PORT of the Power Supply
+        default: 10001
+
+      rangeI:
+        type: int
+        description: |-
+          Current channels range
+        default: 30
+      rangeV:
+        type: int
+        description: |-
+          Voltage channels range
+        default: 20
+      OMAX:
+        type: int
+        description: |-
+          Output MAX
+        default: 0
+      IMAX:
+        type: int
+        description: |-
+          Current MAX
+        default: 0
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
+
+    databases:
+      - file: fastps.db
+        args:
+          P:
+          R:
+          PORT: '{{R}}_ASYN'
+          RANGEI: '{{rangeI}}'
+          RANGEV: '{{rangeV}}'
+
+      ## unimag interface overlay
+      - file: unimag-fastps.db
+        args:
+          P:
+          R:
