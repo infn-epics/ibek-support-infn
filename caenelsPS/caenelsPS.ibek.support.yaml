@@ -5,7 +5,7 @@ module: caenels
 entity_models:
   - name: histar
     description: |-
-      This will create an instance of standard CAENELS HiStar PS
+      This will create an instance of CAENELS HiStar PS
     parameters:
       P:
         type: str
@@ -55,14 +55,14 @@ entity_models:
           RANGE: '{{range}}'
 
       ## unimag interface overlay
-      - file: unimag-caenels.db
+      - file: unimag-histar.db
         args:
           P:
           R:
-          
+
   - name: fastps
     description: |-
-      This will create an instance of standard CAENELS FASTPS
+      This will create an instance of CAENELS FASTPS
     parameters:
       P:
         type: str
