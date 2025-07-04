@@ -2,7 +2,7 @@
 
 module: motorTechnosoft
 # TODO this should be a release tag to ensure deterministic builds.
-version: technosoft-debug
+version: main
 
 # this module uses modbus so requires none of its own libs/dbds
 organization: https://github.com/infn-epics
