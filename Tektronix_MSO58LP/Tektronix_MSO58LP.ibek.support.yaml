@@ -119,6 +119,7 @@ entity_models:
         args:
           P: '{{ctrl.P}}'
           CHANNEL: '{{channel}}'
+          CHANNAME: '{{name}}'
           SCANTIME: '{{rate}}'
           NELM: '{{samples}}'
           PORT: '{{ctrl.name}}_ASYN'
