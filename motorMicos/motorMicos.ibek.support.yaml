@@ -218,7 +218,7 @@ entity_models:
           N: "{{ADDR +1 }}"
           M:
           DTYP: asynMotor
-          PORT: "pollux_{{controllerName}}"
+          PORT: "pollux_{{controller.controllerName}}"
           ADDR:
           DESC:
           EGU:
