@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../_scripts/support_install_variables.json
+
+module: motorMicos
+version: master
+organization: https://github.com/infn-epics
+
+dbds:
+  - devMicos.dbd
+  - motorRecord.dbd
+  - motorSupport.dbd
+
+libs:
+  - Micos
+  - motor
+  - asyn
