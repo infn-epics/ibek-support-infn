@@ -75,3 +75,7 @@ entity_models:
           P:
           PORT: "{{name}}_ASYN"
           ADDR: "{{DEV_ID}}"
+      - file: unicool-smc.db
+        args:
+          P:
+         
