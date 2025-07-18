@@ -24,7 +24,7 @@ entity_models:
           TCP PORT of the Power Supply
         default: 10001
 
-      RANGE:
+      range:
         type: int
         description: |-
           Current channels range
@@ -56,7 +56,8 @@ entity_models:
           P:
           R:
           PORT: '{{R}}_ASYN'
-          RANGE:
+          RANGE: '{{range}}'
+
       ## unimag interface overlay
       - file: $(SUPPORT)/easy-driver-epics/db/unimag.db
         args:
