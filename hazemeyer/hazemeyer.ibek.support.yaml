@@ -7,6 +7,10 @@ entity_models:
     description: |-
       This will create an instance of CAENELS HiStar PS
     parameters:
+      NAME:
+        type: id
+        description: |-
+          Device Suffix
       P:
         type: str
         description: Device Prefix
@@ -23,8 +27,8 @@ entity_models:
 
     pre_init:
       - value: |
-          drvAsynIPPortConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,1)
-          modbusInterposeConfig("{{R}}_ASYN", 1, 2000, 1000)
+          drvAsynIPPortConfigure("{{NAME}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,1)
+          modbusInterposeConfig("{{NAME}}_ASYN", 1, 2000, 1000)
 
 
   - name: ps
@@ -58,10 +62,10 @@ entity_models:
     pre_init:
       - value: |
           ## Write holding registers slave 6
-          drvModbusAsynConfigure("{{serctrl.R}}_PORT_WAO", "{{serctrl.R}}_ASYN", {{ID}},    16, 4, 4, 0, 1000, "HAZEMEYER")
+          drvModbusAsynConfigure("{{serctrl.NAME}}_PORT_WAO", "{{serctrl.NAME}}_ASYN", {{ID}},    16, 4, 4, 0, 1000, "HAZEMEYER")
 
           ## Read holding registers
-          drvModbusAsynConfigure("{{serctrl.R}}_PORT_RAO", "{{serctrl.R}}_ASYN", {{ID}},    3, 4, 12, 0, 1000, "HAZEMEYER")
+          drvModbusAsynConfigure("{{serctrl.NAME}}_PORT_RAO", "{{serctrl.NAME}}_ASYN", {{ID}},    3, 4, 12, 0, 1000, "HAZEMEYER")
 
 
     databases:
@@ -69,8 +73,8 @@ entity_models:
         args:
           P: '{{serctrl.P}}'
           R: 
-          PORT: '{{serctrl.R}}_PORT_RAO'
-          WPORT: '{{serctrl.R}}_PORT_WAO'
+          PORT: '{{serctrl.NAME}}_PORT_RAO'
+          WPORT: '{{serctrl.NAME}}_PORT_WAO'
           IMAX: '{{IMAX}}'
           VMAX: '{{VMAX}}'
           TIMEOUT: '2000'
