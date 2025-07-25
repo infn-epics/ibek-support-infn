@@ -23,5 +23,6 @@ libs:
   - sscan
   - TEKMSO58LPiocSupport
 
+
 protocol_files:
   - db/devTektronix_MSO58LP.proto

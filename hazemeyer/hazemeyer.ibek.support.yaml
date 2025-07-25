@@ -57,15 +57,20 @@ entity_models:
         description: |-
           ID of the Power Supply
         default: 0
+      POLL:
+        type: int
+        description: |-
+          Polling time in ms
+        default: 1000
       
 
     pre_init:
       - value: |
-          ## Write holding registers slave 6
-          drvModbusAsynConfigure("{{serctrl.NAME}}_PORT_WAO", "{{serctrl.NAME}}_ASYN", {{ID}},    16, 4, 4, 0, 1000, "HAZEMEYER")
+          ## Write holding registers slave {{ID}}
+          drvModbusAsynConfigure("{{serctrl.NAME}}_PORT_WAO", "{{serctrl.NAME}}_ASYN", {{ID}},    16, 4, 4, 0, {{POLL}}, "HAZEMEYER")
 
-          ## Read holding registers
-          drvModbusAsynConfigure("{{serctrl.NAME}}_PORT_RAO", "{{serctrl.NAME}}_ASYN", {{ID}},    3, 4, 12, 0, 1000, "HAZEMEYER")
+          ## Read holding registers slave {{ID}}
+          drvModbusAsynConfigure("{{serctrl.NAME}}_PORT_RAO", "{{serctrl.NAME}}_ASYN", {{ID}},    3, 4, 12, 0, {{POLL}}, "HAZEMEYER")
 
 
     databases:
