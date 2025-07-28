@@ -66,11 +66,10 @@ entity_models:
 
     pre_init:
       - value: |
-          ## Write holding registers slave {{ID}}
-          drvModbusAsynConfigure("{{serctrl.NAME}}_PORT_WAO", "{{serctrl.NAME}}_ASYN", {{ID}},    16, 4, 4, 0, {{POLL}}, "HAZEMEYER")
-
-          ## Read holding registers slave {{ID}}
-          drvModbusAsynConfigure("{{serctrl.NAME}}_PORT_RAO", "{{serctrl.NAME}}_ASYN", {{ID}},    3, 4, 12, 0, {{POLL}}, "HAZEMEYER")
+          ## ps {{R}} Write holding registers slave {{ID}} 
+          drvModbusAsynConfigure("{{R}}_PORT_WAO", "{{serctrl.NAME}}_ASYN", {{ID}},    16, 4, 4, 0, {{POLL}}, "HAZEMEYER")
+          ## ps {{R}} Read holding registers slave {{ID}}
+          drvModbusAsynConfigure("{{R}}_PORT_RAO", "{{serctrl.NAME}}_ASYN", {{ID}},    3, 4, 12, 0, {{POLL}}, "HAZEMEYER")
 
 
     databases:
@@ -78,8 +77,8 @@ entity_models:
         args:
           P: '{{serctrl.P}}'
           R: 
-          PORT: '{{serctrl.NAME}}_PORT_RAO'
-          WPORT: '{{serctrl.NAME}}_PORT_WAO'
+          PORT: '{{R}}_PORT_RAO'
+          WPORT: '{{R}}_PORT_WAO'
           IMAX: '{{IMAX}}'
           VMAX: '{{VMAX}}'
           TIMEOUT: '2000'
