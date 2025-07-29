@@ -22,20 +22,17 @@ entity_models:
         type: int
         description: |-
           TCP PORT of the Power Supply
-        default: 4001
-
-     
-      
-      # OMAX:
-      #   type: int
-      #   description: |-
-      #     Output MAX
-      #   default: 0
-      # IMAX:
-      #   type: int
-      #   description: |-
-      #     Current MAX
-      #   default: 0
+        default: 4001 
+      VMAX:
+        type: int
+        description: |-
+          Output MAX
+        default: 16
+      IMAX:
+        type: int
+        description: |-
+          Current MAX
+        default: 100
 
     pre_init:
       - value: |
@@ -52,8 +49,8 @@ entity_models:
           R:
           READ_ALL: "{{R}}_readback_all"
           CMD_PORT: "{{R}}_command_port"
-          IMAX: "100"
-          VMAX: "200"
+          IMAX:
+          VMAX:
          
 
       ## unimag interface overlay
