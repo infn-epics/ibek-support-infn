@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: ocem
+
+entity_models:
+  - name: modbusps
+    description: |-
+      This will create an instance of OCEM Modbus PS
+    parameters:
+      P:
+        type: str
+        description: Device Prefix
+      R:
+        type: str
+        description: Device Suffix
+      IP:
+        type: str
+        description: |-
+          IP address of the Power Supply
+        default: 127.0.0.1 ## localhost
+      TCPPORT:
+        type: int
+        description: |-
+          TCP PORT of the Power Supply
+        default: 4001
+
+     
+      
+      # OMAX:
+      #   type: int
+      #   description: |-
+      #     Output MAX
+      #   default: 0
+      # IMAX:
+      #   type: int
+      #   description: |-
+      #     Current MAX
+      #   default: 0
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
+          modbusInterposeConfig("{{R}}_ASYN", 0, 0, 0)
+          drvModbusAsynConfigure("{{R}}_command_port", "{{R}}_ASYN", 1, 6, 0, 3, 0, 1000, "OCEM")
+          drvModbusAsynConfigure("{{R}}_readback_all", "{{R}}_ASYN", 1, 4, 20, 7, 0, 1000, "OCEM")
+          
+
+    databases:
+      - file: OCEMPowerSupply.db
+        args:
+          P:
+          R:
+          READ_ALL: "{{R}}_readback_all"
+          CMD_PORT: "{{R}}_command_port"
+          IMAX: "100"
+          VMAX: "200"
+         
+
+      ## unimag interface overlay
+      - file: unimag-ocem.db
+        args:
+          P:
+          R:
+
+  

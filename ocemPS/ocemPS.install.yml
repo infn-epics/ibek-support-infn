@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: OCEMPowerSupply
+organization: https://github.com/infn-epics/
+
+# TODO this should be a tag to make rebuilding the container deterministic
+version: main
+
+# protocol_files:
+#   - protocols/fastps.proto
+#   - protocols/caenels-hs.proto
+
+
+dbds:
+  - asyn.dbd
+  - modbusSupport.dbd
+
+libs:
+  - asyn
+  - modbus
+ 
+
+# remove_macros:
+#    - STREAM
