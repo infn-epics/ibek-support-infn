@@ -22,7 +22,7 @@ entity_models:
         type: int
         description: |-
           TCP PORT of the Power Supply
-        default: 4001 
+        default: 502
       VMAX:
         type: int
         description: |-
