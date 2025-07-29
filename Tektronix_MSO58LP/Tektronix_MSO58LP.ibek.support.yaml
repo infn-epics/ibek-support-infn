@@ -99,6 +99,11 @@ entity_models:
         description: |-
           samples
 
+      sensibility:
+        type: float
+        description: |-
+          Sensibility of the channel, default 1.0
+        default: 1.0
       rate:
         type: enum
         description: |-
@@ -119,7 +124,8 @@ entity_models:
         args:
           P: '{{ctrl.P}}'
           CHANNEL: '{{channel}}'
-          CHANNAME: '{{name}}'
+          CHANAME: '{{name}}'
           SCANTIME: '{{rate}}'
           NELM: '{{samples}}'
+          SENSIBILITY: '{{sensibility}}'
           PORT: '{{ctrl.name}}_ASYN'
