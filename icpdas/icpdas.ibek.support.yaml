@@ -793,7 +793,7 @@ entity_models:
           DOPORT: '{{NAME}}_DO'
           DIPORT: '{{NAME}}_DI'
           CNTPORT: '{{NAME}}_DICNT'
-          PORT: '{{NAME}}_INFO'
+          PORTINFO: '{{NAME}}_INFO'
 
   - name: icp7226
     description: |-
