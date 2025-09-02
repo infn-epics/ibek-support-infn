@@ -69,9 +69,9 @@ entity_models:
         args:
           P:
           R:
-          PORT: '{{NAME}}_RTD'
-          PORTMIN: '{{NAME}}_RTDMIN'
-          PORTMAX: '{{NAME}}_RTDMAX'
+          PORT: '{{NAME}}'
+          PORTMIN: '{{NAME}}_MIN'
+          PORTMAX: '{{NAME}}_MAX'
           PORTINFO: '{{NAME}}_INFO'
 
   - name: icp7215temp
