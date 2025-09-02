@@ -55,12 +55,12 @@ entity_models:
           drvAsynIPPortConfigure("{{NAME}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
           modbusInterposeConfig("{{NAME}}_ASYN",0,{{TIMEOUT}},{{WRITEDELAY}})
           # Read Input Registers temperature
-          drvModbusAsynConfigure("{{NAME}}_RTD", "{{NAME}}_ASYN", 1, 4, 0, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
+          drvModbusAsynConfigure("{{NAME}}", "{{NAME}}_ASYN", 1, 4, 0, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
           ## Read Input Registers MIN  histo
 
-          drvModbusAsynConfigure("{{NAME}}_RTDMIN", "{{NAME}}_ASYN", 1, 4, 268, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
+          drvModbusAsynConfigure("{{NAME}}_MIN", "{{NAME}}_ASYN", 1, 4, 268, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
           ## Read Input Registers MAX histo
-          drvModbusAsynConfigure("{{NAME}}_RTDMAX", "{{NAME}}_ASYN", 1, 4, 236, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
+          drvModbusAsynConfigure("{{NAME}}_MAX", "{{NAME}}_ASYN", 1, 4, 236, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
           #read once or epics events
           drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 350, 4, 0, {{POLL_DELAY*10}}, "ICPDAS7215")
 
