@@ -61,18 +61,17 @@ entity_models:
           drvModbusAsynConfigure("{{NAME}}_MAX", "{{NAME}}_ASYN", 1, 4, 236, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
           #read once or epics events
           drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 350, 4, 0, {{POLL_DELAY*10}}, "ICPDAS7215")
+          drvModbusAsynConfigure("{{NAME}}_TYPE", "{{NAME}}_ASYN", 1, 6, 427, 7, 0, {{POLL_DELAY}}, "ICPDAS7215")
 
     databases:
-      - file: icp7215.db
+      - file: icpdasVersion.template
         args:
           P:
           R:
-          PORT: '{{NAME}}'
-          PORTMIN: '{{NAME}}_MIN'
-          PORTMAX: '{{NAME}}_MAX'
           PORTINFO: '{{NAME}}_INFO'
 
-  - name: icp7215temp
+
+  - name: rtd
     description: |-
       Single Temperature sensor
     parameters:
@@ -80,9 +79,11 @@ entity_models:
         type: object
         description: |-
           ICP icpctrl reference
-      ID:
-        type: str
-        description: Temperature sensor ID
+      channel:
+        type: int
+        description: |-
+          channel index
+        
       DESC:
         type: str
         description: |-
@@ -122,16 +123,6 @@ entity_models:
         description: |-
           Scan Mode 
         default: I/O Intr
-      EGUL:
-        type: float
-        description: |-
-          Engineering Units Low Limit
-        default: -100
-      EGUF:
-        type: float
-        description: |-
-          Engineering Units High Limit
-        default: 100
       ASLO:
         type: float
         description: |-
@@ -162,37 +153,29 @@ entity_models:
         description: |-
           Control Low Limit
         default: 10.0
-      LINR:
-        type: str
-        description: |-
-          Enable = LINEAR Disable=NO CONVERSION Linear Conversion
-        default: NO CONVERSION
+  
 
 
     databases:
-      - file: icprtdsensor.template
+      - file: icprtd.template
         args:
           P: '{{icpctrl.P}}'
           R: '{{icpctrl.R}}'
-          ID:
+          ID: "{{channel}}"
           PORT: '{{icpctrl.NAME}}'
           PORTMIN: '{{icpctrl.NAME}}_MIN'
           PORTMAX: '{{icpctrl.NAME}}_MAX'
-          REGOFFSET:
           EGU:
           ASLO:
           AOFF:
           HOPR:
           LOPR:
           PREC:
-          EGUL:
-          EGUF:
           SCAN:
           LOW:
           LOLO:
           HIGH:
           HIHI:
-          NELM:
 
   - name: icp7026
     description: |-
@@ -544,135 +527,7 @@ entity_models:
     #       PORTMAX: '{{icpctrl.NAME}}_AIMAX'
     #       PORTMIN: '{{icpctrl.NAME}}_AIMIN'
 
-  - name: rtd
-    description: |-
-      Template database for a RTD channel(pt100)
-    parameters:
-      icpctrl:
-        type: object
-        description: |-
-          a reference to the icpctrl
-      name:
-        type: str
-        description: |-
-          channel name
-        
-      channel:
-        type: int
-        description: |-
-          channel index
-      EGU:
-        type: str
-        description: |-
-          Engineering Units
-        default: degC
-      HOPR:
-        type: int
-        description: |-
-          High Limit
-        default: 0
-      LOPR:
-        type: int
-        description: |-
-          Low Limit
-        default: 0
-      PREC:
-        type: int
-        description: |-
-          Precision
-        default: 3
-      NELM:
-        type: int
-        description: |-
-          History for average, max and min
-        default: 65
-      SCAN:
-        type: str
-        description: |-
-          Scan Mode 
-        default: I/O Intr
-      EGUL:
-        type: float
-        description: |-
-          Engineering Units Low Limit
-        default: -100
-      EGUF:
-        type: float
-        description: |-
-          Engineering Units High Limit
-        default: 100
-      ASLO:
-        type: float
-        description: |-
-          Conversion Slope
-        default: 0.02319 ## good for PT100 on IPDAS 
-      AOFF:
-        type: float
-        description: |-
-          Conversion Offset
-        default: 0.0
-      HIHI:
-        type: float
-        description: |-
-          Control High High Limit
-        default: 100.0
-      HIGH:
-        type: float
-        description: |-
-          Control High  Limit
-        default: 90.0
-      LOLO:
-        type: float
-        description: |-
-          Control Low Low Limit
-        default: 0.0
-      LOW:
-        type: float
-        description: |-
-          Control Low Limit
-        default: 10.0
-      LINR:
-        type: str
-        description: |-
-          Enable = LINEAR Disable=NO CONVERSION Linear Conversion
-        default: NO CONVERSION
-    
-      
-    databases:
-      - file: icprtdsensor.template
-        args:
-          P: '{{icpctrl.P}}'
-          R: '{{icpctrl.R}}'
-          ID: '{{name}}'
-          PORT: '{{icpctrl.NAME}}'
-          PORTMIN: '{{icpctrl.NAME}}_MIN'
-          PORTMAX: '{{icpctrl.NAME}}_MAX'
-          REGOFFSET: '{{channel}}'
-          EGU:
-          ASLO:
-          AOFF:
-          HOPR:
-          LOPR:
-          PREC:
-          EGUL:
-          EGUF:
-          SCAN:
-          LOW:
-          LOLO:
-          HIGH:
-          HIHI:
-          NELM:
-      
-    # databases:
-    #   - file: icprtd.template
-    #     args:
-    #       P: '{{icpctrl.P}}'
-    #       R: '{{icpctrl.R}}'
-    #       ID: '{{name}}'
-    #       REGOFFSET: '{{channel}}'
-    #       PORT: '{{icpctrl.NAME}}_RTD'
-    #       PORTMAX: '{{icpctrl.NAME}}_RTDMAX'
-    #       PORTMIN: '{{icpctrl.NAME}}_RTDMIN'
+  
 
   - name: ao
     description: |-
