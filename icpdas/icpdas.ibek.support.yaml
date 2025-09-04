@@ -68,7 +68,7 @@ entity_models:
         args:
           P:
           R:
-          PORTINFO: '{{NAME}}_INFO'
+          PORT: '{{NAME}}_INFO'
 
 
   - name: rtd
@@ -89,10 +89,7 @@ entity_models:
         description: |-
           Readout description
         default: Temperature
-      REGOFFSET:
-        type: int
-        description: |-
-          register address/offset
+      
       EGU:
         type: str
         description: |-
@@ -165,6 +162,7 @@ entity_models:
           PORT: '{{icpctrl.NAME}}'
           PORTMIN: '{{icpctrl.NAME}}_MIN'
           PORTMAX: '{{icpctrl.NAME}}_MAX'
+          PORTTYPE: '{{icpctrl.NAME}}_TYPE'
           EGU:
           ASLO:
           AOFF:
@@ -514,8 +512,7 @@ entity_models:
           # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_rb")
           # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_MAX_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_max_rb")
           # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_MIN_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_min_rb")
-
-    
+  
     # databases:
     #   - file: icpai.template
     #     args:
