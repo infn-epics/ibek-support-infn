@@ -163,6 +163,7 @@ entity_models:
           PORTMIN: '{{icpctrl.NAME}}_MIN'
           PORTMAX: '{{icpctrl.NAME}}_MAX'
           PORTTYPE: '{{icpctrl.NAME}}_TYPE'
+          DESC:
           EGU:
           ASLO:
           AOFF:
@@ -246,19 +247,11 @@ entity_models:
           drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 350, 4, 0, {{POLL_DELAY*10}}, "ICPDAS7026")
 
     databases:
-      - file: icp7026.db
+      - file: icpdasVersion.template
         args:
           P:
           R:
-          AIPORT: '{{NAME}}_AI'
-          WAOPORT: '{{NAME}}_WAO'
-          RAOPORT: '{{NAME}}_RAO'
-          CNTPORT: '{{NAME}}_DICNT'
-          DIPORT: '{{NAME}}_DI'
-          DOPORT: '{{NAME}}_DO'
-          PORTMIN: '{{NAME}}_AIMIN'
-          PORTMAX: '{{NAME}}_AIMAX'
-          PORTINFO: '{{NAME}}_INFO'
+          PORT: '{{NAME}}_INFO'
 
 
   - name: icp7267
@@ -320,13 +313,12 @@ entity_models:
           drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 350, 4, 0, {{POLL_DELAY}}, "ICPDAS7267")
 
     databases:
-      - file: icp7267.db
+      - file: icpdasVersion.template
         args:
           P:
           R:
-          get_port: '{{NAME}}_get_port'
-          set_port: '{{NAME}}_set_port'
           PORT: '{{NAME}}_INFO'
+
   - name: icp7060
     description: |-
       6 Relay and 6 inputs
@@ -389,14 +381,10 @@ entity_models:
           drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 150, 4, 0, {{POLL_DELAY}}, "ICPDAS7060")
 
     databases:
-      - file: icp7060.db
+      - file: icpdasVersion.template
         args:
           P:
           R:
-          get_port: '{{NAME}}_get_port'
-          set_port: '{{NAME}}_set_port'
-          DIPORT: '{{NAME}}_DI'
-          CNTPORT: '{{NAME}}_DICNT'
           PORT: '{{NAME}}_INFO'
   
   - name: rly
@@ -407,20 +395,27 @@ entity_models:
         type: object
         description: |-
           a reference to the icpctrl
-      name:
-        type: str
-        description: |-
-          channel name
         
       channel:
         type: int
         description: |-
           channel index
-
-    pre_init:
-      - value: |
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:RLY{{channel}}_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:RLY{{channel}}_SP","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_sp")
+      DESC:
+        type: str
+        description: |-
+          Readout description
+        default: Digital Input
+    
+    databases:
+  
+      - file: icprly.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{channel}}'
+          get_port: '{{icpctrl.NAME}}_get_port'
+          set_port: '{{icpctrl.NAME}}_set_port'
+          DESC:
 
   - name: di
     description: |-
@@ -430,29 +425,28 @@ entity_models:
         type: object
         description: |-
           a reference to the icpctrl
-      name:
-        type: str
-        description: |-
-          channel name
         
       channel:
         type: int
         description: |-
           channel index
-    pre_init:
-      - value: |
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:DI{{channel}}_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:DI{{channel}}_CNT_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_cnt_rb")
-    # databases:
-    #   - file: icpdi.template
-    #     args:
-    #       P: '{{icpctrl.P}}'
-    #       R: '{{icpctrl.R}}'
-    #       ID: '{{name}}'
-    #       REGOFFSET: '{{channel}}'
-    #       REGOFFSET2X: '{{channel * 2}}'
-    #       PORT: '{{icpctrl.NAME}}_DI'
-    #       PORTCNT: '{{icpctrl.NAME}}_DICNT'
+      DESC:
+        type: str
+        description: |-
+          Readout description
+        default: Digital Input
+    
+    databases:
+  
+      - file: icpdi.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{channel}}'
+          IDX2: '{{channel*2}}'
+          PORT: '{{icpctrl.NAME}}_DI'
+          PORTCNT: '{{icpctrl.NAME}}_DICNT'
+          DESC:
 
   - name: do
     description: |-
@@ -462,27 +456,26 @@ entity_models:
         type: object
         description: |-
           a reference to the icpctrl
-      name:
+      
+      DESC:
         type: str
         description: |-
-          channel name
-        
+          Readout description
+        default: Digital Output
+
       channel:
         type: int
         description: |-
           channel index
-    pre_init:
-      - value: |
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:DO{{channel}}","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_sp")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:DO{{channel}}","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
-    # databases:
-    #   - file: icpdo.template
-    #     args:
-    #       P: '{{icpctrl.P}}'
-    #       R: '{{icpctrl.R}}'
-    #       ID: '{{name}}'
-    #       REGOFFSET: '{{channel}}'
-    #       PORT: '{{icpctrl.NAME}}_DO'
+      
+    databases:
+      - file: icpdo.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{channel}}'
+          PORT: '{{icpctrl.NAME}}_DO'
+          DESC:
 
 
   - name: ai
@@ -493,37 +486,33 @@ entity_models:
         type: object
         description: |-
           a reference to the icpctrl
-      name:
-        type: str
-        description: |-
-          channel name
-        
       channel:
         type: int
         description: |-
           channel index
-
-    pre_init:
-      - value: |
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}_MAX_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_max_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}_MIN_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_min_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_MAX_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_max_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AI{{channel}}:VOLT_MIN_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_min_rb")
+      DESC:
+        type: str
+        description: |-
+          Readout description
+        default: Analog Input
+      maxscale:
+        type: float
+        description: |-
+          max scale
+        default: 10.0
+      
   
-    # databases:
-    #   - file: icpai.template
-    #     args:
-    #       P: '{{icpctrl.P}}'
-    #       R: '{{icpctrl.R}}'
-    #       ID: '{{name}}'
-    #       REGOFFSET: '{{channel}}'
-    #       PORT: '{{icpctrl.NAME}}_AI'
-    #       PORTMAX: '{{icpctrl.NAME}}_AIMAX'
-    #       PORTMIN: '{{icpctrl.NAME}}_AIMIN'
-
+    databases:
+      - file: icpai.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{channel}}'
+          PORT: '{{icpctrl.NAME}}_AI'
+          PORTMAX: '{{icpctrl.NAME}}_AIMAX'
+          PORTMIN: '{{icpctrl.NAME}}_AIMIN'
+          DESC:
+          maxscale:
   
 
   - name: ao
@@ -534,35 +523,33 @@ entity_models:
         type: object
         description: |-
           a reference to the icpctrl
-      name:
+      DESC:
         type: str
         description: |-
-          channel name
-        
+          Readout description
+        default: Analog Output
+      maxscale:
+        type: float
+        description: |-
+          max scale
+        default: 10.0
       channel:
         type: int
         description: |-
           channel index
 
-    pre_init:
-      - value: |
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_sp")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}:VOLT","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_sp")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}:VOLT_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}:VOLT_MAX_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_max_rb")
-          # alias("{{icpctrl.P}}:{{icpctrl.R}}:{{name}}:AO{{channel}}:VOLT_MIN_RB","{{icpctrl.P}}:{{icpctrl.R}}:{{name}}_volt_min_rb")
-    # databases:
-    #   - file: icpao.template
-    #     args:
-    #       P: '{{icpctrl.P}}'
-    #       R: '{{icpctrl.R}}'
-    #       ID: '{{name}}'
-    #       REGOFFSET: '{{channel}}'
-    #       WAOPORT: '{{icpctrl.NAME}}_WAO'
-    #       RAOPORT: '{{icpctrl.NAME}}_RAO'
-    #       PORTMAX: '{{icpctrl.NAME}}_AIMAX'
-    #       PORTMIN: '{{icpctrl.NAME}}_AIMIN'
+    databases:
+      - file: icpao.template
+        args:
+          P: '{{icpctrl.P}}'
+          R: '{{icpctrl.R}}'
+          ID: '{{channel}}'
+          WPORT: '{{icpctrl.NAME}}_WAO'
+          RPORT: '{{icpctrl.NAME}}_RAO'
+          PORTMAX: '{{icpctrl.NAME}}_AIMAX'
+          PORTMIN: '{{icpctrl.NAME}}_AIMIN'
+          DESC:
+          maxscale:
 
   - name: icp7250
     description: |-
@@ -624,14 +611,11 @@ entity_models:
           drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 150, 4, 0, {{POLL_DELAY}}, "ICPDAS7250")
 
     databases:
-      - file: icp7250.db
+      - file: icpdasVersion.template
         args:
           P:
           R:
-          DOPORT: '{{NAME}}_DO'
-          DIPORT: '{{NAME}}_DI'
-          CNTPORT: '{{NAME}}_DICNT'
-          PORTINFO: '{{NAME}}_INFO'
+          PORT: '{{NAME}}_INFO'
 
   - name: icp7226
     description: |-
@@ -705,16 +689,8 @@ entity_models:
           drvModbusAsynConfigure("{{NAME}}_INFO", "{{NAME}}_ASYN", 1, 4, 350, 3, 0, {{POLL_DELAY*10}}, "ICPDAS7226")
 
     databases:
-      - file: icp7226.db
+      - file: icpdasVersion.template
         args:
           P:
           R:
-          AIPORT: '{{NAME}}_AI'
-          WAOPORT: '{{NAME}}_WAO'
-          RAOPORT: '{{NAME}}_RAO'
-          CNTPORT: '{{NAME}}_DICNT'
-          DIPORT: '{{NAME}}_DI'
-          DOPORT: '{{NAME}}_DO'
-          PORTMIN: '{{NAME}}_AIMIN'
-          PORTMAX: '{{NAME}}_AIMAX'
-          PORTINFO: '{{NAME}}_INFO'
+          PORT: '{{NAME}}_INFO'
