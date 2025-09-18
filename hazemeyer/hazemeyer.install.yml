@@ -4,7 +4,7 @@ module: hazemeyer-lnf
 organization: https://github.com/infn-epics/
 
 # TODO this should be a tag to make rebuilding the container deterministic
-version: devel
+version: main
 
 
 dbds:
