@@ -24,11 +24,21 @@ entity_models:
         description: |-
           TCP PORT of the Power Supply
         default: 4001
+      TIMEOUT:
+        type: int
+        description: |-
+          Timeout
+        default: 1000
+      WDELAY:
+        type: int
+        description: |-
+          Write Delay
+        default: 200
 
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{NAME}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,1)
-          modbusInterposeConfig("{{NAME}}_ASYN", 1, 2000, 1000)
+          modbusInterposeConfig("{{NAME}}_ASYN", 1, {{TIMEOUT}}, {{WDELAY}})
 
 
   - name: ps
@@ -57,19 +67,24 @@ entity_models:
         description: |-
           ID of the Power Supply
         default: 0
-      POLL:
+      RPOLL:
         type: int
         description: |-
-          Polling time in ms
-        default: 1000
+          Read Polling time in ms
+        default: 2000
+      WPOLL:
+        type: int
+        description: |-
+          write Polling time in ms
+        default: 200
       
 
     pre_init:
       - value: |
           ## ps {{R}} Write holding registers slave {{ID}} 
-          drvModbusAsynConfigure("{{R}}_PORT_WAO", "{{serctrl.NAME}}_ASYN", {{ID}},    16, 4, 4, 0, {{POLL}}, "HAZEMEYER")
+          drvModbusAsynConfigure("{{R}}_PORT_WAO", "{{serctrl.NAME}}_ASYN", {{ID}},    16, 4, 4, 0, {{WPOLL}}, "HAZEMEYER")
           ## ps {{R}} Read holding registers slave {{ID}}
-          drvModbusAsynConfigure("{{R}}_PORT_RAO", "{{serctrl.NAME}}_ASYN", {{ID}},    3, 4, 12, 0, {{POLL}}, "HAZEMEYER")
+          drvModbusAsynConfigure("{{R}}_PORT_RAO", "{{serctrl.NAME}}_ASYN", {{ID}},    3, 4, 12, 0, {{RPOLL}}, "HAZEMEYER")
 
     databases:
       - file: hz.db
@@ -80,6 +95,5 @@ entity_models:
           WPORT: '{{R}}_PORT_WAO'
           IMAX: '{{IMAX}}'
           VMAX: '{{VMAX}}'
-          TIMEOUT: '2000'
-
+          TIMEOUT: '{{serctrl.TIMEOUT}}'
     
