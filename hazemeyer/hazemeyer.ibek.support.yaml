@@ -31,6 +31,32 @@ entity_models:
           modbusInterposeConfig("{{NAME}}_ASYN", 1, 2000, 1000)
 
 
+  - name: tcp_iocast
+    description: |-
+      This will create an instance of Hazemeyer PS (TCP/IP Modbus)
+    parameters:
+      NAME:
+        type: id
+        description: Device Suffix
+      P:
+        type: str
+        description: Device Prefix
+      IP:
+        type: str
+        description: IP address of the Power Supply
+        default: 192.168.0.117
+      TCPPORT:
+        type: int
+        description: TCP port of the Power Supply
+        default: 502
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{NAME}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 1)
+          modbusInterposeConfig("{{NAME}}_ASYN", 0, 0, 0)
+
+
+
   - name: ps
     description: |-
       This will create an instance of CAENELS FASTPS
@@ -83,3 +109,54 @@ entity_models:
           TIMEOUT: '2000'
 
     
+
+  - name: ps_iocast
+    description: |-
+      This will create an instance of IOCAST PS
+    parameters:
+      serctrl:
+        type: object
+        description: |-
+          Serial controller
+      R:
+        type: str
+        description: Device Suffix
+      # VMAX:
+      #   type: int
+      #   description: |-
+      #     Voltage MAX
+      #   default: 0
+      # IMAX:
+      #   type: int
+      #   description: |-
+      #     Current MAX
+      #   default: 0
+      ID:
+        type: int
+        description: |-
+          ID of the Power Supply
+        default: 0
+      POLL:
+        type: int
+        description: |-
+          Polling time in ms
+        default: 1000
+
+    pre_init:
+      - value: |
+          ## Read holding registers (0–37)
+          drvModbusAsynConfigure("{{R}}_PORT_RAO", "{{serctrl.NAME}}_ASYN", {{ID}}, 3, 0, 37, 0, {{POLL}}, "HAZEMEYER")
+          ## Write holding registers (0–7)
+          drvModbusAsynConfigure("{{R}}_PORT_WAO", "{{serctrl.NAME}}_ASYN", {{ID}}, 6, 0, 7, 0, 500, "HAZEMEYER")
+
+
+    databases:
+      - file: hz_iocast.db
+        args:
+          P: '{{serctrl.P}}'
+          R: '{{R}}'
+          PORT: '{{R}}_PORT_RAO'
+          WPORT: '{{R}}_PORT_WAO'
+          # IMAX: '{{IMAX}}'
+          # VMAX: '{{VMAX}}'
+          TIMEOUT: '{{TIMEOUT}}'
