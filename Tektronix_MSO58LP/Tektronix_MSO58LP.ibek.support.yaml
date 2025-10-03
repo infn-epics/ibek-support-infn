@@ -99,10 +99,10 @@ entity_models:
         description: |-
           samples
 
-      sensibility:
+      coeff:
         type: float
         description: |-
-          Sensibility of the channel, default 1.0
+          Coefficied for pC
         default: 1.0
       rate:
         type: enum
@@ -127,5 +127,5 @@ entity_models:
           CHANAME: '{{name}}'
           SCANTIME: '{{rate}}'
           NELM: '{{samples}}'
-          SENSIBILITY: '{{sensibility}}'
+          COEFF: '{{coeff}}'
           PORT: '{{ctrl.name}}_ASYN'
