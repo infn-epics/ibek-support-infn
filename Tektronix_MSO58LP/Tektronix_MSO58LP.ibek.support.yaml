@@ -129,3 +129,51 @@ entity_models:
           NELM: '{{samples}}'
           COEFF: '{{coeff}}'
           PORT: '{{ctrl.name}}_ASYN'
+
+  - name: measurement
+    description: |-
+      add a measurement
+    parameters:
+      ctrl:
+        type: object
+        description: |-
+          a reference to the main
+      name:
+        type: str
+        description: |-
+          channel name
+        
+      channel:
+        type: int
+        description: |-
+          measurement index
+      
+      coeff:
+        type: float
+        description: |-
+          Coefficied for pC
+        default: 1.0
+      rate:
+        type: enum
+        description: |-
+          Specified scan rate for channel
+        values:
+          .1 second:
+          1 second:
+          10 second:
+          5 second:
+          Passive:
+          2 second:
+          .2 second:
+          .5 second:
+        default: .1 second
+        
+    databases:
+      - file: "measurevalue.template"
+        args:
+          P: '{{ctrl.P}}'
+          CHANNEL: '{{channel}}'
+          CHANAME: '{{name}}'
+          SCANTIME: '{{rate}}'
+          COEFF: '{{coeff}}'
+          PORT: '{{ctrl.name}}_ASYN'
