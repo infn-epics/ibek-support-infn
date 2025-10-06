@@ -153,6 +153,11 @@ entity_models:
         description: |-
           Coefficied for pC
         default: 1.0
+      EGU:
+        type: str
+        description: |-
+          Engineering Unit
+        default: pC
       rate:
         type: enum
         description: |-
@@ -176,4 +181,5 @@ entity_models:
           CHANAME: '{{name}}'
           SCANTIME: '{{rate}}'
           COEFF: '{{coeff}}'
+          EGU: '{{EGU}}'
           PORT: '{{ctrl.name}}_ASYN'
