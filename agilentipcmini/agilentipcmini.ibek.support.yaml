@@ -68,7 +68,14 @@ entity_models:
         type: str
         description: |-
           pump name
-        
+      
+      interlock:
+        type: int
+        description: |-
+          Enable interlock input
+          0: interlock disabled
+          1: interlock enabled
+        default: 0
       channel:
         type: int
         description: |-
@@ -82,11 +89,12 @@ entity_models:
           DEVICE: '{{controller.P}}:{{name}}'
           PORT: '{{controller.name}}_ASYN'
           ADDR: "{{channel}}"
+          INTERLOCK_ENABLE: "{{interlock}}"
 
       - file: asynRecord.db
         args:
           P: '{{controller.P}}:{{name}}'
-          R: 'ASYNRECORD'
+          R: ':ASYNRECORD'
           PORT: '{{controller.name}}_ASYN'
           ADDR: "{{channel}}"
           IMAX: "100"
