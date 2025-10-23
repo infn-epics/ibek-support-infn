@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: ppt-modulator
+version: main
+organization: https://github.com/infn-epics/
+
+macro: PPT_MODULATOR
+
+dbds:
+  - ppt.dbd
+  - stream.dbd
+  - asyn.dbd
+  - drvAsynIPPort.dbd
+  - drvAsynSerialPort.dbd
+
+libs:
+  - stream
+  - asyn
+  - pptsup

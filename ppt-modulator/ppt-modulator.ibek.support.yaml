@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: ppt
+
+entity_models:
+  - name: PptModulatorController
+    description: |-
+      Create a PPT Modulator controller using StreamDevice over TCP/IP
+    parameters:
+      name:
+        type: id
+        description: |-
+          The name of the controller and its Asyn Port Name
+
+      P:
+        type: str
+        description: |-
+          Device PV Prefix
+
+      R:
+        type: str
+        description: |-
+          Device PV Suffix
+        default: ""
+
+      IP:
+        type: str
+        description: |-
+          IP address of the PPT Modulator
+        default: 127.0.0.1
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port of the PPT Modulator
+        default: 2000
+
+      PRIORITY:
+        type: int
+        description: |-
+          Asyn priority
+        default: 0
+
+      NOAUTOCONNECT:
+        type: int
+        description: |-
+          Asyn auto connect
+          0: Auto connection
+          1: No auto connection
+        default: 0
+
+      NOPROCESSEOS:
+        type: int
+        description: |-
+          Asyn noProcessEos
+          0: Process EOS
+          1: Do not process EOS
+        default: 0
+
+    pre_init:
+      - value: |
+          # Configure asyn port for TCP/IP communication
+          drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", {{PRIORITY}}, {{NOAUTOCONNECT}}, {{NOPROCESSEOS}})
+          # Set the stream protocol path
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(PPT_MODULATOR)/db")
+
+    databases:
+      - file: $(PPT_MODULATOR)/pptApp/Db/ppt.template
+        args:
+          P: '{{P}}'
+          R: '{{R}}'
+          PORT: '{{name}}'
+      - file: $(PPT_MODULATOR)/pptApp/Db/ppt_control.template
+        args:
+          P: '{{P}}'
+          R: '{{R}}'
+          PORT: '{{name}}'
