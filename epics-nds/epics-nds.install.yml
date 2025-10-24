@@ -5,7 +5,8 @@ module: epics-nds
 # a release tag.
 # I did not use main because that will mean rebuilding the container is not
 # deterministic.
-version: 842f89796c6fb75122b372bf5efada989f9139ac
+#version: 842f89796c6fb75122b372bf5efada989f9139ac
+version: 7.0.9
 
 dbds:
   - nds.dbd
@@ -20,9 +21,11 @@ apt_developer:
   - libboost-dev
   - libcurl4-gnutls-dev
   - libboost-filesystem-dev
+  - libloki-dev
 
 # TODO - probably do not need dev packages at runtime!
 apt_runtime:
+
   - libboost-dev
   - libcurl4-gnutls-dev
   - libboost-filesystem-dev
