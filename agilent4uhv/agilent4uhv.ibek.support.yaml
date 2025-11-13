@@ -92,6 +92,13 @@ entity_models:
         description: |-
           pump name
 
+      interlock:
+        type: int
+        description: |-
+          Enable interlock input
+          0: interlock disabled
+          1: interlock enabled
+          
       channel:
         type: int
         description: |-
