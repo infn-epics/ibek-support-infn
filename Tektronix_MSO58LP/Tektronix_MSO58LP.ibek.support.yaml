@@ -148,6 +148,12 @@ entity_models:
         description: |-
           measurement index
       
+      ENABLEPV:
+        type: str
+        description: |-
+          PV to enable the measurement (1=enable, 0=disable)
+        default: "1"
+
       coeff:
         type: float
         description: |-
@@ -182,4 +188,5 @@ entity_models:
           SCANTIME: '{{rate}}'
           COEFF: '{{coeff}}'
           EGU: '{{EGU}}'
+          ENABLEPV: '{{ENABLEPV}}'
           PORT: '{{ctrl.name}}_ASYN'
