@@ -1,0 +1,99 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: ocem
+
+entity_models:
+
+  # ---------------------------------------------------------------------
+  # GROUP ENTITY — inizializzazione cumulativa del driver
+  # ---------------------------------------------------------------------
+  - name: E642Group
+    description: |-
+      Controller for an OCEM E642 chain of slaves.
+
+    parameters:
+      P:
+        type: str
+        description: Device prefix
+
+      NAME:
+        type: str
+        description: Logical name of this E642 controller
+
+      IP:
+        type: str
+        description: Controller IP address
+
+      TCPPORT:
+        type: int
+        description: Controller IP port
+        default: 502
+
+      SLAVELIST:
+        type: str
+        description: "Comma-separated list of slave IDs"
+
+      NUMSLAVES:
+        type: int
+        description: "Number of slaves"
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{NAME}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
+          ocemInit "{{NAME}}_ASYN",{{NUMSLAVES}},{{SLAVELIST}}
+
+    # Nessun database qui (solo init)
+    databases: []
+
+
+  # ---------------------------------------------------------------------
+  # SLAVE ENTITY — uno per ogni canale
+  # ---------------------------------------------------------------------
+  - name: E642
+    description: |-
+      Single OCEM E642 slave channel.
+
+    parameters:
+      P:
+        type: str
+        description: Device prefix
+
+      R:
+        type: str
+        description: "Geographical/logical name of the slave"
+
+      NAME:
+        type: str
+        description: "Must match the controller NAME for ASYN port"
+
+      ADDR:
+        type: int
+        description: "Slave ID"
+
+      IMAX:
+        description: Max Current for this slave
+        type: int
+        default: 280
+
+      VMAX:
+        description: Max Voltage for this slave
+        type: int
+        default: 40
+
+    databases:
+      - file: OCEM_E642.db
+        args:
+          P:
+          R:
+          ADDR:
+          IMAX:
+          VMAX:
+
+      - file: unimag-ocem.db
+        args:
+          P:
+          R:
+          
+
+
+  
