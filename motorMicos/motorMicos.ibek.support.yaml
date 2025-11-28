@@ -75,9 +75,9 @@ entity_models:
       NOPRECESSESOS:
         type: int
         description: |-
-          ASYN   noProcessEos, Default : 0
+          ASYN   noProcessEos, Default : 1
           https://epics.anl.gov/tech-talk/2020/msg01705.php
-        default: 0
+        default: 1
 
       numAxes:
         type: int
@@ -89,12 +89,23 @@ entity_models:
         description: |-
           Map to physical addresses
 
+      movingPollPeriod:
+        type: int
+        description: |-
+          The time between polls when any axis is moving
+        default: 100
+      idlePollPeriod:
+        type: int
+        description: |-
+          The time between polls when no axis is moving
+        default: 500
+
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
-          SMCpolluxCreateController("pollux_{{controllerName}}", "{{controllerName}}_ASYN", "{{numAxes}}", 100, 500,"{{mapAxes}}") 
+          SMCpolluxCreateController("pollux_{{controllerName}}", "{{controllerName}}_ASYN", "{{numAxes}}", {{movingPollPeriod}}, {{idlePollPeriod}},"{{mapAxes}}") 
 
-
+  # DIR=Pos,DESC=M0,EGU=degrees,VMAX=5.,VELO=3.,VBAS=.5,ACCL=.5,BDST=0,BVEL=1.0,BACC=2,MRES=001,PREC=2,DHLM=12,DLLM=
   - name: axis
     description: |-
       Creates a motor axis
@@ -135,7 +146,7 @@ entity_models:
         type: int
         description: |-
           Velocity
-        default: 1
+        default: 3
 
       home:
         type: int
@@ -161,18 +172,18 @@ entity_models:
         type: str
         description: |-
           Engineering Units
-        default: mm
+        default: "mm"
       VBAS:
         type: float
         description: |-
           Base Velocity (EGU/s)
-        default: 0.2
+        default: 0.5
 
       ACCL:
         type: float
         description: |-
           Seconds to Velocity
-        default: 0.2
+        default: 0.5
 
       BDST:
         type: int
@@ -184,25 +195,25 @@ entity_models:
         type: float
         description: |-
           BL Velocity (EGU/s)
-        default: 0.5
+        default: 1
 
       BACC:
         type: float
         description: |-
           BL Seconds to Veloc.
-        default: 0.2
+        default: 2
 
       MRES:
         type: float
         description: |-
           Motor Step Size (EGU)
-        default: 0.00001
+        default: 1
 
       PREC:
         type: int
         description: |-
           Display precision (EGU)
-        default: 6
+        default: 2
 
     
     databases:
