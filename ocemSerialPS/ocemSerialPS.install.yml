@@ -13,10 +13,12 @@ version: main
 
 dbds:
   - asyn.dbd
+  - OCEM_E642Support.dbd   # il DBD generato dalla tua libreria
 
 
 libs:
   - asyn
+  - OCEM_E642
 
  
 

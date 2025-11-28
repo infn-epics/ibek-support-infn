@@ -40,7 +40,7 @@ entity_models:
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{NAME}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
-          ocemInit "{{NAME}}_ASYN",{{NUMSLAVES}},{{SLAVELIST}}
+          ocemInit "{{NAME}}_ASYN",{{NUMSLAVES}},"{{SLAVELIST}}"
 
     # Nessun database qui (solo init)
     databases: []
@@ -89,7 +89,7 @@ entity_models:
           IMAX:
           VMAX:
 
-      - file: unimag-ocem.db
+      - file: unimag-ocemE642.db
         args:
           P:
           R:
