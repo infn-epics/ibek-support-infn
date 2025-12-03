@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
 
-module: plc-eli
+module: plc-elinp
 version: main
 organization: https://github.com/infn-epics/
 
