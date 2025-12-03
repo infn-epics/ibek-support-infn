@@ -1,0 +1,120 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: plc-eli
+
+entity_models:
+  - name: PLCMagnets
+    description: |-
+      Create a PLC controller for ELI-NP magnets using Modbus TCP/IP
+      This controls solenoids, correctors, quadrupoles, and dipole
+    parameters:
+      name:
+        type: id
+        description: |-
+          The PLC identifier (e.g., "MAG")
+
+      P:
+        type: str
+        description: |-
+          Device PV Prefix (e.g., "ELIPLC:MAG:")
+
+      IP:
+        type: str
+        description: |-
+          IP address of the PLC
+        default: "10.16.4.170"
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port of the Modbus interface
+        default: 502
+
+      SLAVE_ADDR:
+        type: int
+        description: |-
+          Modbus slave address
+        default: 1
+
+      POLLING:
+        type: int
+        description: |-
+          Polling time in ms
+        default: 1000
+
+    pre_init:
+      - value: |
+          #############################################################################
+          # PLC Magnets {{name}} - Modbus TCP Configuration
+          #############################################################################
+          
+          ## TCP/IP port configuration
+          drvAsynIPPortConfigure("PLCMAG_{{name}}_IP", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+          modbusInterposeConfig("PLCMAG_{{name}}_IP", 0, 0, 0)
+          
+          ## Modbus port reading registers 0-9 (Function 3 - Read Holding Registers)
+          drvModbusAsynConfigure("PLCMAG_{{name}}_IO", "PLCMAG_{{name}}_IP", {{SLAVE_ADDR}}, 3, 0, 10, 0, {{POLLING}}, "PLCMAG_{{name}}")
+
+    databases:
+      - file: $(PLCELI)/db/plcelimag.template
+        args:
+          PORT: 'PLCMAG_{{name}}_IO'
+          P: '{{P}}'
+
+  - name: PLCVacuum
+    description: |-
+      Create a PLC controller for ELI-NP vacuum system using Modbus TCP/IP
+      This controls vacuum gauges, pneumatic valves, fast valve, and MPS
+    parameters:
+      name:
+        type: id
+        description: |-
+          The PLC identifier (e.g., "VAC")
+
+      P:
+        type: str
+        description: |-
+          Device PV Prefix (e.g., "ELIPLC:VAC:")
+
+      IP:
+        type: str
+        description: |-
+          IP address of the PLC
+        default: "10.16.4.171"
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port of the Modbus interface
+        default: 502
+
+      SLAVE_ADDR:
+        type: int
+        description: |-
+          Modbus slave address
+        default: 1
+
+      POLLING:
+        type: int
+        description: |-
+          Polling time in ms
+        default: 1000
+
+    pre_init:
+      - value: |
+          #############################################################################
+          # PLC Vacuum {{name}} - Modbus TCP Configuration
+          #############################################################################
+          
+          ## TCP/IP port configuration
+          drvAsynIPPortConfigure("PLCVAC_{{name}}_IP", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+          modbusInterposeConfig("PLCVAC_{{name}}_IP", 0, 0, 0)
+          
+          ## Modbus port reading registers 0-9 (Function 3 - Read Holding Registers)
+          drvModbusAsynConfigure("PLCVAC_{{name}}_IO", "PLCVAC_{{name}}_IP", {{SLAVE_ADDR}}, 3, 0, 10, 0, {{POLLING}}, "PLCVAC_{{name}}")
+
+    databases:
+      - file: $(PLCELI)/db/plcelivac.template
+        args:
+          PORT: 'PLCVAC_{{name}}_IO'
+          P: '{{P}}'
