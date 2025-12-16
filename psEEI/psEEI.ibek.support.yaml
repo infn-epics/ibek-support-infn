@@ -1,0 +1,81 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: EEI
+
+entity_models:
+  - name: ps
+    description: |-
+      This will create a TCP/IP Modbus connection for EEI Power Supply
+    parameters:
+      
+      P:
+        type: str
+        description: Device Prefix
+      R:
+        type: str
+        description: PS name
+      IP:
+        type: str
+        description: IP address of the Power Supply
+        default: 192.168.190.153
+      TCPPORT:
+        type: int
+        description: TCP port of the Power Supply
+        default: 502
+      SLAVE_ID:
+        type: int
+        description: |-
+          Modbus Slave ID
+        default: 1
+      RPOLL:
+        type: int
+        description: |-
+          Read Polling time in ms
+        default: 1000
+      WPOLL:
+        type: int
+        description: |-
+          Write Polling time in ms (0 = on demand)
+        default: 0
+      TIMEOUT:
+        type: int
+        description: |-
+          Modbus timeout in ms
+        default: 1000
+      MAX_CURR:
+        type: int
+        description: |-
+          Maximum current in mA
+        default: 330000
+      MIN_CURR:
+        type: int
+        description: |-
+          Minimum current in mA
+        default: -330000
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{IP}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+          modbusInterposeConfig("{{IP}}_ASYN", 0, 0, 0)
+          ## EEI PS {{R}} - Read holding registers (Function Code 3)
+          ## Start at register 40001 (Modbus address 0), read 45 registers
+          drvModbusAsynConfigure("{{R}}_PORT_RD", "{{IP}}_ASYN", {{SLAVE_ID}}, 3, 0, 45, 0, {{RPOLL}}, "EEI")
+          
+          ### EEI PS {{R}} - Write holding registers (Function Code 16)
+          ### Start at register 40001 (Modbus address 0), write to 45 registers
+          drvModbusAsynConfigure("{{R}}_PORT_WR", "{{IP}}_ASYN", {{SLAVE_ID}}, 16, 0, 45, 0, {{WPOLL}}, "EEI")
+    databases:
+      - file: eei_ps.template
+        args:
+          P: '{{P}}:{{R}}'
+          PORT: '{{R}}_PORT_RD'
+          PORT_WR: '{{R}}_PORT_WR'
+          TIMEOUT: '{{TIMEOUT}}'
+          MAX_CURR: '{{MAX_CURR}}'
+      
+      - file: eei_ps_unimag.template
+        args:
+          P: '{{P}}:{{R}}'
+          MAX_CURR: '{{MAX_CURR}}'
+          MIN_CURR: '{{MIN_CURR}}'
+
+
