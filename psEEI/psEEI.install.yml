@@ -6,10 +6,17 @@ organization: https://github.com/infn-epics/
 # TODO this should be a tag to make rebuilding the container deterministic
 version: main
 
+dependencies:
+  - sequencer
+
 dbds:
   - asyn.dbd
   - modbusSupport.dbd
+  - psmodbusEEISupport.dbd
 
 libs:
   - asyn
   - modbus
+  - seq
+  - pv
+  - psmodbusEEISupport
