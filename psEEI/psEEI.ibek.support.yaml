@@ -77,5 +77,8 @@ entity_models:
           P: '{{P}}:{{R}}'
           MAX_CURR: '{{MAX_CURR}}'
           MIN_CURR: '{{MIN_CURR}}'
-
+    
+    post_init: 
+      - value: |
+          seq unimagControl, "P={{P}}:{{R}}"
 
