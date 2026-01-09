@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: maccaferriPS
+organization: https://github.com/infn-epics/
+
+# TODO this should be a tag to make rebuilding the container deterministic
+version: main
+
+dependencies:
+  - sequencer
+
+dbds:
+  - asyn.dbd
+  - modbusSupport.dbd
+  - maccaferriPSSupport.dbd
+
+libs:
+  - asyn
+  - modbus
+  - seq
+  - pv
+  - maccaferriPSSupport

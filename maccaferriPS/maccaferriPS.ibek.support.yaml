@@ -1,0 +1,84 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: maccaferriPS
+
+entity_models:
+  - name: ps
+    description: |-
+      This will create a Modbus RTU over TCP connection for Maccaferri Power Supply
+    parameters:
+      
+      P:
+        type: str
+        description: Device Prefix
+      R:
+        type: str
+        description: PS name
+      server:
+        type: str
+        description: IP address of the Modbus TCP gateway
+        default: 127.0.0.1
+      port:
+        type: int
+        description: TCP port of the Modbus TCP gateway
+        default: 502
+      slave_id:
+        type: int
+        description: Modbus Slave ID
+        default: 1
+      timeout:
+        type: int
+        description: Modbus timeout in ms
+        default: 2000
+      fast_poll:
+        type: int
+        description: Fast readback poll interval (ms) for current/voltage
+        default: 40
+      slow_poll:
+        type: int
+        description: Slow readback poll interval (ms) for faults/states
+        default: 1000
+      max_curr:
+        type: int
+        description: Maximum current in A
+        default: 330
+      min_curr:
+        type: int
+        description: Minimum current in A
+        default: 0
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{server}}_{{R}}_ASYN", "{{server}}:{{port}}", 0, 0, 1)
+          modbusInterposeConfig("{{server}}_{{R}}_ASYN", 1, {{timeout}}, 10)
+          
+          ## Maccaferri PS {{R}} - Read Holding Registers for COMMAND AREA (0x0000..0x0001)
+          drvModbusAsynConfigure("{{R}}_CMD_RO", "{{server}}_{{R}}_ASYN", {{slave_id}}, 3, 0, 2, 0, {{slow_poll}}, "MACCAFERRI_{{R}}")
+          
+          ## Maccaferri PS {{R}} - Write Holding Registers for COMMAND AREA
+          drvModbusAsynConfigure("{{R}}_CMD_WO", "{{server}}_{{R}}_ASYN", {{slave_id}}, 16, 0, 2, 0, 0, "MACCAFERRI_{{R}}")
+          
+          ## Maccaferri PS {{R}} - FAST readback for Current/Voltage/Reference (0x0023..0x0026)
+          drvModbusAsynConfigure("{{R}}_FAST_AI", "{{server}}_{{R}}_ASYN", {{slave_id}}, 3, 35, 4, 0, {{fast_poll}}, "MACCAFERRI_{{R}}")
+          
+          ## Maccaferri PS {{R}} - SLOW readback for Faults/States (0x0020..0x0022)
+          drvModbusAsynConfigure("{{R}}_SLOW_AI", "{{server}}_{{R}}_ASYN", {{slave_id}}, 3, 32, 3, 0, {{slow_poll}}, "MACCAFERRI_{{R}}")
+    databases:
+      - file: maccaferriPS_main.template
+        args:
+          P: '{{P}}'
+          R: '{{R}}'
+          PORT_CMD_RO: '{{R}}_CMD_RO'
+          PORT_CMD_WO: '{{R}}_CMD_WO'
+          PORTFAST: '{{R}}_FAST_AI'
+          PORTSLOW: '{{R}}_SLOW_AI'
+          TIMEOUT: '{{timeout}}'
+      
+      - file: maccaferriPS_unimag.template
+        args:
+          P: '{{P}}:{{R}}'
+          MAX_CURR: '{{max_curr}}'
+          MIN_CURR: '{{min_curr}}'
+    
+    post_init: 
+      - value: |
+          seq maccaferriControl, "P={{P}}:{{R}}"
