@@ -1,0 +1,86 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: danfysik
+
+entity_models:
+  - name: tcp
+    description: |-
+      TCP/IP moxa connection for Danfysik SYS8X00 power supply
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Asyn port name
+      IP:
+        type: str
+        description: |-
+          IP address of the power supply
+      PORT:
+        type: int
+        description: |-
+          TCP port number
+        default: 4001
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{NAME}}", "{{IP}}:{{PORT}}", 0, 0, 0)
+
+  - name: ps
+    description: |-
+      Danfysik SYS8X00 power supply instance
+    parameters:
+      NAME:
+        type: id
+        description: Device suffix
+      P:
+        type: str
+        description: Device prefix
+      PORT:
+        type: str
+        description: Asyn port name
+      ADDR:
+        type: int
+        description: Power supply address (0-63)
+        default: 1
+      IMAX:
+        type: float
+        description: Maximum current in Amperes
+        default: 100.0
+      VMAX:
+        type: float
+        description: Maximum voltage in Volts
+        default: 25.0
+      PREC:
+        type: int
+        description: Precision for display
+        default: 3
+      unimag_enable:
+        type: bool
+        description: Enable UNIMAG sequencer for bipolar operation
+        default: true
+      debug:
+        type: int
+        description: Debug level for UNIMAG sequencer
+        default: 1
+
+    databases:
+      - file: danfysik.template
+        args:
+          DEVICE: '{{P}}'
+          PORT: '{{PORT}}'
+          ADDR: '{{ADDR}}'
+          IMAX: '{{IMAX}}'
+          VMAX: '{{VMAX}}'
+          PREC: '{{PREC}}'
+      - file: danfysik_unimag.template
+        args:
+          DEVICE: '{{P}}'
+          IMAX: '{{IMAX}}'
+        enabled: '{{unimag_enable}}'
+
+    post_init:
+      - type: text
+        when: '{{unimag_enable}}'
+        value: |
+          seq danfysikUnimagControl, "device={{P}}, debug={{debug}}"
+  

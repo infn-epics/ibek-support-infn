@@ -80,5 +80,5 @@ entity_models:
     
     post_init: 
       - value: |
-          seq unimagControl, "P={{P}}:{{R}}"
+          seq unimagEEIControl, "P={{P}}:{{R}}"
 
