@@ -37,12 +37,12 @@ entity_models:
       IDLE_POLL_S:
         type: float
         description: "Polling interval when no commands active (seconds)"
-        default: 1.0
+        default: 0.05
 
       ACTIVE_POLL_S:
         type: float
         description: "Polling interval when commands are being processed (seconds)"
-        default: 0.1
+        default: 0.01
 
       ACTIVE_TIMEOUT_S:
         type: float
@@ -103,12 +103,12 @@ entity_models:
       SET_TOLERANCE:
         description: "Tolerance for current setpoint verification (Amperes)"
         type: float
-        default: 1.0
+        default: 1.5
 
       ZERO_TOLERANCE:
         description: "Tolerance for zero current check (Amperes)"
         type: float
-        default: 1.0
+        default: 2.0
 
       SET_TIMEOUT_S:
         description: "Timeout for reaching setpoint (seconds)"
@@ -116,14 +116,14 @@ entity_models:
         default: 10.0
 
       CURRENT_THRESHOLD:
-        description: "Current threshold for unsolicited messages (A). -1 = auto (5% of IMAX)"
+        description: "Current threshold for unsolicited messages (A)."
         type: float
-        default: -1
+        default: 1
 
       VOLTAGE_THRESHOLD:
-        description: "Voltage threshold for unsolicited messages (V). -1 = auto (5% of VMAX)"
+        description: "Voltage threshold for unsolicited messages (V). "
         type: float
-        default: -1
+        default: 5
 
       FORCE_STATE_QUERY_S:
         description: "Forced SL query interval (0=disabled, default 60s)"
