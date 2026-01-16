@@ -34,15 +34,25 @@ entity_models:
         type: str
         description: "Comma-separated list of slave IDs"
 
+      INIT_TIMEOUT_S:
+        type: float
+        description: "Timeout for each PS init before retry (seconds)"
+        default: 5.0
+
+      INIT_MAX_RETRIES:
+        type: int
+        description: "Max retries before marking PS failed"
+        default: 3
+
       IDLE_POLL_S:
         type: float
         description: "Polling interval when no commands active (seconds)"
-        default: 0.05
+        default: 0.2
 
       ACTIVE_POLL_S:
         type: float
         description: "Polling interval when commands are being processed (seconds)"
-        default: 0.01
+        default: 0.1
 
       ACTIVE_TIMEOUT_S:
         type: float
@@ -58,6 +68,7 @@ entity_models:
       - value: |
           drvAsynIPPortConfigure("{{NAME}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
           ocemInit "{{NAME}}_ASYN","{{SLAVELIST}}"
+          ocemSetInitParams {{INIT_TIMEOUT_S}}, {{INIT_MAX_RETRIES}}
           ocemSetPollingRates {{IDLE_POLL_S}}, {{ACTIVE_POLL_S}}, {{ACTIVE_TIMEOUT_S}}
           ocemSetDebug {{DEBUG_LEVEL}}
 
@@ -103,37 +114,52 @@ entity_models:
       SET_TOLERANCE:
         description: "Tolerance for current setpoint verification (Amperes)"
         type: float
-        default: 1.5
+        default: 1.8
 
       ZERO_TOLERANCE:
         description: "Tolerance for zero current check (Amperes)"
         type: float
-        default: 2.0
+        default: 1.8
 
       SET_TIMEOUT_S:
         description: "Timeout for reaching setpoint (seconds)"
         type: float
-        default: 10.0
+        default: 60.0
+
+      INIT_TIMEOUT_S:
+        description: "Timeout before retrying PRG initialization (seconds)"
+        type: float
+        default: 60.0
 
       CURRENT_THRESHOLD:
-        description: "Current threshold for unsolicited messages (A)."
+        description: "Current threshold for unsolicited messages (A). "
         type: float
-        default: 1
+        default: 99999
 
       VOLTAGE_THRESHOLD:
-        description: "Voltage threshold for unsolicited messages (V). "
+        description: "Voltage threshold for unsolicited messages (V)."
         type: float
-        default: 5
+        default: 999
 
-      FORCE_STATE_QUERY_S:
-        description: "Forced SL query interval (0=disabled, default 60s)"
-        type: float
-        default: 60
+      POLL_STATE:
+        description: "Enable periodic SL (state) polling: 0=disabled, 1=enabled"
+        type: int
+        default: 1
 
-      FORCE_OPERATING_QUERY_S:
-        description: "Forced SA query interval (0=disabled, default 60s)"
+      POLL_STATE_INTERVAL:
+        description: "SL polling interval (seconds)"
         type: float
-        default: 60
+        default: 1.0
+
+      POLL_ANALOG:
+        description: "Enable periodic SA (analog) polling: 0=disabled, 1=enabled"
+        type: int
+        default: 1
+
+      POLL_ANALOG_INTERVAL:
+        description: "SA polling interval (seconds)"
+        type: float
+        default: 0.5
 
     databases:
       - file: OCEM_E642.db
@@ -146,10 +172,13 @@ entity_models:
           SET_TOLERANCE:
           ZERO_TOLERANCE:
           SET_TIMEOUT_S:
+          INIT_TIMEOUT_S:
           CURRENT_THRESHOLD:
           VOLTAGE_THRESHOLD:
-          FORCE_STATE_QUERY_S:
-          FORCE_OPERATING_QUERY_S:
+          POLL_STATE:
+          POLL_STATE_INTERVAL:
+          POLL_ANALOG:
+          POLL_ANALOG_INTERVAL:
 
 
   
