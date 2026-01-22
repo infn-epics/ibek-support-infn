@@ -57,6 +57,18 @@ entity_models:
           1: Do not process EOS
         default: 0
 
+      HVMAX:
+        type: int
+        description: |-
+          Maximum operational HV voltage in kV
+        default: 37
+
+      RETRY_DELAY:
+        type: float
+        description: |-
+          Time in seconds between command retries for the auto sequencer
+        default: 5.0
+
     pre_init:
       - value: |
           # Configure asyn port for TCP/IP communication
@@ -75,3 +87,13 @@ entity_models:
           P: '{{P}}'
           R: '{{R}}'
           PORT: '{{name}}'
+          HVMAX: '{{HVMAX}}'
+      - file: $(PPT_MODULATOR)/pptApp/Db/ppt_autoseq.template
+        args:
+          P: '{{P}}'
+          R: '{{R}}'
+
+    post_init:
+      - value: |
+          # Start the auto sequencer program
+          seq pptAutoSeq, "P={{P}},R={{R}},RETRY_DELAY={{RETRY_DELAY}}"
