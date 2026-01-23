@@ -100,10 +100,16 @@ entity_models:
           The time between polls when no axis is moving
         default: 500
 
+      debug:
+        type: int
+        description: |-
+          Debug level: 0=off, 1=errors, 2=status every 5s, 3=commands, 4=verbose
+        default: 0
+
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
-          SMCpolluxCreateController("pollux_{{controllerName}}", "{{controllerName}}_ASYN", "{{numAxes}}", {{movingPollPeriod}}, {{idlePollPeriod}},"{{mapAxes}}") 
+          SMCpolluxCreateController("pollux_{{controllerName}}", "{{controllerName}}_ASYN", "{{numAxes}}", {{movingPollPeriod}}, {{idlePollPeriod}},"{{mapAxes}}", {{debug}}) 
 
   # DIR=Pos,DESC=M0,EGU=degrees,VMAX=5.,VELO=3.,VBAS=.5,ACCL=.5,BDST=0,BVEL=1.0,BACC=2,MRES=001,PREC=2,DHLM=12,DLLM=
   - name: axis
