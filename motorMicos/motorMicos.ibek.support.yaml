@@ -134,13 +134,13 @@ entity_models:
         type: int
         description: |-
           The low limit of the axis
-        default: -5
+        default: 0
 
       DHLM:
         type: int
         description: |-
           The high limit of the axis
-        default: 25
+        default: 0
 
       VELO:
         type: int
