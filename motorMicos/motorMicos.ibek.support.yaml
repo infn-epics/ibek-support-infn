@@ -153,11 +153,6 @@ entity_models:
         description: |-
           The home position of the axis (in counts)
 
-      start:
-        type: int
-        description: |-
-          The starting position of the axis (in counts)
-        default: 0
 
       DIR:
         type: enum
