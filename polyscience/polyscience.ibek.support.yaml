@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+# Polyscience Programmable Chiller Support
+# Connection: Ethernet-to-Serial converter (transparent mode)
+# Protocol: Serial ASCII over TCP
+
+module: polyscience
+
+entity_models:
+  - name: CreateCtrl
+    description: |-
+      Create a Polyscience chiller controller
+    parameters:
+      name:
+        type: id
+        description: |-
+          The name of the controller and its Asyn Port Name
+
+      P:
+        type: str
+        description: |-
+          Device PV Prefix
+
+      IP:
+        type: str
+        description: |-
+          IP address of the ethernet2serial
+        default: 127.0.0.1
+
+      TCPPORT:
+        type: int
+        description: |-
+          Port of the ethernet2serial
+        default: 4001
+
+      ASYNPRIO:
+        type: int
+        description: |-
+          ASYN PRIORITY, Default : 0
+        default: 0
+
+      AUTOCONNECT:
+        type: int
+        description: |-
+          Asyn auto connect
+          0: Auto connection
+          1: no Auto connection
+        default: 0
+
+      NOPROCESSEOS:
+        type: int
+        description: |-
+          ASYN noProcessEos, Default : 0
+          https://epics.anl.gov/tech-talk/2020/msg01705.php
+        default: 0
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPROCESSEOS}})
+          # Set terminators for Polyscience protocol (CR only)
+          asynOctetSetInputEos("{{name}}_ASYN", 0, "\r")
+          asynOctetSetOutputEos("{{name}}_ASYN", 0, "\r")
+          ## Set protocol path
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
+
+    databases:
+      - file: polyscience.db
+        args:
+          P:
+          PORT: "{{name}}_ASYN"
+      - file: polyscience-compat.db
+        args:
+          P:
