@@ -3,6 +3,7 @@
 # Polyscience Programmable Chiller Support
 # Connection: Ethernet-to-Serial converter (transparent mode)
 # Protocol: Serial ASCII over TCP
+# Compatible with chillerSmc OPI via unicool-poly.db
 
 module: polyscience
 
@@ -57,7 +58,7 @@ entity_models:
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPROCESSEOS}})
-          # Set terminators for Polyscience protocol (CR only)
+          # Set terminators for Polyscience protocol (CR only, no LF)
           asynOctetSetInputEos("{{name}}_ASYN", 0, "\r")
           asynOctetSetOutputEos("{{name}}_ASYN", 0, "\r")
           ## Set protocol path
@@ -68,6 +69,6 @@ entity_models:
         args:
           P:
           PORT: "{{name}}_ASYN"
-      - file: polyscience-compat.db
+      - file: unicool-poly.db
         args:
           P:

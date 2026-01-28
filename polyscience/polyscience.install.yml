@@ -17,4 +17,8 @@ libs:
   - asyn
 
 protocol_files:
-  - iocBoot/polyscience-ioc/polyscience.proto
+  - polyscienceApp/Db/polyscience.proto
+
+db_files:
+  - polyscienceApp/Db/polyscience.db
+  - polyscienceApp/Db/unicool-poly.db
