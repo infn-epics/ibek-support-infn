@@ -65,6 +65,24 @@ entity_models:
           Test probe polling time in ms
         default: 10000
 
+      CCPS_V_SP_HOPR:
+        type: int
+        description: |-
+          CCPS voltage setpoint high operating range
+        default: 1500
+
+      IONPMP_HIGH:
+        type: int
+        description: |-
+          Ion pump HIGH alarm threshold
+        default: 8000
+
+      IONPMP_HIHI:
+        type: int
+        description: |-
+          Ion pump HIHI alarm threshold
+        default: 9000
+
     pre_init:
       - value: |
           #############################################################################
@@ -167,6 +185,9 @@ entity_models:
         args:
           RFMOD_ASYNPORT: 'RFMod_{{name}}'
           PREFIX: '{{P}}'
+          CCPS_V_SP_HOPR: '{{CCPS_V_SP_HOPR}}'
+          IONPMP_HIGH: '{{IONPMP_HIGH}}'
+          IONPMP_HIHI: '{{IONPMP_HIHI}}'
 
     post_init:
       - value: |
