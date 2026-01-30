@@ -6,7 +6,10 @@ entity_models:
   - name: RFModulator
     description: |-
       Create a Scandinova RF Modulator controller using Modbus TCP/IP
-      This uses the split-debug configuration with individual ports per register group
+      This uses the lite configuration which excludes optional registers not present on all hardware:
+      - Klystron RF monitoring (registers 820-826)
+      - CCPS cooling flow sensors (registers 900-906)
+      - Additional flow sensors (registers 908-912)
     parameters:
       name:
         type: id
@@ -53,18 +56,6 @@ entity_models:
           Watchdog write polling time in ms
         default: 800
 
-      SLOW_REGISTER_POLLING:
-        type: int
-        description: |-
-          Slow register polling time in ms (RF, Flow meters)
-        default: 5000
-
-      TEST_POLLING:
-        type: int
-        description: |-
-          Test probe polling time in ms
-        default: 10000
-
       CCPS_V_SP_HOPR:
         type: int
         description: |-
@@ -98,14 +89,20 @@ entity_models:
     pre_init:
       - value: |
           #############################################################################
-          # Scandinova RF Modulator {{name}} - Split Debug Configuration
+          # Scandinova RF Modulator {{name}} - Lite Configuration
+          # Excludes optional registers not present on all hardware:
+          # - Klystron RF monitoring (registers 820-826)
+          # - CCPS cooling flow sensors (registers 900-906)
+          # - Additional flow sensors (registers 908-912)
           #############################################################################
           epicsEnvSet("RFMOD_ASYNPORT", "RFMod_{{name}}")
           epicsEnvSet("RFMOD_MSGS", "SCN_RFMod_{{name}}")
+          epicsEnvSet("RFMOD_POLLING", "{{POLLING}}")
+          epicsEnvSet("RFMOD_WD_POLLING", "{{WD_POLLING}}")
           
           ## TCP/IP port
           drvAsynIPPortConfigure("RFMod_{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 1)
-          modbusInterposeConfig("RFMod_{{name}}", 0, 0, 1)
+          modbusInterposeConfig("RFMod_{{name}}", 0, 2000, 0)
           
           ## Core TCP/Status registers (Function 4 - Read Input Registers)
           drvModbusAsynConfigure("RFMod_{{name}}_TCP_PROT_ID",   "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 0,  1, 0, {{POLLING}}, "SCN_RFMod_{{name}}")
@@ -117,83 +114,67 @@ entity_models:
           drvModbusAsynConfigure("RFMod_{{name}}_TIME_REMAINING", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 6,  2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## Status / Protocol derived PVs
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_PLS_REPR_RB", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 8, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_PLS_REP_RATE", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 8, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## Setpoint readbacks
-          drvModbusAsynConfigure("RFMod_{{name}}_STATE_SR",               "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 20, 1, 4, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_CCPS_VOLT_SET_RB",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 21, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FILPS_CURR_SET_RB", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 23, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_PLS_WDTH_SET_RB",   "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 25, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          
-          ## Mirrored setpoint readbacks
-          drvModbusAsynConfigure("RFMod_{{name}}_CCPS_VOLT_SR",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 21, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_FILPS_CURR_SR", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 23, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_PLS_WDTH_SR",   "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 25, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_STATE_SR",       "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 20, 1, 4, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_CCPS_VOLT_SR",   "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 21, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_FILPS_CURR_SR",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 23, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_PLS_WDTH_SR",    "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 25, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## CCPS voltages
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_CCPS1_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 100, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_CCPS2_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 102, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_CCPS3_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 104, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_CCPS1_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 100, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_CCPS2_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 102, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_CCPS3_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 104, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## Filament PS
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FILPS_CURR", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 200, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FILPS_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 202, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_FILPS_CURR", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 200, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_FILPS_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 202, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## Ion pump
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_IONPS_R", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 300, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_IONPS_R", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 300, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## Solenoid PS
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_SOLPS_CURR", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 400, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_SOLPS_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 402, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_SOLPS_CURR", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 400, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_SOLPS_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 402, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## Pulse measurements
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_PLS_CURR", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 500, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_PLS_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 502, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_PLS_WDTH", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 504, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_PLS_CURR", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 500, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_PLS_VOLT", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 502, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_PLS_WDTH", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 504, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## Tank oil
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_TANK_TEMP",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 600, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_TANK_LEVEL", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 602, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_OIL_TEMP",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 600, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_OIL_LVL", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 602, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## Temperatures
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_CLL_IN_TEMP",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 700, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_CLL_OUT_TEMP", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 702, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_SOLPS_TEMP",   "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 704, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_KLY_OUT_TEMP", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 706, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_INLETTEMP",     "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 700, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_OUTLETTEMP",    "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 702, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_SOLPSTEMP",     "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 704, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_KLYBDRTNTEMP",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 706, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           
-          ## RF measurements (slow polling)
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_RF_FWD",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 820, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_RF_REFL", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 822, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_RF_VSWR", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 824, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_RF_PLEN", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 826, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          
-          ## Flows (slow polling)
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FLOW_CCPS1", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 900, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FLOW_CCPS2", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 902, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FLOW_CCPS3", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 904, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FLOW_CCPS4", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 906, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FLOW_BODY",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 908, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FLOW_CLL",   "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 910, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_FLOW_SOLPS", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 912, 2, 7, {{SLOW_REGISTER_POLLING}}, "SCN_RFMod_{{name}}")
-          
-          ## CCPS interlocks combined block (disabled - device rejects len>1)
-          drvModbusAsynConfigure("RFMod_{{name}}_CCPS_ILCKS", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 120, 3, 0, 0, "SCN_RFMod_{{name}}")
+          ## REMOVED: Klystron RF monitoring (registers 820-826) - not present on all hardware
+          ## REMOVED: CCPS cooling flow sensors (registers 900-906) - not present on all hardware
+          ## REMOVED: Body/Collector/Solenoid flow (registers 908-912) - not present on all hardware
           
           ## CCPS interlocks (split per register to avoid exception=3 on length>1)
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_CCPS1_ILCKS", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 120, 1, 0, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_CCPS2_ILCKS", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 121, 1, 0, {{POLLING}}, "SCN_RFMod_{{name}}")
-          drvModbusAsynConfigure("RFMod_{{name}}_READ_CCPS3_ILCKS", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 122, 1, 0, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_CCPS1_ILCKS", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 120, 1, 0, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_CCPS2_ILCKS", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 121, 1, 0, {{POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_CCPS3_ILCKS", "RFMod_{{name}}", {{SLAVE_ADDR}}, 4, 122, 1, 0, {{POLLING}}, "SCN_RFMod_{{name}}")
           
           ## Outputs (Function 6/16 - Write Holding Registers)
-          drvModbusAsynConfigure("RFMod_{{name}}_WD_SP",         "RFMod_{{name}}", {{SLAVE_ADDR}}, 6,  0,   1, 0, {{WD_WRITE_POLLING}}, "SCN_RFMod_{{name}}")
+          drvModbusAsynConfigure("RFMod_{{name}}_WD_SP",         "RFMod_{{name}}", {{SLAVE_ADDR}}, 6,  0,   1, 0, {{POLLING}}, "SCN_RFMod_{{name}}")
           drvModbusAsynConfigure("RFMod_{{name}}_STATE_SP",      "RFMod_{{name}}", {{SLAVE_ADDR}}, 6,  1,   1, 4, {{POLLING}}, "SCN_RFMod_{{name}}")
           drvModbusAsynConfigure("RFMod_{{name}}_CMD_SP",        "RFMod_{{name}}", {{SLAVE_ADDR}}, 6,  2,   1, 0, {{POLLING}}, "SCN_RFMod_{{name}}")
           drvModbusAsynConfigure("RFMod_{{name}}_CCPS_VOLT_SP",  "RFMod_{{name}}", {{SLAVE_ADDR}}, 16, 100, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           drvModbusAsynConfigure("RFMod_{{name}}_FILPS_CURR_SP", "RFMod_{{name}}", {{SLAVE_ADDR}}, 16, 200, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
           drvModbusAsynConfigure("RFMod_{{name}}_PLS_WDTH_SP",   "RFMod_{{name}}", {{SLAVE_ADDR}}, 16, 300, 2, 7, {{POLLING}}, "SCN_RFMod_{{name}}")
+          
+          ## Enable ASYN_TRACEIO_HEX on octet server
+          asynSetTraceIOMask("RFMod_{{name}}", 0, 4)
 
     databases:
-      - file: $(SCANDINOVA_RFMOD)/db/scandinova-rfmod-split-debug.db
+      - file: $(SCANDINOVA_RFMOD)/db/scandinova-rfmod-lite.db
         args:
           RFMOD_ASYNPORT: 'RFMod_{{name}}'
           PREFIX: '{{P}}'
