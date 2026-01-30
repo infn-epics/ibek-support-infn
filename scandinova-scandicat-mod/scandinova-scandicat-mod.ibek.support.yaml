@@ -71,6 +71,18 @@ entity_models:
           CCPS voltage setpoint high operating range
         default: 1500
 
+      PLS_WDTH_SP_HOPR:
+        type: int
+        description: |-
+          Pulse width setpoint high operating range
+        default: 5
+
+      FILPS_CURR_SP_HOPR:
+        type: int
+        description: |-
+          Filament current setpoint high operating range
+        default: 30
+
       IONPMP_HIGH:
         type: int
         description: |-
@@ -186,6 +198,8 @@ entity_models:
           RFMOD_ASYNPORT: 'RFMod_{{name}}'
           PREFIX: '{{P}}'
           CCPS_V_SP_HOPR: '{{CCPS_V_SP_HOPR}}'
+          PLS_WDTH_SP_HOPR: '{{PLS_WDTH_SP_HOPR}}'
+          FILPS_CURR_SP_HOPR: '{{FILPS_CURR_SP_HOPR}}'
           IONPMP_HIGH: '{{IONPMP_HIGH}}'
           IONPMP_HIHI: '{{IONPMP_HIHI}}'
 
