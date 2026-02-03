@@ -109,7 +109,7 @@ entity_models:
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
-          SMCpolluxCreateController("pollux_{{controllerName}}", "{{controllerName}}_ASYN", "{{numAxes}}", {{movingPollPeriod}}, {{idlePollPeriod}},"{{mapAxes}}", {{debug}}) 
+          SMCpolluxCreateController("{{controllerName}}", "{{controllerName}}_ASYN", "{{numAxes}}", {{movingPollPeriod}}, {{idlePollPeriod}},"{{mapAxes}}", {{debug}}) 
 
   # DIR=Pos,DESC=M0,EGU=degrees,VMAX=5.,VELO=3.,VBAS=.5,ACCL=.5,BDST=0,BVEL=1.0,BACC=2,MRES=001,PREC=2,DHLM=12,DLLM=
   - name: axis
@@ -230,7 +230,7 @@ entity_models:
           N: "{{ADDR +1 }}"
           M:
           DTYP: asynMotor
-          PORT: "pollux_{{controller.controllerName}}"
+          PORT: "{{controller.controllerName}}"
           ADDR:
           DESC:
           EGU:
