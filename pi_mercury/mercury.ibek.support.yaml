@@ -1,0 +1,273 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.0.1/ibek.support.schema.json
+
+# dbLoadRecords("$(MOTOR)/db/motorUtil.db", "P=$(P):")
+
+# ##
+# drvAsynIPPortConfigure("polluxPort","192.168.190.64:4001", 0, 0, 0)
+# asynReport 1
+# #asynSetTraceMask("polluxPort",0,0x3F)
+# #asynSetTraceIOMask("polluxPort",0,0x3F)
+# #asynSetTraceMask("pollux1",0,0x3F)
+# #asynSetTraceIOMask("pollux1",0,0x3F)
+# SMCpolluxCreateController("pollux1", "polluxPort", 2, 100, 500,"7,8") ## last argument is the map between asyn addr and physical axis id 0->7 1->8
+# #asynSetTraceMask("pollux1",0,0x3F)
+# #asynSetTraceIOMask("pollux1",0,0x3F)
+
+# dbLoadRecords("/epics/support/motor/db/asyn_motor.db","P=$(P),M=m0,DTYP=asynMotor,PORT=pollux1,ADDR=0,DIR=Pos,DESC=M0,EGU=degrees,VMAX=15.,VELO=3.,VBAS=.05,ACCL=.5,BDST=0,BVEL=1.0,BACC=2,MRES=001,PREC=2,DHLM=175,DLLM=-175,INIT=")
+# dbLoadRecords("/epics/support/motor/db/asyn_motor.db","P=$(P),M=m1,DTYP=asynMotor,PORT=pollux1,ADDR=1,DIR=Pos,DESC=M1,EGU=degrees,VMAX=15.,VELO=3.,VBAS=.05,ACCL=.5,BDST=0,BVEL=1.0,BACC=2,MRES=001,PREC=2,DHLM=175,DLLM=-175,INIT=")
+
+
+
+
+
+# MERCURY
+# {P,        M,            DTYP,    PORT, ADDR,      DESC,  EGU,  DIR,  VELO,  VBAS,  ACCL,  BDST,  BVEL,  BACC,  MRES,  PREC,  DHLM,  DLLM,  INIT, TWV}
+# Motor Micronix MP-21
+# {Motor:,  "PI",  "asynMotor",  "C-663",    0,  "Micronix MP-21", mm,  Pos,     5,     0,    .2,    0,      1,    .2,  0.00000125,  4,     12.0,   0.0,  "", 1.0}
+
+# drvAsynIPPortConfigure("C-663_ETH",$(MOTOR_ADDR),0,0,0)
+# asynAutoConnect("C-663_ETH", 0, 1)
+
+# asynSetTraceMask("C-663_ETH",0,3)
+# asynSetTraceIOMask("C-663_ETH",0,1)
+
+# PI_GCS2_CreateController(portName, asynPort, numAxes, priority, stackSize, movingPollingRate, idlePollingRate)
+# PI_GCS2_CreateController("C-663", "C-663_ETH",1, 0,0, 100, 1000)
+
+# Turn off asyn trace
+# asynSetTraceMask("C-663_ETH",0,1)
+# asynSetTraceIOMask("C-663_ETH",0,0)
+
+#dbLoadRecords("$(TOP)/db/PI_Support.db","P=Motor:,R=PI:,PORT=C-663,ADDR=0,TIMEOUT=1")  
+
+# asyn record for troubleshooting
+# dbLoadRecords("$(ASYN)/db/asynRecord.db","P=Motor:,R=asyn_1,PORT=C-663_ETH,ADDR=0,OMAX=256,IMAX=256")
+
+module: pi
+
+entity_models:
+  - name: mercury
+    description: |-
+      Creates Mercury motion controller connected to a serial-to-ethernet converter
+    parameters:
+      controllerName: 
+        type: id
+        description: |-
+          The name of the controller and its Asyn Port Name
+
+      P:
+        type: str
+        description: |-
+          Device PV Prefix
+
+      IP:
+        type: str
+        description: |-
+          IP address of the ethernet2serial
+        default: 127.0.0.1 ## localhost
+
+      TCPPORT:
+        type: int
+        description: |-
+          Port of the ethernet2serial
+        default: 4001
+
+      POLL:
+        type: int
+        description: |-
+          Movement poll ms
+        default: 100
+
+      EGUXSTEP:
+        type: float
+        description: |-
+          EGU PER STEP
+        default: 0.00005
+
+      ASYNPRIO:
+        type: int
+        description: |-
+          ASYN   PRIORITY, Default : 0
+        default: 0
+
+      AUTOCONNECT:
+        type: int
+        description: |-
+          Asyn auto connect
+          0: Auto connection
+          1: no Auto connection
+        default: 0
+
+      NOPRECESSESOS:
+        type: int
+        description: |-
+          ASYN   noProcessEos, Default : 1
+          https://epics.anl.gov/tech-talk/2020/msg01705.php
+        default: 1
+
+      numAxes:
+        type: int
+        description: |-
+          The number of axes to create
+      
+      mapAxes:
+        type: str
+        description: |-
+          Map to physical addresses
+
+      movingPollPeriod:
+        type: int
+        description: |-
+          The time between polls when any axis is moving
+        default: 100
+      idlePollPeriod:
+        type: int
+        description: |-
+          The time between polls when no axis is moving
+        default: 500
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
+          SMCpolluxCreateController("pollux_{{controllerName}}", "{{controllerName}}_ASYN", "{{numAxes}}", {{movingPollPeriod}}, {{idlePollPeriod}},"{{mapAxes}}") 
+
+  # DIR=Pos,DESC=M0,EGU=degrees,VMAX=5.,VELO=3.,VBAS=.5,ACCL=.5,BDST=0,BVEL=1.0,BACC=2,MRES=001,PREC=2,DHLM=12,DLLM=
+  - name: axis
+    description: |-
+      Creates a motor axis
+    parameters:
+      controller:
+        type: object
+        description: |-
+          a reference to the motion controller
+
+      M:
+        type: str
+        description: |-
+          PV suffix for the motor record
+
+      ADDR:
+        type: int
+        description: |-
+          The axis number (allowed to be from 0 to controller.numAxes-1)
+
+      DESC:
+        type: str
+        description: |-
+          The description of the axis
+
+      DLLM:
+        type: int
+        description: |-
+          The low limit of the axis
+        default: 0
+
+      DHLM:
+        type: int
+        description: |-
+          The high limit of the axis
+        default: 0
+
+      VELO:
+        type: int
+        description: |-
+          Velocity
+        default: 3
+
+      home:
+        type: int
+        description: |-
+          The home position of the axis (in counts)
+
+      start:
+        type: int
+        description: |-
+          The starting position of the axis (in counts)
+        default: 0
+
+      DIR:
+        type: enum
+        description: |-
+          The direction of the axis
+        default: 0
+        values:
+          Pos: 0
+          Neg: 1
+
+      EGU:
+        type: str
+        description: |-
+          Engineering Units
+        default: "mm"
+      VBAS:
+        type: float
+        description: |-
+          Base Velocity (EGU/s)
+        default: 0.5
+
+      ACCL:
+        type: float
+        description: |-
+          Seconds to Velocity
+        default: 0.5
+
+      BDST:
+        type: int
+        description: |-
+          BL Distance (EGU)
+        default: 0
+
+      BVEL:
+        type: float
+        description: |-
+          BL Velocity (EGU/s)
+        default: 1
+
+      BACC:
+        type: float
+        description: |-
+          BL Seconds to Veloc.
+        default: 2
+
+      MRES:
+        type: float
+        description: |-
+          Motor Step Size (EGU)
+        default: 1
+
+      PREC:
+        type: int
+        description: |-
+          Display precision (EGU)
+        default: 2
+
+    
+    databases:
+      # TODO as this is a simulation I have hard coded some of the DB fields,
+      # but these could easily be made into arguments above
+      #
+      # Note: supplying no value means that the argument of the same name is used
+      # (the most common case - if you contrive to make args and db fields the same.
+      # Which is  good idea for ease of transition from traditional IOCs)
+      - file: basic_asyn_motor.db
+        args:
+          P: "{{controller.P}}"
+          N: "{{ADDR +1 }}"
+          M:
+          DTYP: asynMotor
+          PORT: "pollux_{{controller.controllerName}}"
+          ADDR:
+          DESC:
+          EGU:
+          DIR:
+          VELO:
+          VBAS:
+          ACCL:
+          BDST:
+          BVEL:
+          BACC:
+          MRES:
+          PREC:
+          DHLM:
+          DLLM:
+          INIT: ""

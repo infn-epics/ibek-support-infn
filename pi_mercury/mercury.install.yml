@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../_scripts/support_install_variables.json
+
+module: pi-motor-master
+version: master
+organization: https://github.com/infn-epics
+
+dbds:
+  - pigcs2.dbd
+  - base.dbd
+  - asyn.dbd
+  - drvAsynSerialPort.dbd
+  - drvAsynIPPort.dbd
+  - motorSupport.dbd
+  - PI_GCS2Support.dbd
+
+libs:
+  - PI_GCS2Support
+  - motor
+  - asyn
