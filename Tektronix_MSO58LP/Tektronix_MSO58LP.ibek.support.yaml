@@ -342,7 +342,7 @@ entity_models:
         description: |-
           Source channel for measurement (1-8)
       
-      type:
+      functype:
         type: enum
         description: |-
           Measurement type
@@ -385,7 +385,7 @@ entity_models:
           PORT: '{{ctrl.name}}'
           MEAS: '{{meas}}'
           CHANNEL: '{{channel}}'
-          TYPE: '{{type}}'
+          TYPE: '{{functype}}'
           NAME: '{{name}}'
           ENABLE: '{{enable}}'
           COEFF: '{{coeff}}'
