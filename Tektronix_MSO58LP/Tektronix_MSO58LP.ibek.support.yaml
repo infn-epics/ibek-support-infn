@@ -190,3 +190,203 @@ entity_models:
           EGU: '{{EGU}}'
           ENABLEPV: '{{ENABLEPV}}'
           PORT: '{{ctrl.name}}_ASYN'
+
+  #============================================================
+  # ASYN Driver Entities (High-performance native driver)
+  #============================================================
+
+  - name: mso58lp-asyn
+    description: |-
+      Create a Tektronix oscilloscope controller using native ASYN driver
+      High-performance driver for measurement-only or waveform acquisition
+    parameters:
+      name:
+        type: id
+        description: |-
+          The name of the controller and its Asyn Port Name
+      P:  
+        type: str
+        description: |-
+          Device PV Prefix
+      IP:
+        type: str
+        description: |-
+          IP address or hostname of the oscilloscope
+        default: 127.0.0.1
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port (typically 4000 or 4004)
+        default: 4004
+
+      NUM_CHANNELS:
+        type: int
+        description: |-
+          Number of channels to support (1-8)
+        default: 4
+
+      NUM_MEASUREMENTS:
+        type: int
+        description: |-
+          Number of measurements to support (1-10)
+        default: 4
+
+      SAMPLES:
+        type: int
+        description: |-
+          Maximum waveform points per channel
+        default: 10000
+
+      POLL_TIME:
+        type: float
+        description: |-
+          Polling interval in seconds (0.01=100Hz, 0.1=10Hz)
+        default: 0.1
+
+      CA_MAX_ARRAY_BYTES:
+        type: int
+        description: |-
+          EPICS CA max array bytes for large waveforms
+        default: 3000000
+     
+    pre_init:
+      - value: |
+          epicsEnvSet "EPICS_CA_MAX_ARRAY_BYTES" "{{CA_MAX_ARRAY_BYTES}}"
+          # Configure the ASYN driver for Tektronix MSO58LP
+          # drvTekMSO58LPConfigure(portName, ipAddress, ipPort, numChannels, numMeasurements, maxPoints, pollTime)
+          drvTekMSO58LPConfigure("{{name}}", "{{IP}}", {{TCPPORT}}, {{NUM_CHANNELS}}, {{NUM_MEASUREMENTS}}, {{SAMPLES}}, {{POLL_TIME}})
+
+    databases:
+      - file: device_asyn.template 
+        args:
+          P: 
+          PORT: '{{name}}'
+          NELM: "{{SAMPLES}}"
+          POLL_TIME: "{{POLL_TIME}}"
+
+  - name: channel-asyn
+    description: |-
+      Channel entity for ASYN driver with full waveform acquisition.
+      Provides:
+        - Raw and scaled waveform arrays
+        - Time array for X axis
+        - Waveform statistics (Mean, Min, Max, RMS, Integral)
+        - Charge calculation with configurable coefficient
+        - Vertical scale/offset control
+        - Marker-based window calculations
+    parameters:
+      ctrl:
+        type: object
+        description: |-
+          A reference to the mso58lp-asyn controller
+      name:
+        type: str
+        description: |-
+          Channel name/label (device identifier)
+        
+      channel:
+        type: int
+        description: |-
+          Channel index (1-8)
+      
+      samples:
+        type: int
+        description: |-
+          Number of samples for waveform (NELM)
+
+      coeff:
+        type: float
+        description: |-
+          Coefficient for charge calculation (pC)
+        default: 1.0
+
+      CHARGE_EGU:
+        type: str
+        description: |-
+          Engineering Unit for charge calculation
+        default: pC
+        
+    databases:
+      - file: channel_asyn.template
+        args:
+          P: '{{ctrl.P}}'
+          PORT: '{{ctrl.name}}'
+          CHANNEL: '{{channel}}'
+          CHANAME: '{{name}}'
+          NELM: '{{samples}}'
+          COEFF: '{{coeff}}'
+          CHARGE_EGU: '{{CHARGE_EGU}}'
+
+  - name: measurement-asyn
+    description: |-
+      Measurement entity for ASYN driver (measurement-only mode)
+      High-speed scalar value acquisition without waveforms
+    parameters:
+      ctrl:
+        type: object
+        description: |-
+          A reference to the mso58lp-asyn controller
+      name:
+        type: str
+        description: |-
+          Measurement name (device identifier)
+        
+      meas:
+        type: int
+        description: |-
+          Measurement index (1-10)
+
+      channel:
+        type: int
+        description: |-
+          Source channel for measurement (1-8)
+      
+      type:
+        type: enum
+        description: |-
+          Measurement type
+        values:
+          MEAN:
+          MAX:
+          MIN:
+          PK2PK:
+          RMS:
+          AMPLITUDE:
+          AREA:
+          FREQUENCY:
+          PERIOD:
+          RISETIME:
+          FALLTIME:
+        default: MEAN
+
+      enable:
+        type: int
+        description: |-
+          Enable measurement acquisition (1=enable, 0=disable)
+        default: 1
+
+      coeff:
+        type: float
+        description: |-
+          Coefficient for charge calculation
+        default: 1.0
+
+      EGU:
+        type: str
+        description: |-
+          Engineering Unit
+        default: pC
+        
+    databases:
+      - file: measurement_asyn.template
+        args:
+          P: '{{ctrl.P}}'
+          PORT: '{{ctrl.name}}'
+          MEAS: '{{meas}}'
+          CHANNEL: '{{channel}}'
+          TYPE: '{{type}}'
+          NAME: '{{name}}'
+          ENABLE: '{{enable}}'
+          COEFF: '{{coeff}}'
+          EGU: '{{EGU}}'
