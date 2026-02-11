@@ -295,6 +295,12 @@ entity_models:
         description: |-
           Number of samples for waveform (NELM)
 
+      START:
+        type: int
+        description: |-
+          Initial data start sample (scope sample index, 1-based)
+        default: 1
+
       coeff:
         type: float
         description: |-
@@ -315,6 +321,7 @@ entity_models:
           CHANNEL: '{{channel}}'
           CHANAME: '{{name}}'
           NELM: '{{samples}}'
+          START: '{{START}}'
           COEFF: '{{coeff}}'
           CHARGE_EGU: '{{CHARGE_EGU}}'
 
@@ -375,7 +382,7 @@ entity_models:
       EGU:
         type: str
         description: |-
-          Engineering Unit
+          Engineering Unit for charge calculation
         default: pC
         
     databases:
@@ -389,4 +396,4 @@ entity_models:
           NAME: '{{name}}'
           ENABLE: '{{enable}}'
           COEFF: '{{coeff}}'
-          EGU: '{{EGU}}'
+          CHARGE_EGU: '{{EGU}}'
