@@ -1,0 +1,109 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+# SSRIP Machine Protection System (MPS) support
+# Based on eli-mps-ioc by Giulia Latini <Giulia Latini@lnf.infn.it>
+
+module: mps
+entity_models:
+  - name: ssrip
+    description: |-
+      SSRIP Machine Protection System controller.
+      Uses Modbus TCP via asyn to communicate with the MPS FPGA.
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          MPS controller instance name (used as Modbus port prefix)
+
+      IP:
+        type: str
+        description: |-
+          IP address of the Modbus TCP gateway (MOXA)
+
+      TCPPORT:
+        type: int
+        description: |-
+          Modbus TCP port
+        default: 502
+
+      SLAVE_ADDR:
+        type: int
+        description: |-
+          Modbus slave address
+        default: 1
+
+      P:
+        type: str
+        description: |-
+          PV prefix (e.g. RUF-MPS-A-001)
+
+      POLLING:
+        type: int
+        description: |-
+          Polling interval in ms
+        default: 100
+
+      TIMEOUT:
+        type: int
+        description: |-
+          Modbus timeout in ms
+        default: 2000
+
+      WRITEDELAY:
+        type: int
+        description: |-
+          Modbus write delay in ms (for Serial RTU)
+        default: 0
+
+    pre_init:
+      - value: |
+          #  MPS Modbus configuration for {{NAME}}
+          #
+          # Create Asyn IP port
+          drvAsynIPPortConfigure("{{NAME}}", "{{IP}}:{{TCPPORT}}", 0, 0, 1)
+          modbusInterposeConfig("{{NAME}}", 0, {{TIMEOUT}}, {{WRITEDELAY}})
+
+          # --- Read Holding Registers (function 3) ---
+          # Boot Timestamp: offset 0, length 2, INT32_BE (type 6)
+          drvModbusAsynConfigure("{{NAME}}_BOOT_TIMESTAMP_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 0, 2, 6, {{POLLING}}, "{{NAME}}")
+          # Benchmark: offset 2, length 1, UINT16 (type 0)
+          drvModbusAsynConfigure("{{NAME}}_BENCHMARK_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 2, 1, 0, {{POLLING}}, "{{NAME}}")
+          # Temperature: offset 3, length 1, UINT16 (type 0)
+          drvModbusAsynConfigure("{{NAME}}_TEMP_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 3, 1, 0, {{POLLING}}, "{{NAME}}")
+          # Watchdog: offset 8, length 2, INT32_BE (type 6)
+          drvModbusAsynConfigure("{{NAME}}_WATCHDOG_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 8, 2, 6, {{POLLING}}, "{{NAME}}")
+          # Sleep: offset 5, length 1, UINT16 (type 0)
+          drvModbusAsynConfigure("{{NAME}}_SLEEP_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 5, 1, 0, {{POLLING}}, "{{NAME}}")
+          # Enable: offset 600, length 1, UINT16 (type 0)
+          drvModbusAsynConfigure("{{NAME}}_ENABLE_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 600, 1, 0, {{POLLING}}, "{{NAME}}")
+
+          # Interlock readbacks: Read Holding Registers (function 3)
+          # VAC Corridor: offset 100, length 2, UINT16 (type 0)
+          drvModbusAsynConfigure("{{NAME}}_VAC_COR_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 100, 2, 0, {{POLLING}}, "{{NAME}}")
+          # VAC Roof: offset 102, length 2, UINT16 (type 0)
+          drvModbusAsynConfigure("{{NAME}}_VAC_RUF_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 102, 2, 0, {{POLLING}}, "{{NAME}}")
+          # LLRF: offset 110, length 2, UINT16 (type 0)
+          drvModbusAsynConfigure("{{NAME}}_LLRF_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 110, 2, 0, {{POLLING}}, "{{NAME}}")
+          # Modulator: offset 120, length 2, UINT16 (type 0)
+          drvModbusAsynConfigure("{{NAME}}_MOD_RB", "{{NAME}}", {{SLAVE_ADDR}}, 3, 120, 2, 0, {{POLLING}}, "{{NAME}}")
+
+          # --- Write Single Register (function 6) ---
+          # Reset: offset 1000
+          drvModbusAsynConfigure("{{NAME}}_RESET_SP", "{{NAME}}", {{SLAVE_ADDR}}, 6, 1000, 1, 0, {{POLLING}}, "{{NAME}}")
+          # Acknowledge: offset 500
+          drvModbusAsynConfigure("{{NAME}}_ACK_SP", "{{NAME}}", {{SLAVE_ADDR}}, 6, 500, 1, 0, {{POLLING}}, "{{NAME}}")
+
+          # Bypass setpoints: Write Single Register (function 6)
+          # VAC Corridor bypass: offset 200, length 2
+          drvModbusAsynConfigure("{{NAME}}_BYPASS_VAC_COR_SP", "{{NAME}}", {{SLAVE_ADDR}}, 6, 200, 2, 0, {{POLLING}}, "{{NAME}}")
+          # VAC Roof bypass: offset 202, length 2
+          drvModbusAsynConfigure("{{NAME}}_BYPASS_VAC_RUF_SP", "{{NAME}}", {{SLAVE_ADDR}}, 6, 202, 2, 0, {{POLLING}}, "{{NAME}}")
+          # LLRF bypass: offset 210, length 2
+          drvModbusAsynConfigure("{{NAME}}_BYPASS_LLRF_SP", "{{NAME}}", {{SLAVE_ADDR}}, 6, 210, 2, 0, {{POLLING}}, "{{NAME}}")
+          # Modulator bypass: offset 220, length 2
+          drvModbusAsynConfigure("{{NAME}}_BYPASS_MOD_SP", "{{NAME}}", {{SLAVE_ADDR}}, 6, 220, 2, 0, {{POLLING}}, "{{NAME}}")
+
+    databases:
+      - file: ssrip-mps.db
+        args:
+          MPS_ASYNPORT: "{{NAME}}"
+          PREFIX: "{{P}}"

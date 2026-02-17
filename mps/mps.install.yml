@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: eli-mps-ioc
+# TODO this should be a release tag to ensure deterministic builds.
+version: main
+
+# this module uses modbus so requires none of its own libs/dbds
+organization: https://github.com/infn-epics/
+
+dbds:
+  - modbusSupport.dbd
+  - asyn.dbd
+
+libs:
+  - modbus
+  - asyn
