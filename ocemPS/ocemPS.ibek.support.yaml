@@ -34,6 +34,12 @@ entity_models:
           Current MAX
         default: 100
 
+      CORRECTION:
+        type: float
+        description: |-
+          Euristic correction factor for current conversion
+        default: 1.8
+
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
@@ -51,6 +57,7 @@ entity_models:
           CMD_PORT: "{{R}}_command_port"
           IMAX:
           VMAX:
+          CORRECTION:
          
 
       ## unimag interface overlay
