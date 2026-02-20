@@ -1,0 +1,11 @@
+module: thorlabs-apt-motor
+version: main
+organization: https://github.com/infn-epics
+dbds:
+  - devThorLabsApt.dbd
+  - motorRecord.dbd
+  - motorSupport.dbd
+libs:
+  - thorlabsSupport
+  - motor
+  - asyn

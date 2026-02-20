@@ -1,0 +1,260 @@
+# yaml-language-server: $schema=../schemas/ibek.support.schema.json
+
+# Thorlabs APT Motor Controller support for ibek
+#
+# EPICS asynMotor driver for Thorlabs APT controllers on Linux.
+# Supports DC servo (TDC001, KDC101, BBD103, etc.),
+# stepper (TST001, KST101, BSC103, etc.),
+# piezo (KPZ101, TPZ001, etc.),
+# and piezo inertial (KIM101, TIM101) motors
+# via USB serial or ser2net TCP.
+#
+# IOC shell commands:
+#   AptControllerConfig(portName, devicePath, motorType, numAxes, movingPoll, idlePoll)
+#   AptSetVelParams(portName, axisNum, minVelocity, acceleration, maxVelocity)
+
+module: thorlabsApt
+
+entity_models:
+  - name: AptController
+    description: |-
+      Creates a Thorlabs APT motor controller.
+      Connects via local USB serial (/dev/ttyUSBx) or remote TCP (host:port via ser2net).
+      Supports DC servo, stepper, piezo, and piezo inertial (KIM101) motor types.
+      Multi-channel bay controllers (BBD103, BSC103, etc.) are auto-detected.
+    parameters:
+      controllerName:
+        type: id
+        description: |-
+          The asyn port name for this controller
+
+      P:
+        type: str
+        description: |-
+          Device PV Prefix
+
+      devicePath:
+        type: str
+        description: |-
+          Device path: local USB serial (e.g. /dev/ttyUSB0) or
+          remote TCP via ser2net (e.g. hostname:4001)
+
+      motorType:
+        type: enum
+        description: |-
+          Motor type:
+            dc      — DC servo motors (TDC001, KDC101, BBD103, etc.)
+            stepper — Stepper motors (TST001, KST101, BSC103, etc.)
+            piezo   — Direct piezo actuators (KPZ101, TPZ001, etc.)
+            kim     — Piezo inertial motors (KIM101, TIM101, etc.)
+        default: dc
+        values:
+          dc: dc
+          stepper: stepper
+          piezo: piezo
+          kim: kim
+
+      numAxes:
+        type: int
+        description: |-
+          Number of axes:
+            0 = auto-detect from controller HW_GET_INFO
+            1 = single-channel USB device (TDC001, KDC101, KST101, etc.)
+            N = multi-channel bay/rack controller with N channels
+              (BBD103=3, BSC103=3, KIM101=4, etc.)
+        default: 0
+
+      movingPollPeriod:
+        type: float
+        description: |-
+          The poll period (seconds) when any axis is moving
+        default: 0.2
+
+      idlePollPeriod:
+        type: float
+        description: |-
+          The poll period (seconds) when no axis is moving
+        default: 1.0
+
+    pre_init:
+      - value: |
+          AptControllerConfig("{{controllerName}}", "{{devicePath}}", "{{motorType}}", {{numAxes}}, {{movingPollPeriod}}, {{idlePollPeriod}})
+
+  - name: motorAxis
+    description: |-
+      Creates a Thorlabs APT motor axis.
+      Uses standard EPICS motor record with asynMotor DTYP.
+    parameters:
+      controller:
+        type: object
+        description: |-
+          A reference to the Thorlabs APT controller
+
+      M:
+        type: str
+        description: |-
+          PV suffix for the motor record
+
+      ADDR:
+        type: int
+        description: |-
+          The axis number (0-based: 0 to controller.numAxes-1)
+
+      DESC:
+        type: str
+        description: |-
+          The description of the axis
+        default: "Thorlabs APT Motor"
+
+      EGU:
+        type: str
+        description: |-
+          Engineering Units
+        default: mm
+
+      DIR:
+        type: enum
+        description: |-
+          Motor direction
+        default: Pos
+        values:
+          Pos: Pos
+          Neg: Neg
+
+      VELO:
+        type: float
+        description: |-
+          Velocity (EGU/s)
+        default: 2.3
+
+      VBAS:
+        type: float
+        description: |-
+          Base Velocity (EGU/s)
+        default: 0.1
+
+      ACCS:
+        type: float
+        description: |-
+          Acceleration (EGU/s^2)
+        default: 1.5
+
+      BDST:
+        type: float
+        description: |-
+          Backlash Distance (EGU)
+        default: 0
+
+      BVEL:
+        type: float
+        description: |-
+          Backlash Velocity (EGU/s)
+        default: 2.3
+
+      BACC:
+        type: float
+        description: |-
+          Backlash Acceleration (EGU/s^2)
+        default: 1.0
+
+      MRES:
+        type: float
+        description: |-
+          Motor Step Size (EGU). Typical values:
+            DC servo (KDC101): 0.000028939405515
+            Stepper (KST101):  0.0000024414
+            Piezo (KPZ101):    1 (0-32767 range → 0-100%)
+            KIM101:            1 (encoder counts)
+        default: 0.000028939405515
+
+      PREC:
+        type: int
+        description: |-
+          Display Precision
+        default: 4
+
+      DHLM:
+        type: float
+        description: |-
+          Dial High Limit (EGU). Set to 0 to disable.
+        default: 25.0
+
+      DLLM:
+        type: float
+        description: |-
+          Dial Low Limit (EGU). Set to 0 to disable.
+        default: -0.1
+
+      TWV:
+        type: float
+        description: |-
+          Tweak Value (EGU)
+        default: 1.0
+
+      home:
+        type: int
+        description: |-
+          Home the axis on startup (1=yes, 0=no)
+        default: 0
+
+    databases:
+      - file: $(THORLABS_APT_MOTOR)/db/motor.db
+        args:
+          P: "{{controller.P}}"
+          M: "{{M}}"
+          DTYP: asynMotor
+          PORT: "{{controller.controllerName}}"
+          ADDR: "{{ADDR}}"
+          DESC: "{{DESC}}"
+          EGU: "{{EGU}}"
+          DIR: "{{DIR}}"
+          VELO: "{{VELO}}"
+          VBAS: "{{VBAS}}"
+          ACCS: "{{ACCS}}"
+          BDST: "{{BDST}}"
+          BVEL: "{{BVEL}}"
+          BACC: "{{BACC}}"
+          MRES: "{{MRES}}"
+          PREC: "{{PREC}}"
+          DHLM: "{{DHLM}}"
+          DLLM: "{{DLLM}}"
+          TWV: "{{TWV}}"
+          INIT: ""
+
+  - name: AptSetVelParams
+    description: |-
+      Optionally set APT velocity parameters for a specific axis
+      (in raw APT encoder counts). Useful for tuning multi-channel
+      bay controllers (BBD103, BSC103) and piezo inertial motors (KIM101).
+    parameters:
+      controller:
+        type: object
+        description: |-
+          A reference to the Thorlabs APT controller
+
+      axisNum:
+        type: int
+        description: |-
+          The axis number (0-based)
+
+      minVelocity:
+        type: int
+        description: |-
+          Minimum velocity (APT encoder counts/s)
+        default: 0
+
+      acceleration:
+        type: int
+        description: |-
+          Acceleration (APT encoder counts/s^2)
+        default: 13422
+
+      maxVelocity:
+        type: int
+        description: |-
+          Maximum velocity (APT encoder counts/s)
+        default: 134218
+
+    post_init:
+      - value: |
+          AptSetVelParams("{{controller.controllerName}}", {{axisNum}}, {{minVelocity}}, {{acceleration}}, {{maxVelocity}})

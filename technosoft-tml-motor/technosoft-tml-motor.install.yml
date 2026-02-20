@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../_scripts/support_install_variables.json
+
+module: technosoft-tml-motor
+version: main
+organization: https://github.com/infn-epics
+
+dbds:
+  - devTechnosoft.dbd
+  - motorRecord.dbd
+  - motorSupport.dbd
+
+libs:
+  - TechnosoftMotor
+  - TML_lib
+  - motor
+  - asyn
+
+runtime_files:
+  - /epics/support/technosoft-tml-motor/tml_lib/lib/linux-x86_64/libTML_lib.so
+  - /epics/support/technosoft-tml-motor/tml_lib/lib/linux-x86_64/libtmlcomm.so

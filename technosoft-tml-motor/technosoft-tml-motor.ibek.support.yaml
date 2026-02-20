@@ -1,0 +1,200 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: technosoftAsyn
+
+entity_models:
+  - name: TmlController
+    description: |-
+      Creates a Technosoft TML motion controller connected via RS-232/RS-485 or XPORT
+    parameters:
+      controllerName:
+        type: id
+        description: |-
+          The name of the controller and its Asyn Port Name
+
+      P:
+        type: str
+        description: |-
+          Device PV Prefix
+
+      devicePath:
+        type: str
+        description: |-
+          Serial device path (e.g., /dev/ttyUSB0) or IP:port for XPORT
+        default: /dev/ttyUSB0
+
+      numAxes:
+        type: int
+        description: |-
+          Total number of axes on this communication channel
+        default: 1
+
+      hostId:
+        type: int
+        description: |-
+          RS-232 host ID (usually the axis ID of directly connected drive, or 255)
+        default: 255
+
+      baudRate:
+        type: int
+        description: |-
+          Serial baud rate
+        default: 9600
+
+      movingPollPeriod:
+        type: float
+        description: |-
+          Polling period (seconds) while any axis is moving
+        default: 0.1
+
+      idlePollPeriod:
+        type: float
+        description: |-
+          Polling period (seconds) while all axes are idle
+        default: 1.0
+
+    pre_init:
+      - value: |
+          # Create TML controller
+          TmlControllerConfig("{{controllerName}}", "{{devicePath}}", {{numAxes}}, {{hostId}}, {{baudRate}}, {{movingPollPeriod}}, {{idlePollPeriod}})
+
+  - name: TmlAxis
+    description: |-
+      Creates a motor axis for Technosoft TML controller
+    parameters:
+      controller:
+        type: object
+        description: |-
+          Reference to the TML controller
+
+      M:
+        type: str
+        description: |-
+          PV suffix for the motor record
+
+      axisNo:
+        type: int
+        description: |-
+          The axis number (0-based index, must be < controller.numAxes)
+
+      axisId:
+        type: int
+        description: |-
+          TML drive address on the bus (1-255)
+        default: 1
+
+      setupFile:
+        type: str
+        description: |-
+          Path to .t.zip or setup directory from EasyMotion/EasySetup
+        default: ""
+
+      homingSwitch:
+        type: enum
+        description: |-
+          Which limit switch to use for homing
+        default: LSN
+        values:
+          LSN:
+          LSP:
+
+      DESC:
+        type: str
+        description: |-
+          Description of the axis
+        default: "TML Axis"
+
+      EGU:
+        type: str
+        description: |-
+          Engineering Units
+        default: "mm"
+
+      DIR:
+        type: enum
+        description: |-
+          Motor direction
+        default: Pos
+        values:
+          Pos: 0
+          Neg: 1
+
+      VELO:
+        type: float
+        description: |-
+          Velocity (EGU/s)
+        default: 1.0
+
+      VBAS:
+        type: float
+        description: |-
+          Base velocity (EGU/s)
+        default: 0.1
+
+      ACCL:
+        type: float
+        description: |-
+          Seconds to velocity
+        default: 0.5
+
+      VMAX:
+        type: float
+        description: |-
+          Maximum velocity (EGU/s)
+        default: 10.0
+
+      BDST:
+        type: float
+        description: |-
+          Backlash distance (EGU)
+        default: 0
+
+      BVEL:
+        type: float
+        description: |-
+          Backlash velocity (EGU/s)
+        default: 1.0
+
+      BACC:
+        type: float
+        description: |-
+          Backlash acceleration time (s)
+        default: 0.5
+
+      MRES:
+        type: float
+        description: |-
+          Motor resolution (EGU per step)
+        default: 0.001
+
+      PREC:
+        type: int
+        description: |-
+          Display precision (decimal places)
+        default: 3
+
+      DHLM:
+        type: float
+        description: |-
+          High soft limit (EGU)
+        default: 100.0
+
+      DLLM:
+        type: float
+        description: |-
+          Low soft limit (EGU)
+        default: -100.0
+
+      TWV:
+        type: float
+        description: |-
+          Tweak step size (EGU)
+        default: 0.1
+
+    pre_init:
+      - value: |
+          # Configure TML axis
+          TmlAxisConfig("{{controller.controllerName}}", {{axisNo}}, {{axisId}}, "{{setupFile}}", "{{homingSwitch}}")
+          
+          # Load motor record
+          dbLoadRecords("$(MOTOR)/db/asyn_motor.db", "P={{controller.P}},M={{M}},DTYP=asynMotor,PORT={{controller.controllerName}},ADDR={{axisNo}},DIR={{DIR}},DESC={{DESC}},EGU={{EGU}},VMAX={{VMAX}},VELO={{VELO}},VBAS={{VBAS}},ACCL={{ACCL}},BDST={{BDST}},BVEL={{BVEL}},BACC={{BACC}},MRES={{MRES}},PREC={{PREC}},DHLM={{DHLM}},DLLM={{DLLM}},TWV={{TWV}},INIT=")
