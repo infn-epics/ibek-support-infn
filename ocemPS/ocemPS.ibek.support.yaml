@@ -40,6 +40,11 @@ entity_models:
           Euristic correction factor for current conversion
         default: 1.8
 
+      CORRECTIONSET:
+        type: float
+        description: |-
+          Euristic correction factor for current conversion
+        default: 1
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
@@ -58,7 +63,7 @@ entity_models:
           IMAX:
           VMAX:
           CORRECTION:
-         
+          CORRECTIONSET:
 
       ## unimag interface overlay
       - file: unimag-ocem.db
