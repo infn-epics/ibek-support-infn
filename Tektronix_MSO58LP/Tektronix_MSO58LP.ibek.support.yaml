@@ -295,7 +295,7 @@ entity_models:
         description: |-
           Number of samples for waveform (NELM)
 
-      START:
+      START_SAMPLE:
         type: int
         description: |-
           Initial data start sample (scope sample index, 1-based)
@@ -321,7 +321,7 @@ entity_models:
           CHANNEL: '{{channel}}'
           CHANAME: '{{name}}'
           NELM: '{{samples}}'
-          START: '{{START}}'
+          START: '{{START_SAMPLE}}'
           COEFF: '{{coeff}}'
           CHARGE_EGU: '{{CHARGE_EGU}}'
 
