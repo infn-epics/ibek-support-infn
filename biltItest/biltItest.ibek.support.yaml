@@ -80,6 +80,6 @@ entity_models:
           module: "{{id}}"
           max: "{{max}}"
 
-      - file: $(SIGMAPHISTART)/db/unimag.db
+      - file: $(SIGMAPHISTART)/db/unimag-biltItest.db
         args:
           device: '{{ controller.P }}:{{ P }}'
