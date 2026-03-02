@@ -1,0 +1,254 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+# Menlo Systems laser synchronization devices
+# Supports: LAC1550, LFC, SYNCRO, SYNCRO-FLS, SYNCRO-THETA
+# Connection: TCP/IP with Menlo HRT binary protocol (CRC + SOT/EOT framing)
+# Uses asynInterposeMenlo for protocol framing
+
+module: menlo
+
+entity_models:
+  # ===========================================================================
+  # TCP/IP connection with Menlo interpose layer
+  # ===========================================================================
+  - name: tcp
+    description: |-
+      TCP/IP connection to a Menlo device with asynInterposeMenlo CRC framing
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Asyn port name
+      IP:
+        type: str
+        description: |-
+          IP address of the Menlo device
+      PORT:
+        type: int
+        description: |-
+          TCP port number
+        default: 4001
+      TIMEOUT:
+        type: int
+        description: |-
+          Menlo interpose timeout (seconds)
+        default: 1
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{NAME}}", "{{IP}}:{{PORT}}", 0, 0, 0)
+          asynInterposeMenloConfig("{{NAME}}", 0, {{TIMEOUT}})
+
+  # ===========================================================================
+  # LAC1550 — Laser Amplifier Controller
+  # ===========================================================================
+  - name: lac1550
+    description: |-
+      Menlo LAC1550 laser amplifier controller
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Device instance name
+      P:
+        type: str
+        description: |-
+          PV prefix (e.g. MENLO:LAC)
+      PORT:
+        type: str
+        description: |-
+          Asyn port name (from menlo.tcp)
+      SCAN:
+        type: str
+        description: |-
+          Scan period for polled records
+        default: "1 second"
+      SRC:
+        type: int
+        description: |-
+          Source ID (host ID in Menlo protocol)
+        default: 17
+      DST:
+        type: int
+        description: |-
+          Destination ID (device ID in Menlo protocol)
+        default: 66
+    databases:
+      - file: menlo_lac1550.db
+        args:
+          P: "{{P}}"
+          ASYNPORT: "{{PORT}}"
+          SCAN_PERIOD: "{{SCAN}}"
+          SRC: "{{SRC}}"
+          DST: "{{DST}}"
+
+  # ===========================================================================
+  # LFC — Laser Frequency Counter / Comb
+  # ===========================================================================
+  - name: lfc
+    description: |-
+      Menlo LFC laser frequency comb
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Device instance name
+      P:
+        type: str
+        description: |-
+          PV prefix (e.g. MENLO:LFC)
+      PORT:
+        type: str
+        description: |-
+          Asyn port name (from menlo.tcp)
+      SCAN:
+        type: str
+        description: |-
+          Scan period for polled records
+        default: "1 second"
+      SRC:
+        type: int
+        description: |-
+          Source ID (host ID in Menlo protocol)
+        default: 17
+      DST:
+        type: int
+        description: |-
+          Destination ID (device ID in Menlo protocol)
+        default: 66
+    databases:
+      - file: menlo_lfc.db
+        args:
+          P: "{{P}}"
+          ASYNPORT: "{{PORT}}"
+          SCAN_PERIOD: "{{SCAN}}"
+          SRC: "{{SRC}}"
+          DST: "{{DST}}"
+
+  # ===========================================================================
+  # SYNCRO — RF synchronization unit (standard)
+  # ===========================================================================
+  - name: syncro
+    description: |-
+      Menlo SYNCRO RF synchronization unit (standard variant with 2 TECs, 4 motors)
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Device instance name
+      P:
+        type: str
+        description: |-
+          PV prefix (e.g. MENLO:SYNCRO)
+      PORT:
+        type: str
+        description: |-
+          Asyn port name (from menlo.tcp)
+      SCAN:
+        type: str
+        description: |-
+          Scan period for polled records
+        default: "1 second"
+      SRC:
+        type: int
+        description: |-
+          Source ID (host ID in Menlo protocol)
+        default: 17
+      DST:
+        type: int
+        description: |-
+          Destination ID (device ID in Menlo protocol)
+        default: 66
+    databases:
+      - file: menlo_syncro.db
+        args:
+          P: "{{P}}"
+          ASYNPORT: "{{PORT}}"
+          SCAN_PERIOD: "{{SCAN}}"
+          SRC: "{{SRC}}"
+          DST: "{{DST}}"
+
+  # ===========================================================================
+  # SYNCRO-FLS — FLS variant with 8-channel ADC
+  # ===========================================================================
+  - name: syncro_fls
+    description: |-
+      Menlo SYNCRO-FLS variant (with 8-channel ADC module)
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Device instance name
+      P:
+        type: str
+        description: |-
+          PV prefix (e.g. MENLO:SYNCRO:FLS)
+      PORT:
+        type: str
+        description: |-
+          Asyn port name (from menlo.tcp)
+      SCAN:
+        type: str
+        description: |-
+          Scan period for polled records
+        default: "1 second"
+      SRC:
+        type: int
+        description: |-
+          Source ID (host ID in Menlo protocol)
+        default: 17
+      DST:
+        type: int
+        description: |-
+          Destination ID (device ID in Menlo protocol)
+        default: 66
+    databases:
+      - file: menlo_syncro_fls.db
+        args:
+          P: "{{P}}"
+          ASYNPORT: "{{PORT}}"
+          SCAN_PERIOD: "{{SCAN}}"
+          SRC: "{{SRC}}"
+          DST: "{{DST}}"
+
+  # ===========================================================================
+  # SYNCRO-THETA — Theta variant with 7 TECs, no motors
+  # ===========================================================================
+  - name: syncro_theta
+    description: |-
+      Menlo SYNCRO-THETA variant (temperature-only, 7 TEC channels)
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Device instance name
+      P:
+        type: str
+        description: |-
+          PV prefix (e.g. MENLO:SYNCRO:THETA)
+      PORT:
+        type: str
+        description: |-
+          Asyn port name (from menlo.tcp)
+      SCAN:
+        type: str
+        description: |-
+          Scan period for polled records
+        default: "1 second"
+      SRC:
+        type: int
+        description: |-
+          Source ID (host ID in Menlo protocol)
+        default: 17
+      DST:
+        type: int
+        description: |-
+          Destination ID (device ID in Menlo protocol)
+        default: 66
+    databases:
+      - file: menlo_syncro_theta.db
+        args:
+          P: "{{P}}"
+          ASYNPORT: "{{PORT}}"
+          SCAN_PERIOD: "{{SCAN}}"
+          SRC: "{{SRC}}"
+          DST: "{{DST}}"

@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: menlo-ioc
+organization: https://github.com/infn-epics/
+
+# TODO this should be a release tag to ensure deterministic builds.
+version: main
+
+# Menlo uses StreamDevice + asyn + asynInterposeMenlo for binary protocol framing
+dbds:
+  - asyn.dbd
+  - drvAsynIPPort.dbd
+  - stream.dbd
+  - asynInterposeMenlo.dbd
+
+libs:
+  - stream
+  - asyn
+  - asynInterposeMenlo
+
+protocol_files:
+  - protocol/menlo_dev.proto
+  - protocol/menlo_lac1550.proto
+  - protocol/menlo_lfc_dev.proto
+  - protocol/menlo_lfc_ext.proto
+  - protocol/menlo_lfc_sp.proto
+  - protocol/menlo_syncro.proto
+  - protocol/menlo_syncro_ext.proto
+
+db_files:
+  - menloApp/Db/menlo_dev.template
+  - menloApp/Db/menlo_lac_dev.template
+  - menloApp/Db/menlo_lac1550_dev.template
+  - menloApp/Db/menlo_lac1550_diode.template
+  - menloApp/Db/menlo_lac1550_sp.template
+  - menloApp/Db/menlo_lac1550.substitutions
+  - menloApp/Db/menlo_lfc_dev.template
+  - menloApp/Db/menlo_lfc_ext.template
+  - menloApp/Db/menlo_lfc_sp.template
+  - menloApp/Db/menlo_lfc.substitutions
+  - menloApp/Db/menlo_syncro_dev.template
+  - menloApp/Db/menlo_syncro_motor.template
+  - menloApp/Db/menlo_syncro_temperature.template
+  - menloApp/Db/menlo_syncro_adc.template
+  - menloApp/Db/menlo_syncro.substitutions
+  - menloApp/Db/menlo_syncro_fls.substitutions
+  - menloApp/Db/menlo_syncro_theta.substitutions
