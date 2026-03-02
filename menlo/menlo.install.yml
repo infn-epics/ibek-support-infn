@@ -11,12 +11,12 @@ dbds:
   - asyn.dbd
   - drvAsynIPPort.dbd
   - stream.dbd
-  - asynInterposeMenlo.dbd
+  - menloSup.dbd
 
 libs:
   - stream
   - asyn
-  - asynInterposeMenlo
+  - menloSup
 
 protocol_files:
   - protocol/menlo_dev.proto
