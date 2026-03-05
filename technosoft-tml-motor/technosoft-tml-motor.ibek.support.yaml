@@ -15,7 +15,8 @@ entity_models:
       P:
         type: str
         description: |-
-          Device PV Prefix
+          Device PV Prefix, with trailing colon (e.g. "SPARC:MOT:TML:")
+          Combined with M as $(P)$(M) to form the motor record PV name.
 
       devicePath:
         type: str
@@ -70,7 +71,8 @@ entity_models:
       M:
         type: str
         description: |-
-          PV suffix for the motor record
+          Axis PV suffix, without leading colon (e.g. "GUNFLG01")
+          Combined with P as $(P)$(M) to form the motor record PV name.
 
       axisNo:
         type: int
