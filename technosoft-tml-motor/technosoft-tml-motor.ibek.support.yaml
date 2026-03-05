@@ -131,17 +131,11 @@ entity_models:
           Base velocity (EGU/s)
         default: 0.1
 
-      ACCL:
+      ACCS:
         type: float
         description: |-
-          Seconds to velocity
+          Acceleration time in seconds to reach VELO from VBAS
         default: 0.5
-
-      VMAX:
-        type: float
-        description: |-
-          Maximum velocity (EGU/s)
-        default: 10.0
 
       BDST:
         type: float
@@ -191,10 +185,25 @@ entity_models:
           Tweak step size (EGU)
         default: 0.1
 
+      ignoreLSP:
+        type: int
+        description: |-
+          Ignore positive (forward) limit switch: 1 = ignore, 0 = use
+        default: 0
+
+      ignoreLSN:
+        type: int
+        description: |-
+          Ignore negative (reverse) limit switch: 1 = ignore, 0 = use
+        default: 0
+
     pre_init:
       - value: |
           # Configure TML axis
-          TmlAxisConfig("{{controller.controllerName}}", {{axisNo}}, {{axisId}}, "{{setupFile}}", "{{homingSwitch}}")
-          
+          TmlAxisConfig("{{controller.controllerName}}", {{axisNo}}, {{axisId}}, "{{setupFile}}", "{{homingSwitch}}", {{ignoreLSP}}, {{ignoreLSN}})
+
           # Load motor record
-          dbLoadRecords("$(MOTOR)/db/asyn_motor.db", "P={{controller.P}},M={{M}},DTYP=asynMotor,PORT={{controller.controllerName}},ADDR={{axisNo}},DIR={{DIR}},DESC={{DESC}},EGU={{EGU}},VMAX={{VMAX}},VELO={{VELO}},VBAS={{VBAS}},ACCL={{ACCL}},BDST={{BDST}},BVEL={{BVEL}},BACC={{BACC}},MRES={{MRES}},PREC={{PREC}},DHLM={{DHLM}},DLLM={{DLLM}},TWV={{TWV}},INIT=")
+          dbLoadRecords("$(TECHNOSOFT_TML_MOTOR)/db/motor.db", "P={{controller.P}},M={{M}},DESC={{DESC}},PORT={{controller.controllerName}},ADDR={{axisNo}},DIR={{DIR}},MRES={{MRES}},EGU={{EGU}},DHLM={{DHLM}},DLLM={{DLLM}},VELO={{VELO}},VBAS={{VBAS}},ACCS={{ACCS}},BDST={{BDST}},BVEL={{BVEL}},BACC={{BACC}},PREC={{PREC}},TWV={{TWV}}")
+
+          # Load TML-specific compatibility records
+          dbLoadRecords("$(TECHNOSOFT_TML_MOTOR)/db/tml_compat.db", "P={{controller.P}},M={{M}},PORT={{controller.controllerName}},ADDR={{axisNo}}")
