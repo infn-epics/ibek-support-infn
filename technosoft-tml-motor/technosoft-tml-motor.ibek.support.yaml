@@ -110,7 +110,7 @@ entity_models:
         type: str
         description: |-
           Engineering Units
-        default: "mm"
+        default: "ustep"
 
       DIR:
         type: enum
@@ -199,10 +199,17 @@ entity_models:
           Ignore negative (reverse) limit switch: 1 = ignore, 0 = use
         default: 0
 
+      scrValue:
+        type: int
+        description: |-
+          SCR register value (hex) to enable encoder feedback; 0 = skip
+          (e.g. 0x4338 for open-loop with encoder feedback)
+        default: 0
+
     pre_init:
       - value: |
           # Configure TML axis
-          TmlAxisConfig("{{controller.controllerName}}", {{axisNo}}, {{axisId}}, "$(TECHNOSOFT_TML_MOTOR)/tml_lib/config/{{setupFile}}", "{{homingSwitch}}", {{ignoreLSP}}, {{ignoreLSN}})
+          TmlAxisConfig("{{controller.controllerName}}", {{axisNo}}, {{axisId}}, "$(TECHNOSOFT_TML_MOTOR)/tml_lib/config/{{setupFile}}", "{{homingSwitch}}", {{ignoreLSP}}, {{ignoreLSN}}, {{scrValue}})
 
           # Load motor record
           dbLoadRecords("$(TECHNOSOFT_TML_MOTOR)/db/motor.db", "P={{controller.P}},M={{M}},DESC={{DESC}},PORT={{controller.controllerName}},ADDR={{axisNo}},DIR={{DIR}},MRES={{MRES}},EGU={{EGU}},DHLM={{DHLM}},DLLM={{DLLM}},VELO={{VELO}},VBAS={{VBAS}},ACCS={{ACCS}},BDST={{BDST}},BVEL={{BVEL}},BACC={{BACC}},PREC={{PREC}},TWV={{TWV}}")
