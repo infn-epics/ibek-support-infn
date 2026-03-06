@@ -15,6 +15,11 @@ libs:
   - motor
   - asyn
 
+tasks:
+  - path: tml_task.yml
+
 runtime_files:
-  - /epics/support/technosoft-tml-motor/tml_lib/lib/linux-x86_64/libTML_lib.so
-  - /epics/support/technosoft-tml-motor/tml_lib/lib/linux-x86_64/libtmlcomm.so
+  - /epics/support/technosoft-tml-motor/tml_lib/lib/libTML_lib.so
+  - /epics/support/technosoft-tml-motor/tml_lib/lib/libtmlcomm.so
+  - /epics/support/technosoft-tml-motor/tml_lib/config/star_vat_phs.t.zip
+

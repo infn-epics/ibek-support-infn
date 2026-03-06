@@ -89,7 +89,7 @@ entity_models:
         type: str
         description: |-
           Path to .t.zip or setup directory from EasyMotion/EasySetup
-        default: ""
+        default: "star_vat_phs.t.zip"
 
       homingSwitch:
         type: enum
@@ -202,7 +202,7 @@ entity_models:
     pre_init:
       - value: |
           # Configure TML axis
-          TmlAxisConfig("{{controller.controllerName}}", {{axisNo}}, {{axisId}}, "{{setupFile}}", "{{homingSwitch}}", {{ignoreLSP}}, {{ignoreLSN}})
+          TmlAxisConfig("{{controller.controllerName}}", {{axisNo}}, {{axisId}}, "$(TECHNOSOFT_TML_MOTOR)/tml_lib/config/{{setupFile}}", "{{homingSwitch}}", {{ignoreLSP}}, {{ignoreLSN}})
 
           # Load motor record
           dbLoadRecords("$(TECHNOSOFT_TML_MOTOR)/db/motor.db", "P={{controller.P}},M={{M}},DESC={{DESC}},PORT={{controller.controllerName}},ADDR={{axisNo}},DIR={{DIR}},MRES={{MRES}},EGU={{EGU}},DHLM={{DHLM}},DLLM={{DLLM}},VELO={{VELO}},VBAS={{VBAS}},ACCS={{ACCS}},BDST={{BDST}},BVEL={{BVEL}},BACC={{BACC}},PREC={{PREC}},TWV={{TWV}}")
