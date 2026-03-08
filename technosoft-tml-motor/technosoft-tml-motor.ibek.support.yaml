@@ -54,9 +54,16 @@ entity_models:
           Polling period (seconds) while all axes are idle
         default: 1.0
 
+      debug:
+        type: int
+        description: |-
+          Debug level
+        default: 0
+
     pre_init:
       - value: |
           # Create TML controller
+          var drvTmlDebug {{debug}}
           TmlControllerConfig("{{controllerName}}", "{{devicePath}}", {{numAxes}}, {{hostId}}, {{baudRate}}, {{movingPollPeriod}}, {{idlePollPeriod}})
 
   - name: TmlAxis
