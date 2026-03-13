@@ -101,6 +101,16 @@ entity_models:
         description: |-
           Current MAX
         default: 0
+      rampI:
+        type: float
+        description: |-
+          Current slew rate in A/s (0 = use 10% of rangeI)
+        default: 0
+      rampV:
+        type: float
+        description: |-
+          Voltage slew rate in V/s (0 = use 10% of rangeV)
+        default: 0
 
     pre_init:
       - value: |
@@ -115,6 +125,8 @@ entity_models:
           PORT: '{{R}}_ASYN'
           RANGEI: '{{rangeI}}'
           RANGEV: '{{rangeV}}'
+          RAMPI: '{{rampI}}'
+          RAMPV: '{{rampV}}'
 
       ## unimag interface overlay
       - file: unimag-fastps.db
