@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+
+module: TTI
+
+entity_models:
+  - name: device
+    description: |-
+      TTI Power Supply device connected via TCP/IP
+    parameters:
+      NAME:
+        type: id
+        description: |-
+
+      P:
+        type: str
+        description: |-
+          PV name prefix 
+      R:
+        type: str
+        description: |-
+          PV name suffix
+
+      IP:
+        type: str
+        description: |-
+          IP address
+        default: 192.168.197.49
+
+      PORT:
+        type: int
+        description: |-
+          TCP port number for device communication
+        default: 4001
+
+      TIMEOUT:
+        type: int
+        description: |-
+          Connection timeout in milliseconds
+        default: 1000
+
+      DISCONNECT_ON_TIMEOUT:
+        type: bool
+        description: |-
+          Whether to disconnect from the device on read timeout
+        default: true
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{NAME}}", "{{IP}}:{{PORT}}", 0, 0, 0)
+                    asynSetOption("{{NAME}}", 0, "disconnectOnReadTimeout", "{% if DISCONNECT_ON_TIMEOUT %}Y{% else %}N{% endif %}")
+
+    databases:
+      - file: TTI.template
+        args:
+          P: "{{P}}"          
+          R: "{{R}}"          
+          PORT: "{{NAME}}"    

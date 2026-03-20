@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+module: TTI
+
+organization: https://github.com/infn-epics/
+version: main
+
+dbds:
+  - asyn.dbd
+  - StreamDevice.dbd
+
+libs:
+  - asyn
+  - StreamDevice
+
+protocols:
+  - TTI.proto
