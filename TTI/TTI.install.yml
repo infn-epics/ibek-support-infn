@@ -6,11 +6,11 @@ version: main
 
 dbds:
   - asyn.dbd
-  - StreamDevice.dbd
+  - stream.dbd
 
 libs:
   - asyn
-  - StreamDevice
+  - stream
 
 protocols:
   - TTI.proto
