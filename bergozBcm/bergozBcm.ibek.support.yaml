@@ -1,0 +1,124 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+# Bergoz BCM-RF-E Beam Charge Monitor — ibek support
+#
+# EPICS IOC for the Bergoz Turbo-ICT & BCM-RF-E Beam Charge Monitor.
+# Based on BCM-RF Manual Rev. 2.4 (Nov. 2017), firmware >= 2.5.
+#
+# Uses StreamDevice over USB CDC serial or ethernet-to-serial (TCP/IP).
+# Dependencies: asyn, StreamDevice, calc, autosave (all standard).
+#
+# The device exposes two connection modes:
+#   ipDevice   — TCP/IP via transparent ethernet-to-serial converter (ser2net)
+#   serialDevice — direct local USB serial (USB CDC / RS-232)
+#
+# Each entity creates the asyn port, sets the STREAM_PROTOCOL_PATH,
+# and loads bcm-rf.db for the single BCM-RF-E device on that port.
+
+module: bergozBcm
+
+entity_models:
+
+  # ===========================================================================
+  # IP device — connects via TCP/IP (ser2net or transparent Ethernet converter)
+  # ===========================================================================
+  - name: ipDevice
+    description: |-
+      Bergoz BCM-RF-E connected via TCP/IP (ethernet-to-serial / ser2net).
+      Configure the converter for 9600 baud, 8N1.
+      Creates the asyn IP port, enables disconnectOnReadTimeout, loads bcm-rf.db.
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Asyn port name for this device (e.g. BCM1)
+
+      P:
+        type: str
+        description: |-
+          PV prefix (e.g. BCM:RF:01)
+
+      HOST:
+        type: str
+        description: |-
+          IP address or hostname of the ethernet-to-serial converter
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port number of the converter
+        default: 4001
+
+      SCAN:
+        type: str
+        description: |-
+          Measurement scan period (EPICS scan string, e.g. "1 second")
+        default: "1 second"
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{NAME}}", "{{HOST}}:{{TCPPORT}}", 0, 0, 0)
+          asynSetOption("{{NAME}}", 0, "disconnectOnReadTimeout", "Y")
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(TURBO_BERGOZ_BCM)/db")
+
+    databases:
+      - file: $(TURBO_BERGOZ_BCM)/db/bcm-rf.db
+        args:
+          P: "{{P}}"
+          PORT: "{{NAME}}"
+          SCAN: "{{SCAN}}"
+
+  # ===========================================================================
+  # Serial device — connects via local USB serial (USB CDC or RS-232)
+  # ===========================================================================
+  - name: serialDevice
+    description: |-
+      Bergoz BCM-RF-E connected via local USB serial (USB CDC or RS-232).
+      Configures 9600 baud, 8N1, no flow control.
+      Creates the asyn serial port, loads bcm-rf.db.
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Asyn port name for this device (e.g. BCM1)
+
+      P:
+        type: str
+        description: |-
+          PV prefix (e.g. BCM:RF:01)
+
+      DEVICE:
+        type: str
+        description: |-
+          Serial device path (e.g. /dev/ttyACM0)
+        default: /dev/ttyACM0
+
+      BAUD:
+        type: int
+        description: |-
+          Baud rate
+        default: 9600
+
+      SCAN:
+        type: str
+        description: |-
+          Measurement scan period (EPICS scan string, e.g. "1 second")
+        default: "1 second"
+
+    pre_init:
+      - value: |
+          drvAsynSerialPortConfigure("{{NAME}}", "{{DEVICE}}", 0, 0, 0)
+          asynSetOption("{{NAME}}", 0, "baud",    "{{BAUD}}")
+          asynSetOption("{{NAME}}", 0, "bits",    "8")
+          asynSetOption("{{NAME}}", 0, "parity",  "none")
+          asynSetOption("{{NAME}}", 0, "stop",    "1")
+          asynSetOption("{{NAME}}", 0, "clocal",  "Y")
+          asynSetOption("{{NAME}}", 0, "crtscts", "N")
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(TURBO_BERGOZ_BCM)/db")
+
+    databases:
+      - file: $(TURBO_BERGOZ_BCM)/db/bcm-rf.db
+        args:
+          P: "{{P}}"
+          PORT: "{{NAME}}"
+          SCAN: "{{SCAN}}"

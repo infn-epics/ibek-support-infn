@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: turbo-bergoz-bcm
+organization: https://github.com/infn-epics
+
+# TODO: pin to a release tag for deterministic builds
+version: main
+
+# All runtime deps are standard support modules already in the base image.
+# List them so ibek includes them in the IOC's Makefile.
+dbds:
+  - asyn.dbd
+  - stream.dbd
+  - drvAsynIPPort.dbd
+  - drvAsynSerialPort.dbd
+  - calcSupport.dbd
+
+libs:
+  - stream
+  - asyn
+  - calc
+
+# StreamDevice protocol — deployed to db/ alongside bcm-rf.db
+protocol_files:
+  - db/bcm-rf.proto
+
+# Database template
+db_files:
+  - db/bcm-rf.db
