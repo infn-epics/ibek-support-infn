@@ -12,5 +12,5 @@ libs:
   - asyn
   - stream
 
-protocols:
+protocol_files:
   - TTI.proto
