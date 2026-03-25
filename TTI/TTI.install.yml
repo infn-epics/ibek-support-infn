@@ -13,4 +13,4 @@ libs:
   - stream
 
 protocol_files:
-  - TTI.proto
+  - db/TTI.proto
