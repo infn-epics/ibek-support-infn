@@ -47,8 +47,9 @@ entity_models:
 
     pre_init:
       - value: |
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "$(TTI_PS)/iocBoot/ioctest/"
           drvAsynIPPortConfigure("{{NAME}}", "{{IP}}:{{PORT}}", 0, 0, 0)
-                    asynSetOption("{{NAME}}", 0, "disconnectOnReadTimeout", "{% if DISCONNECT_ON_TIMEOUT %}Y{% else %}N{% endif %}")
+          # asynSetOption("{{NAME}}", 0, "disconnectOnReadTimeout", "{% if DISCONNECT_ON_TIMEOUT %}Y{% else %}N{% endif %}")
 
     databases:
       - file: TTI.template
