@@ -1,0 +1,201 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: motorPIGCS2
+
+entity_models:
+  - name: Controller
+    description: |-
+      Creates a PI GCS2 motor controller connected via IP/serial gateway.
+    parameters:
+      controllerName:
+        type: id
+        description: |-
+          The name of the controller and its asyn port name.
+
+      P:
+        type: str
+        description: |-
+          Device PV Prefix
+
+      IP:
+        type: str
+        description: |-
+          IP address or host name of the controller endpoint.
+        default: 127.0.0.1
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port of the controller endpoint.
+        default: 50000
+
+      ASYNPRIO:
+        type: int
+        description: |-
+          Asyn priority (drvAsynIPPortConfigure arg 3).
+        default: 0
+
+      AUTOCONNECT:
+        type: int
+        description: |-
+          Asyn auto connect flag (drvAsynIPPortConfigure arg 4).
+        default: 0
+
+      NOPROCESSEOS:
+        type: int
+        description: |-
+          Asyn noProcessEos flag (drvAsynIPPortConfigure arg 5).
+        default: 0
+
+      numAxes:
+        type: int
+        description: |-
+          Number of axes to create for this controller.
+
+      movingPollPeriod:
+        type: int
+        description: |-
+          Polling period in ms while an axis is moving.
+        default: 100
+
+      idlePollPeriod:
+        type: int
+        description: |-
+          Polling period in ms while all axes are idle.
+        default: 1000
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPROCESSEOS}})
+          PI_GCS2_CreateController("{{controllerName}}", "{{controllerName}}_ASYN", {{numAxes}}, 0, 0, {{movingPollPeriod}}, {{idlePollPeriod}})
+
+  - name: Axis
+    description: |-
+      Creates a motor axis using the standard asyn motor record.
+    parameters:
+      controller:
+        type: object
+        description: |-
+          A reference to the PI GCS2 motion controller.
+
+      M:
+        type: str
+        description: |-
+          PV suffix for the motor record.
+
+      ADDR:
+        type: int
+        description: |-
+          Axis index (0-based).
+
+      DESC:
+        type: str
+        description: |-
+          Axis description.
+        default: "PI GCS2 Axis"
+
+      DLLM:
+        type: float
+        description: |-
+          Low soft limit.
+        default: 0
+
+      DHLM:
+        type: float
+        description: |-
+          High soft limit.
+        default: 0
+
+      VELO:
+        type: float
+        description: |-
+          Velocity.
+        default: 5
+
+      DIR:
+        type: enum
+        description: |-
+          Axis direction.
+        default: Pos
+        values:
+          Pos: Pos
+          Neg: Neg
+
+      EGU:
+        type: str
+        description: |-
+          Engineering units.
+        default: mm
+
+      VBAS:
+        type: float
+        description: |-
+          Base velocity.
+        default: 0
+
+      ACCL:
+        type: float
+        description: |-
+          Acceleration time.
+        default: 0.2
+
+      BDST:
+        type: float
+        description: |-
+          Backlash distance.
+        default: 0
+
+      BVEL:
+        type: float
+        description: |-
+          Backlash velocity.
+        default: 1
+
+      BACC:
+        type: float
+        description: |-
+          Backlash acceleration time.
+        default: 0.2
+
+      MRES:
+        type: float
+        description: |-
+          Motor resolution.
+        default: 0.0005
+
+      PREC:
+        type: int
+        description: |-
+          Display precision.
+        default: 4
+
+      TWV:
+        type: float
+        description: |-
+          Tweak value.
+        default: 1.0
+
+    databases:
+      - file: basic_asyn_motor.db
+        args:
+          P: "{{controller.P}}"
+          N: "{{ADDR + 1}}"
+          M:
+          DTYP: asynMotor
+          PORT: "{{controller.controllerName}}"
+          ADDR:
+          DESC:
+          EGU:
+          DIR:
+          VELO:
+          VBAS:
+          ACCL:
+          BDST:
+          BVEL:
+          BACC:
+          MRES:
+          PREC:
+          DHLM:
+          DLLM:
+          TWV:
+          INIT: ""
