@@ -17,6 +17,7 @@ libs:
 
 protocol_files:
   - TPGSup/devTPG300.proto
+  - TPGSup/devTPG366.proto
   - TPGSup/devTPG500.proto
   - TPGSup/devTPGx00.proto
   - TPGSup/TPG36x.proto

@@ -68,13 +68,8 @@ entity_models:
           drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
 
     databases:
-      - file: TPG366.db
+      - file: devTPG366.db
         args:
-          CONTROLLER: '{{P}}:{{name}}'
+          P: '{{P}}:{{name}}'
+          R: ''
           PORT: '{{name}}'
-          S1: GAUGE1
-          S2: GAUGE2
-          S3: GAUGE3
-          S4: GAUGE4
-          S5: GAUGE5
-          S6: GAUGE6

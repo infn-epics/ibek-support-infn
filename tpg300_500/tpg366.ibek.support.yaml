@@ -1,0 +1,132 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+
+module: pfeiffer.tpg366
+
+entity_models:
+  - name: controller
+    description: |-
+      Create a TPG366 MaxiGauge controller (6-channel).
+      Sensor channels are loaded separately via pfeiffer.tpg366.sensor entities.
+    parameters:
+      name:
+        type: id
+        description: |-
+          The name of the controller and its Asyn Port Name
+
+      P:
+        type: str
+        description: |-
+          Device PV Prefix (CONTROLLER macro in the db templates,
+          e.g. EUAPS:VAC:VGC)
+
+      IP:
+        type: str
+        description: |-
+          IP address of the ethernet2serial
+        default: 127.0.0.1
+
+      TCPPORT:
+        type: int
+        description: |-
+          Port of the ethernet2serial
+        default: 8000
+
+      ASYNPRIO:
+        type: int
+        description: |-
+          ASYN priority, Default: 0
+        default: 0
+
+      AUTOCONNECT:
+        type: int
+        description: |-
+          Asyn auto connect
+          0: Auto connection
+          1: no Auto connection
+        default: 0
+
+      NOPRECESSESOS:
+        type: int
+        description: |-
+          ASYN noProcessEos, Default: 0
+          https://epics.anl.gov/tech-talk/2020/msg01705.php
+        default: 0
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+
+  - name: sensor
+    description: |-
+      Load one TPG366 sensor channel (TPG366-Sensor.template).
+      Instantiate once per active gauge channel.
+      Controller-level records (READ-STATUS, READ-INFOS, FWVER …) are included
+      in the template and are harmlessly redefined across multiple channels.
+    parameters:
+      controller:
+        type: object
+        description: |-
+          Reference to the pfeiffer.tpg366.controller
+
+      name:
+        type: str
+        description: |-
+          Sensor PV prefix (SENSOR macro).  Becomes the alias root for
+          :PRESSURE, :STATUS, :ONOFF … records.
+          e.g. EUAPS:VAC:VGC:PRVGA01
+
+      channel:
+        type: enum
+        description: |-
+          Measuring channel on the MaxiGauge (1 … 6)
+        values:
+          "1":
+          "2":
+          "3":
+          "4":
+          "5":
+          "6":
+
+      WARN:
+        type: str
+        description: |-
+          MINOR alarm threshold (pressure value or Inf for none)
+        default: "Inf"
+
+      ALARM:
+        type: str
+        description: |-
+          MAJOR alarm threshold (pressure value or Inf for none)
+        default: "Inf"
+
+      MIN:
+        type: int
+        description: |-
+          Minimal range exponent (LOPR = 1e<MIN>)
+        default: -11
+
+      MAX:
+        type: int
+        description: |-
+          Maximal range exponent (HOPR = 1e<MAX>)
+        default: 3
+
+      PREC:
+        type: int
+        description: |-
+          Display precision (negative = exponential notation digits)
+        default: -4
+
+    databases:
+      - file: TPG366-Sensor.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          CH: '{{channel}}'
+          SENSOR: '{{name}}'
+          WARN:
+          ALARM:
+          MIN:
+          MAX:
+          PREC:
