@@ -119,7 +119,7 @@ entity_models:
         default: -4
 
     databases:
-      - file: TPG366-Sensor.template
+      - file: $(TPG300_500)/tgpApp/Db/TPG366-Sensor.template
         args:
           CONTROLLER: '{{controller.P}}'
           PORT: '{{controller.name}}'
@@ -129,4 +129,66 @@ entity_models:
           ALARM:
           MIN:
           MAX:
+          PREC:
+
+  - name: setpoints
+    description: |-
+      Load all 6 TPG366 relay setpoints (TPG366-Setpoint.template, NR=1..6).
+      Instantiate once per controller; the template defines RELAY1..RELAY6
+      and associated SOURCE/LOW/HIGH/SET/UPDATE records on the controller PV prefix.
+    parameters:
+      controller:
+        type: object
+        description: |-
+          Reference to the pfeiffer.tpg366.controller
+
+      PREC:
+        type: int
+        description: |-
+          Display precision for setpoint pressure values
+          (negative = exponential notation digits)
+        default: -4
+
+    databases:
+      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "1"
+          NRC: "A"
+          PREC:
+      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "2"
+          NRC: "B"
+          PREC:
+      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "3"
+          NRC: "C"
+          PREC:
+      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "4"
+          NRC: "D"
+          PREC:
+      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "5"
+          NRC: "E"
+          PREC:
+      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "6"
+          NRC: "F"
           PREC:
