@@ -58,7 +58,7 @@ entity_models:
 
     pre_init:
       - value: |
-          epicsEnvSet "STREAM_PROTOCOL_PATH", "$(TPG366)/iocBoot/ioctest/"
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
           drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
 
   - name: sensor

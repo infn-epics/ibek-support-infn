@@ -121,7 +121,7 @@ entity_models:
         default: -4
 
     databases:
-      - file: $(TPG300_500)/tgpApp/Db/TPG366-Sensor.template
+      - file: $(TPG300_500)/tgpApp/Db/PFTPG366-Sensor.template
         args:
           CONTROLLER: '{{controller.P}}'
           PORT: '{{controller.name}}'
@@ -152,42 +152,42 @@ entity_models:
         default: -4
 
     databases:
-      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+      - file: $(TPG300_500)/tgpApp/Db/PFTPG366-Setpoint.template
         args:
           CONTROLLER: '{{controller.P}}'
           PORT: '{{controller.name}}'
           NR: "1"
           NRC: "A"
           PREC:
-      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+      - file: $(TPG300_500)/tgpApp/Db/PFTPG366-Setpoint.template
         args:
           CONTROLLER: '{{controller.P}}'
           PORT: '{{controller.name}}'
           NR: "2"
           NRC: "B"
           PREC:
-      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+      - file: $(TPG300_500)/tgpApp/Db/PFTPG366-Setpoint.template
         args:
           CONTROLLER: '{{controller.P}}'
           PORT: '{{controller.name}}'
           NR: "3"
           NRC: "C"
           PREC:
-      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+      - file: $(TPG300_500)/tgpApp/Db/PFTPG366-Setpoint.template
         args:
           CONTROLLER: '{{controller.P}}'
           PORT: '{{controller.name}}'
           NR: "4"
           NRC: "D"
           PREC:
-      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+      - file: $(TPG300_500)/tgpApp/Db/PFTPG366-Setpoint.template
         args:
           CONTROLLER: '{{controller.P}}'
           PORT: '{{controller.name}}'
           NR: "5"
           NRC: "E"
           PREC:
-      - file: $(TPG300_500)/tgpApp/Db/TPG366-Setpoint.template
+      - file: $(TPG300_500)/tgpApp/Db/PFTPG366-Setpoint.template
         args:
           CONTROLLER: '{{controller.P}}'
           PORT: '{{controller.name}}'
