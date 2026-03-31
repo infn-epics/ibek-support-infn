@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
 
-module: tpg300_500
+module: TPG366
 # TODO this should be a release tag to ensure deterministic builds.
 version: main
 
 # this module uses modbus so requires none of its own libs/dbds
-organization: https://github.com/infn-epics/
+organization: https://baltig.infn.it/lnf-da-control
 
 dbds:
   - asyn.dbd
@@ -14,4 +14,4 @@ libs:
   - asyn
 
 protocol_files:
-  - db/ipc.proto
+  - iocBoot/ioctest/TPG366.proto

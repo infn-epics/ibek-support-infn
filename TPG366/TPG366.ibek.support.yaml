@@ -1,18 +1,16 @@
 # yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
 
-# epicsEnvSet ("STREAM_PROTOCOL_PATH", "$(TOP)/agilentXgs600App/protocol")
-# drvAsynIPPortConfigure ("MOXA1","192.168.190.55:4002",0,0,0)
-# dbLoadRecords("$(TOP)/db/agilentXgs600Ctlr.template","device=GEN-CS-GP08:VGCON03, port=MOXA1")
-# dbLoadRecords("$(TOP)/db/agilentXgs600Img.template","device=LEL-VAC-GAUG10:CC, port=MOXA1, sensor=T1,tcauto=T3")
-# #
-
 
 module: TPG366
 
 entity_models:
-  - name: CreateCtrl
+  - name: controller
     description: |-
-      Create a TPG366 gauge controller
+      Create a TPG366 MaxiGauge controller (6-channel).
+      Sets STREAM_PROTOCOL_PATH to the TPG366 protocol directory and
+      configures the Asyn IP port.
+      Sensor channels are loaded separately via TPG366.sensor entities.
+      Relay setpoints are loaded via TPG366.setpoints.
     parameters:
       name:
         type: id
@@ -22,13 +20,14 @@ entity_models:
       P:
         type: str
         description: |-
-          Device PV Prefix
+          Device PV Prefix (CONTROLLER macro in the db templates,
+          e.g. EUAPS:VAC:VGC)
 
       IP:
         type: str
         description: |-
           IP address of the ethernet2serial
-        default: 127.0.0.1 ## localhost
+        default: 127.0.0.1
 
       TCPPORT:
         type: int
@@ -39,7 +38,7 @@ entity_models:
       ASYNPRIO:
         type: int
         description: |-
-          ASYN   PRIORITY, Default : 0
+          ASYN priority, Default: 0
         default: 0
 
       AUTOCONNECT:
@@ -53,23 +52,147 @@ entity_models:
       NOPRECESSESOS:
         type: int
         description: |-
-          ASYN   noProcessEos, Default : 0
+          ASYN noProcessEos, Default: 0
           https://epics.anl.gov/tech-talk/2020/msg01705.php
         default: 0
-
-      charLabel:
-        type: str
-        description: |-
-          label del sensore
 
     pre_init:
       - value: |
           epicsEnvSet "STREAM_PROTOCOL_PATH", "$(TPG366)/iocBoot/ioctest/"
           drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
 
+  - name: sensor
+    description: |-
+      Load one TPG366 sensor channel (TPG366-Sensor.template).
+      Instantiate once per active gauge channel.
+      Controller-level records (READ-STATUS, READ-INFOS …) are included
+      in the template and are harmlessly redefined across multiple channels.
+    parameters:
+      controller:
+        type: object
+        description: |-
+          Reference to the TPG366.controller
+
+      name:
+        type: str
+        description: |-
+          Sensor PV prefix (SENSOR macro). Becomes the alias root for
+          :PRESSURE, :STATUS, :ONOFF … records.
+          e.g. EUAPS:VAC:VGC:PRVGA01
+
+      channel:
+        type: enum
+        description: |-
+          Measuring channel on the MaxiGauge (1 … 6)
+        values:
+          "1":
+          "2":
+          "3":
+          "4":
+          "5":
+          "6":
+
+      WARN:
+        type: str
+        description: |-
+          MINOR alarm threshold (pressure value or Inf for none)
+        default: "Inf"
+
+      ALARM:
+        type: str
+        description: |-
+          MAJOR alarm threshold (pressure value or Inf for none)
+        default: "Inf"
+
+      MIN:
+        type: int
+        description: |-
+          Minimal range exponent (LOPR = 1e<MIN>)
+        default: -11
+
+      MAX:
+        type: int
+        description: |-
+          Maximal range exponent (HOPR = 1e<MAX>)
+        default: 3
+
+      PREC:
+        type: int
+        description: |-
+          Display precision (negative = exponential notation digits)
+        default: -3
+
     databases:
-      - file: devTPG366.db
+      - file: $(TPG366)/testApp/Db/TPG366-Sensor.template
         args:
-          P: '{{P}}:{{name}}'
-          R: ''
-          PORT: '{{name}}'
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          CH: '{{channel}}'
+          SENSOR: '{{name}}'
+          WARN:
+          ALARM:
+          MIN:
+          MAX:
+          PREC:
+
+  - name: setpoints
+    description: |-
+      Load all 6 TPG366 relay setpoints (TPG366-Setpoint.template, NR=1..6).
+      Instantiate once per controller; the template defines RELAY1..RELAY6
+      and associated SOURCE/LOW/HIGH/SET/UPDATE records on the controller PV prefix.
+    parameters:
+      controller:
+        type: object
+        description: |-
+          Reference to the TPG366.controller
+
+      PREC:
+        type: int
+        description: |-
+          Display precision for setpoint pressure values
+          (negative = exponential notation digits)
+        default: -3
+
+    databases:
+      - file: $(TPG366)/testApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "1"
+          NRC: "A"
+          PREC:
+      - file: $(TPG366)/testApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "2"
+          NRC: "B"
+          PREC:
+      - file: $(TPG366)/testApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "3"
+          NRC: "C"
+          PREC:
+      - file: $(TPG366)/testApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "4"
+          NRC: "D"
+          PREC:
+      - file: $(TPG366)/testApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "5"
+          NRC: "E"
+          PREC:
+      - file: $(TPG366)/testApp/Db/TPG366-Setpoint.template
+        args:
+          CONTROLLER: '{{controller.P}}'
+          PORT: '{{controller.name}}'
+          NR: "6"
+          NRC: "F"
+          PREC:
