@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
 
-module: danfysik-sys8x00
+module: danfysik_sys8x00
 organization: https://github.com/infn-epics/
 
 # TODO this should be a tag to make rebuilding the container deterministic
