@@ -15,12 +15,14 @@ entity_models:
       P:
         type: str
         description: |-
-          PV prefix for the controller records.
+          Base PV prefix for the controller records.
+          Example: SPARC:VAC:MIDIVAC
 
       R:
         type: str
         description: |-
-          Separator appended between the PV prefix and record names.
+          Suffix/separator appended after the base prefix before record names.
+          Use ":" for a single controller or values like ":UN1SIP01:" for per-device instances.
         default: ":"
 
       IP:
@@ -59,6 +61,12 @@ entity_models:
           Send the echo-off command after IOC startup for clean parsing.
         default: true
 
+      PRES_FACTOR:
+        type: float
+        description: |-
+          Multiplier applied to the measured current to derive the pressure readback.
+        default: 1.0
+
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
@@ -70,6 +78,7 @@ entity_models:
           P: "{{P}}"
           R: "{{R}}"
           PORT: "{{name}}_ASYN"
+          PRES_FACTOR: "{{PRES_FACTOR}}"
 
       - file: asynRecord.db
         args:
