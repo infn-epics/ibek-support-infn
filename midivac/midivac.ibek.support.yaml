@@ -1,0 +1,94 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: midivac
+
+entity_models:
+  - name: controller
+    description: |-
+      Varian MidiVac ion pump controller over StreamDevice and asyn IP.
+    parameters:
+      name:
+        type: id
+        description: |-
+          Controller instance name used as the asyn port prefix.
+
+      P:
+        type: str
+        description: |-
+          PV prefix for the controller records.
+
+      R:
+        type: str
+        description: |-
+          Separator appended between the PV prefix and record names.
+        default: ":"
+
+      IP:
+        type: str
+        description: |-
+          IP address or hostname of the ethernet-to-serial gateway.
+        default: 127.0.0.1
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port exposed by the serial gateway.
+        default: 4001
+
+      ASYNPRIO:
+        type: int
+        description: |-
+          Asyn priority passed to drvAsynIPPortConfigure.
+        default: 0
+
+      AUTOCONNECT:
+        type: int
+        description: |-
+          Asyn auto-connect flag.
+        default: 0
+
+      NOPRECESSESOS:
+        type: int
+        description: |-
+          noProcessEos flag for drvAsynIPPortConfigure.
+        default: 0
+
+      ECHO_OFF:
+        type: bool
+        description: |-
+          Send the echo-off command after IOC startup for clean parsing.
+        default: true
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "$(MIDIVAC)/db/"
+
+    databases:
+      - file: midivac.db
+        args:
+          P: "{{P}}"
+          R: "{{R}}"
+          PORT: "{{name}}_ASYN"
+
+      - file: asynRecord.db
+        args:
+          P: "{{P}}"
+          R: "{{R}}ASYN"
+          PORT: "{{name}}_ASYN"
+          ADDR: "0"
+          IMAX: "80"
+          OMAX: "80"
+
+    post_init:
+      - value: |
+          epicsThreadSleep(1.0)
+          {%- if ECHO_OFF %}
+          dbpf "{{P}}{{R}}EchoOff-Cmd" 1
+          epicsThreadSleep(0.2)
+          {%- endif %}
+          dbpf "{{P}}{{R}}Firmware-Sts.PROC" 1
+          dbpf "{{P}}{{R}}LocalRemote-Sts.PROC" 1
+          dbpf "{{P}}{{R}}HVStatus-Sts.PROC" 1
+          dbpf "{{P}}{{R}}Mode-Sts.PROC" 1
+          dbpf "{{P}}{{R}}ProtectI-Sts.PROC" 1

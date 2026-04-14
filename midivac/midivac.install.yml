@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: midivac
+version: main
+organization: https://github.com/infn-epics/
+
+dbds:
+  - asyn.dbd
+  - drvAsynIPPort.dbd
+  - stream.dbd
+
+libs:
+  - asyn
+  - stream
+
+protocol_files:
+  - db/midivac.proto
