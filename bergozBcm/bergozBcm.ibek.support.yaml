@@ -26,6 +26,7 @@ entity_models:
     description: |-
       Bergoz BCM-RF-E connected via TCP/IP (ethernet-to-serial / ser2net).
       Configure the converter for 9600 baud, 8N1.
+      Uses noProcessEos=1 for the LF+NUL protocol terminator.
       Creates the asyn IP port, enables disconnectOnReadTimeout, loads bcm-rf.db.
     parameters:
       NAME:
@@ -52,12 +53,13 @@ entity_models:
       SCAN:
         type: str
         description: |-
-          Measurement scan period (EPICS scan string, e.g. "1 second")
-        default: "1 second"
+          Measurement scan period (EPICS scan string, e.g. ".2 second")
+        default: ".2 second"
 
     pre_init:
       - value: |
-          drvAsynIPPortConfigure("{{NAME}}", "{{HOST}}:{{TCPPORT}}", 0, 0, 0)
+          # Keep noProcessEos=1 so StreamDevice handles the LF+NUL terminator.
+          drvAsynIPPortConfigure("{{NAME}}", "{{HOST}}:{{TCPPORT}}", 0, 0, 1)
           asynSetOption("{{NAME}}", 0, "disconnectOnReadTimeout", "Y")
           epicsEnvSet("STREAM_PROTOCOL_PATH", "$(TURBO_BERGOZ_BCM)/db")
 
@@ -102,8 +104,8 @@ entity_models:
       SCAN:
         type: str
         description: |-
-          Measurement scan period (EPICS scan string, e.g. "1 second")
-        default: "1 second"
+          Measurement scan period (EPICS scan string, e.g. ".2 second")
+        default: ".2 second"
 
     pre_init:
       - value: |
