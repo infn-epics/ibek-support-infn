@@ -137,19 +137,19 @@ entity_models:
           The description of the axis
 
       DLLM:
-        type: int
+        type: float
         description: |-
           The low limit of the axis
         default: 0
 
       DHLM:
-        type: int
+        type: float
         description: |-
           The high limit of the axis
         default: 0
 
       VELO:
-        type: int
+        type: float
         description: |-
           Velocity
         default: 3
