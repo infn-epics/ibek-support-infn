@@ -246,3 +246,7 @@ entity_models:
           DHLM:
           DLLM:
           INIT: ""
+    post_init:
+
+      - value: |
+          dbpf("{{controller.P}}:{{M}}.SYNC",1)
