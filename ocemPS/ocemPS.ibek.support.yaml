@@ -71,4 +71,59 @@ entity_models:
           P:
           R:
 
-  
+  - name: modbusps4chan
+    description: |-
+     OCEM Modbus Power Supply - 4 channels version
+
+    parameters:
+     P:
+      type: str
+      description: Device Prefix
+     R:
+      type: str
+      description: Device Suffix
+     IP:
+      description: |-
+          IP address of the Power Supply
+      type: str
+      default: 127.0.0.1
+     TCPPORT:
+      description: |-
+          TCP PORT of the Power Supply
+      type: int
+      default: 502
+
+     VMAX:
+      description: |-
+          Voltage MAX
+      type: int
+      default: 16
+     IMAX:
+      description: |-
+          Current MAX
+      type: int
+      default: 30
+
+    pre_init:
+    - value: |
+        drvAsynIPPortConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
+        modbusInterposeConfig("{{R}}_ASYN", 0, 0, 0)
+
+        drvModbusAsynConfigure("{{R}}_command_port", "{{R}}_ASYN", 1, 6, 0, 13, 0, 1000, "OCEM")
+        drvModbusAsynConfigure("{{R}}_readback_all", "{{R}}_ASYN", 1, 4, 20, 23, 0, 1000, "OCEM")
+
+    databases:
+    - file: OCEMPowerSupply4chan.db
+      args:
+        P:
+        R:
+        READ_ALL: "{{R}}_readback_all"
+        CMD_PORT: "{{R}}_command_port"
+        IMAX:
+        VMAX:
+        
+
+    - file: unimag-ocem4chan.db
+      args:
+        P:
+        R:
