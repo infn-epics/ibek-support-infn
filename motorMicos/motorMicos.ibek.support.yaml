@@ -249,4 +249,4 @@ entity_models:
     post_init:
 
       - value: |
-          dbpf("{{controller.P}}:{{M}}.SYNC",1)
+          dbpf("{{controller.P}}{{M}}.SYNC",1)
