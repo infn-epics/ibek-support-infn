@@ -250,4 +250,5 @@ entity_models:
 
       - value: |
         epicsThreadSleep(1.0)
+      - value: |
         dbpf("{{controller.P}}{{M}}.SYNC",1)        
