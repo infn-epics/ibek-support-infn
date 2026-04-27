@@ -249,6 +249,5 @@ entity_models:
     post_init:
 
       - value: |
-        epicsThreadSleep(1.0)
-      - value: |
-        dbpf("{{controller.P}}{{M}}.SYNC",1)        
+          dbpf("{{controller.P}}{{M}}.SYNC",1)
+          epicsThreadSleep(1.0)
