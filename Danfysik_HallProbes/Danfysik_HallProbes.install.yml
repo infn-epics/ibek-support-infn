@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: Danfysik_HallProbes
+organization: https://github.com/infn-epics/
+
+# TODO this should be a release tag to make rebuilding the container deterministic
+version: main
+
+macro: DANFYSIK_HALLPROBES
+
+dbds:
+  - asyn.dbd
+  - drvAsynIPPort.dbd
+  - stream.dbd
+
+libs:
+  - asyn
+  - stream
+
+protocol_files:
+  - db/hallprobe.proto

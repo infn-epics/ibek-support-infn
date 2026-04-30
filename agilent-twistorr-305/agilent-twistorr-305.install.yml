@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: agilent-twistorr-305
+version: main
+organization: https://baltig.infn.it/lnf-da-control/
+
+macro: AGILENT_TWISTORR_305
+
+dbds:
+  - asyn.dbd
+  - drvAsynIPPort.dbd
+  - drvAsynSerialPort.dbd
+  - modbusSupport.dbd
+  - stream.dbd
+
+libs:
+  - asyn
+  - modbus
+  - stream
+
+protocol_files:
+  - iocBoot/agilent-twistorr-305-ioc/agilent-twistorr-305.proto

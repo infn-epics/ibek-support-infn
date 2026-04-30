@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: Danfysik_HallProbes
+
+entity_models:
+  - name: hallprobe
+    description: |-
+      Danfysik Hall Probe monitor over TCP/IP using StreamDevice.
+      Creates one asyn IP port and loads the hallprobe database.
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Asyn port name.
+      P:
+        type: str
+        description: |-
+          PV prefix.
+      R:
+        type: str
+        description: |-
+          PV suffix.
+        default: ""
+      IP:
+        type: str
+        description: |-
+          Hall probe controller IP address.
+      TCPPORT:
+        type: int
+        description: |-
+          Hall probe TCP port.
+        default: 4002
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{NAME}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(DANFYSIK_HALLPROBES)/db")
+
+    databases:
+      - file: hallprobe.db
+        args:
+          P:
+          R:
+          PORT: "{{NAME}}"

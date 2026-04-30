@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: agilent.twistorr305
+
+entity_models:
+  - name: controller
+    description: |-
+      Create an Agilent TwisTorr 305 controller over TCP/IP.
+    parameters:
+      name:
+        type: id
+        description: |-
+          Controller identifier and logical asyn port basename.
+      P:
+        type: str
+        description: |-
+          PV prefix used by pump instances attached to this controller.
+      IP:
+        type: str
+        description: |-
+          Controller IP address.
+        default: 127.0.0.1
+      TCPPORT:
+        type: int
+        description: |-
+          Controller TCP port.
+        default: 4005
+      ASYNPRIO:
+        type: int
+        description: |-
+          asyn priority.
+        default: 0
+      AUTOCONNECT:
+        type: int
+        description: |-
+          asyn auto-connect flag (0 auto, 1 no auto).
+        default: 0
+      NOPROCESSEOS:
+        type: int
+        description: |-
+          asyn noProcessEos flag.
+        default: 0
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPROCESSEOS}})
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(AGILENT_TWISTORR_305)/iocBoot/agilent-twistorr-305-ioc")
+
+  - name: pump
+    description: |-
+      Load one Agilent TwisTorr 305 device database instance.
+    parameters:
+      controller:
+        type: object
+        description: |-
+          Reference to an agilent.twistorr305.controller entity.
+      name:
+        type: str
+        description: |-
+          Pump PV suffix.
+      addr:
+        type: str
+        description: |-
+          Device protocol address (e.g. 0x80 for RS232).
+        default: "0x80"
+
+    databases:
+      - file: agilent-twistorr-305.db
+        args:
+          device: '{{controller.P}}:{{name}}'
+          addr: '{{addr}}'
+          port: '{{controller.name}}_ASYN'
