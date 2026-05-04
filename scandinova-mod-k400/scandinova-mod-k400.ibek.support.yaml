@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: scandinova-mod-k400
+
+entity_models:
+  - name: RFModulator
+    description: |-
+      Create a Scandinova K400 RF Modulator controller using Modbus TCP/IP.
+      This configuration reuses the original startup command file from the
+      scandinova-mod-k400 support repository.
+    parameters:
+      name:
+        type: id
+        description: |-
+          The modulator identifier (e.g., "1", "2", "3")
+
+      P:
+        type: str
+        description: |-
+          Device PV prefix (e.g., "MODXX003")
+
+      SLAVE_ADDR:
+        type: int
+        description: |-
+          Modbus slave address
+        default: 1
+
+      IP:
+        type: str
+        description: |-
+          IP address or hostname of the RF Modulator
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port of the Modbus interface
+        default: 502
+
+    pre_init:
+      - value: |
+          #############################################################################
+          # Scandinova RF Modulator K400 {{name}}
+          #############################################################################
+          epicsEnvSet("RFMOD_ID", "{{name}}")
+          epicsEnvSet("RFMOD_SLAVE_ADDR", "{{SLAVE_ADDR}}")
+          epicsEnvSet("RFMOD_TCP_IP", "{{IP}}")
+          epicsEnvSet("RFMOD_TCP_PORT", "{{TCPPORT}}")
+          < "$(SCANDINOVA_MOD_K400)/iocBoot/rr-c-ioc-sparc-001/sparc-scandinova-k400.cmd"
+
+    databases:
+      - file: $(SCANDINOVA_MOD_K400)/rr-c-ioc-sparc-001App/Db/sparc-scandinova-k400.db
+        args:
+          RFMOD_ASYNPORT: 'RFMod_{{name}}'
+          PREFIX: '{{P}}'
+
+    post_init:
+      - value: |
+          ## Optional: print database record list for modulator {{name}}
+          # dbl

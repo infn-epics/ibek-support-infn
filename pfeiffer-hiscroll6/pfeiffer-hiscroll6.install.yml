@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: pfeiffer-hiscroll6
+version: main
+organization: https://baltig.infn.it/lnf-da-control/
+
+macro: PFEIFFER_HISCROLL6
+
+dbds:
+  - asyn.dbd
+  - drvAsynIPPort.dbd
+  - drvAsynSerialPort.dbd
+  - stream.dbd
+
+libs:
+  - asyn
+  - stream
+
+protocol_files:
+  - pfeiffer-hiscroll6App/Db/pfeiffer-hiscroll6.proto

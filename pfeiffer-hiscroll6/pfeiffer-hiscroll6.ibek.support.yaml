@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: pfeiffer-hiscroll6
+
+entity_models:
+  - name: pump
+    description: |-
+      Create a Pfeiffer HiScroll 6 pump controller using StreamDevice over TCP/IP.
+      The DB macros are:
+        device = PV prefix (e.g. "SPARC:VAC:PUMP01")
+        addr   = Pfeiffer serial address as 3-digit string (e.g. "002")
+        port   = asyn port name
+    parameters:
+      name:
+        type: id
+        description: |-
+          The name of the asyn port for this pump
+
+      P:
+        type: str
+        description: |-
+          Device PV prefix (e.g. "SPARC:VAC:PUMP01")
+
+      ADDR:
+        type: str
+        description: |-
+          Pfeiffer serial address as 3-digit string (e.g. "002")
+        default: "002"
+
+      IP:
+        type: str
+        description: |-
+          IP address or hostname of the TCP/serial converter
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port of the serial converter
+        default: 4001
+
+    pre_init:
+      - value: |
+          #############################################################################
+          # Pfeiffer HiScroll 6 pump {{name}}
+          #############################################################################
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(PFEIFFER_HISCROLL6)/pfeiffer-hiscroll6App/Db")
+          drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+
+    databases:
+      - file: $(PFEIFFER_HISCROLL6)/pfeiffer-hiscroll6App/Db/pfeiffer-hiscroll6.db
+        args:
+          device: '{{P}}'
+          addr: '{{ADDR}}'
+          port: '{{name}}'
+
+    post_init:
+      - value: |
+          ## Optional: print database record list for pump {{name}}
+          # dbl
