@@ -19,4 +19,4 @@ libs:
   - stream
 
 protocol_files:
-  - iocBoot/agilent-twistorr-305-ioc/agilent-twistorr-305.proto
+  - agilent-twistorr-305-iocApp/Db/agilent-twistorr-305.proto
