@@ -44,7 +44,7 @@ entity_models:
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{name}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPROCESSEOS}})
-          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(AGILENT_TWISTORR_305)/iocBoot/agilent-twistorr-305-ioc")
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/")
 
   - name: pump
     description: |-
