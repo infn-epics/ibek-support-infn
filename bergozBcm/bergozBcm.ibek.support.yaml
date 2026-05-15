@@ -60,7 +60,7 @@ entity_models:
       - value: |
           # Keep noProcessEos=1 so StreamDevice handles the LF+NUL terminator.
           drvAsynIPPortConfigure("{{NAME}}", "{{HOST}}:{{TCPPORT}}", 0, 0, 1)
-          asynSetOption("{{NAME}}", 0, "disconnectOnReadTimeout", "Y")
+          # asynSetOption("{{NAME}}", 0, "disconnectOnReadTimeout", "Y")
           epicsEnvSet("STREAM_PROTOCOL_PATH", "$(TURBO_BERGOZ_BCM)/db")
 
     databases:
