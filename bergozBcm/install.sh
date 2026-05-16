@@ -16,10 +16,10 @@ set -xe
 ibek support git-clone ${NAME} ${VERSION} --org https://github.com/infn-epics/
 ibek support register ${NAME}
 
-# no custom library — all deps (asyn, stream, calc) are already in the base image.
-# declare them so they are linked into the IOC that uses this support.
-ibek support add-libs asyn stream calc
-ibek support add-dbds asyn.dbd stream.dbd drvAsynIPPort.dbd drvAsynSerialPort.dbd calcSupport.dbd
+# The native bcmAsynMon driver manages its own TCP socket.
+# No StreamDevice or drvAsynIPPort/SerialPort needed.
+ibek support add-libs asyn calc
+ibek support add-dbds asyn.dbd bcmAsynMon.dbd calcSupport.dbd
 
 # global config settings (CROSS_COMPILER_TARGET_ARCHS, etc.)
 ${FOLDER}/../_global/install.sh ${NAME}

@@ -6,23 +6,18 @@ organization: https://github.com/infn-epics
 # TODO: pin to a release tag for deterministic builds
 version: main
 
-# All runtime deps are standard support modules already in the base image.
-# List them so ibek includes them in the IOC's Makefile.
+# The native bcmAsynMon driver manages its own TCP socket — no StreamDevice
+# or drvAsynIPPort required. bcmAsynMon.dbd registers the iocsh configure
+# command. asyn and calc are standard base-image deps.
 dbds:
   - asyn.dbd
-  - stream.dbd
-  - drvAsynIPPort.dbd
-  - drvAsynSerialPort.dbd
+  - bcmAsynMon.dbd
   - calcSupport.dbd
 
 libs:
-  - stream
   - asyn
   - calc
-
-# StreamDevice protocol — deployed to db/ alongside bcm-rf.db
-protocol_files:
-  - db/bcm-rf.proto
+  - bcmAsynMonSupport
 
 # Database template
 db_files:
