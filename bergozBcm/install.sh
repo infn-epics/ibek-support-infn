@@ -18,8 +18,8 @@ ibek support register ${NAME}
 
 # The native bcmAsynMon driver manages its own TCP socket.
 # No StreamDevice or drvAsynIPPort/SerialPort needed.
-ibek support add-libs asyn calc
-ibek support add-dbds asyn.dbd bcmAsynMon.dbd calcSupport.dbd
+ibek support add-libs asyn calc bcmAsynMonSupport
+ibek support add-dbds asyn.dbd bcm-rf-ioc.dbd calcSupport.dbd
 
 # global config settings (CROSS_COMPILER_TARGET_ARCHS, etc.)
 ${FOLDER}/../_global/install.sh ${NAME}

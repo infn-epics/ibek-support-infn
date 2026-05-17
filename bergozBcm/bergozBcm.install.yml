@@ -7,10 +7,11 @@ organization: https://github.com/infn-epics
 version: main
 
 # The native bcmAsynMon driver manages its own TCP socket — no StreamDevice
-# or drvAsynIPPort required. bcmAsynMon.dbd registers the iocsh configure
-# command. asyn and calc are standard base-image deps.
+# or drvAsynIPPort required. bcm-rf-ioc.dbd includes the bcmAsynMon
+# registrar. asyn and calc are standard base-image deps.
 dbds:
   - asyn.dbd
+  - bcm-rf-ioc.dbd
   - calcSupport.dbd
 
 libs:
