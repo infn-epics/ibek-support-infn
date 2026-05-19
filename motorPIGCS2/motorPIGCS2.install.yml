@@ -5,7 +5,6 @@ version: master
 organization: https://github.com/epics-motor
 
 dbds:
-  - pigcs2.dbd
   - base.dbd
   - asyn.dbd
   - drvAsynSerialPort.dbd

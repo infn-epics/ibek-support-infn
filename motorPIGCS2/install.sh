@@ -15,7 +15,7 @@ ibek support register ${NAME}
 
 # declare the libs and DBDs that are required in ioc/iocApp/src/Makefile
 ibek support add-libs PI_GCS2Support motor asyn
-ibek support add-dbds pigcs2.dbd base.dbd asyn.dbd drvAsynSerialPort.dbd drvAsynIPPort.dbd motorSupport.dbd PI_GCS2Support.dbd
+ibek support add-dbds base.dbd asyn.dbd drvAsynSerialPort.dbd drvAsynIPPort.dbd motorSupport.dbd PI_GCS2Support.dbd
 
 # global config settings
 ${FOLDER}/../_global/install.sh ${NAME}
