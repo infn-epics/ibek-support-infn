@@ -179,7 +179,7 @@ entity_models:
       - file: basic_asyn_motor.db
         args:
           P: "{{controller.P}}"
-          N: "{{ADDR + 1}}"
+          N: "{{ADDR}}"
           M:
           DTYP: asynMotor
           PORT: "{{controller.controllerName}}"
