@@ -128,8 +128,3 @@ entity_models:
         P:
         R:
 
-    - file: OCEM4chanParent.db
-      args:
-        P:
-        CHANNEL:
-        CRATE:
