@@ -13,3 +13,6 @@ libs:
   - Micos
   - motor
   - asyn
+
+runtime_files:
+  - /epics/support/motorMicos/config/MP21.init.txt

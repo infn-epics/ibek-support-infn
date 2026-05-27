@@ -106,10 +106,28 @@ entity_models:
           Debug level: 0=off, 1=errors, 2=status every 5s, 3=commands, 4=verbose
         default: 0
 
+      sendVelAccel:
+        type: int
+        description: |-
+          1 to send velocity/acceleration values on every move.
+          0 to keep controller values loaded at startup (for example from configFile).
+        default: 1
+
+      configFile:
+        type: str
+        description: |-
+          Optional controller configuration file path consumed by the Micos driver.
+          Leave empty to use driver defaults.
+        default: ""
+
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPRECESSESOS}})
-          SMCpolluxCreateController("{{controllerName}}", "{{controllerName}}_ASYN", "{{numAxes}}", {{movingPollPeriod}}, {{idlePollPeriod}},"{{mapAxes}}", {{debug}}) 
+          SMCpolluxCreateController("{{controllerName}}", "{{controllerName}}_ASYN", "{{numAxes}}", {{movingPollPeriod}}, {{idlePollPeriod}},"{{mapAxes}}", {{debug}}, {% if configFile %}"{{configFile}}"{% else %}""{% endif %})
+
+    post_init:
+      - value: |
+          SMCpolluxSetSendVelAccel("{{controllerName}}", {{sendVelAccel}})
 
   # DIR=Pos,DESC=M0,EGU=degrees,VMAX=5.,VELO=3.,VBAS=.5,ACCL=.5,BDST=0,BVEL=1.0,BACC=2,MRES=001,PREC=2,DHLM=12,DLLM=
   - name: axis
