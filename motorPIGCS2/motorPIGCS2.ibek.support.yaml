@@ -63,11 +63,23 @@ entity_models:
         description: |-
           Polling period in ms while all axes are idle.
         default: 1000
+      
+      yesNoRefFlag:
+        type: int
+        description: |-
+          1 if motor needs referencing (non-PI motors), 0 if not.
+        default: 0
+
+      configFile: 
+        type: str
+        description: |-
+          path and name of hardware parameters configuration file.
+        default: ""
 
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPROCESSEOS}})
-          PI_GCS2_CreateController("{{controllerName}}", "{{controllerName}}_ASYN", {{numAxes}}, 0, 0, {{movingPollPeriod}}, {{idlePollPeriod}})
+          PI_GCS2_CreateController("{{controllerName}}", "{{controllerName}}_ASYN", {{numAxes}}, 0, 0, {{movingPollPeriod}}, {{idlePollPeriod}}, {{yesNoRefFlag}}, {{configFile}})
 
   - name: Axis
     description: |-
