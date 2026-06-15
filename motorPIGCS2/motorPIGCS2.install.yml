@@ -16,3 +16,6 @@ libs:
   - PI_GCS2Support
   - motor
   - asyn
+
+runtime_files:
+  - /epics/support/motorPIGCS2/iocs/pigcs2IOC/iocBoot/iocPIGCS2/config_5101.07-174_175.txt
