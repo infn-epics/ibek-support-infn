@@ -17,3 +17,6 @@ libs:
   - stream
   - seq
   - danfysikSupport
+
+protocol_files:
+  - db/danfysik.proto
