@@ -74,12 +74,12 @@ entity_models:
         type: str
         description: |-
           path and name of hardware parameters configuration file.
-        default: ""
+  #      default: ""
 
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{controllerName}}_ASYN", "{{IP}}:{{TCPPORT}}", {{ASYNPRIO}}, {{AUTOCONNECT}}, {{NOPROCESSEOS}})
-          PI_GCS2_CreateController("{{controllerName}}", "{{controllerName}}_ASYN", {{numAxes}}, 0, 0, {{movingPollPeriod}}, {{idlePollPeriod}}, {{yesNoRefFlag}}, {{configFile}})
+          PI_GCS2_CreateController("{{controllerName}}", "{{controllerName}}_ASYN", {{numAxes}}, 0, 0, {{movingPollPeriod}}, {{idlePollPeriod}}, {{yesNoRefFlag}}, "{{configFile}}")
 
   - name: Axis
     description: |-
