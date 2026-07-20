@@ -18,4 +18,4 @@ libs:
   - asyn
 
 runtime_files:
-  - /epics/support/motorPIGCS2/iocs/pigcs2IOC/iocBoot/iocPIGCS2/config_5101.07-174_175.txt
+  - //epics/generic-source/ibek-support-infn/motorPIGCS2/config/config_5101.07-174_175.txt
