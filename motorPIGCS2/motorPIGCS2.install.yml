@@ -2,7 +2,7 @@
 
 module: motorPIGCS2
 version: master
-organization: https://github.com/epics-motor
+organization: https://github.com/infn-epics
 
 dbds:
   - base.dbd
@@ -18,4 +18,4 @@ libs:
   - asyn
 
 runtime_files:
-  - //epics/generic-source/ibek-support-infn/motorPIGCS2/config/config_5101.07-174_175.txt
+  - /epics/generic-source/ibek-support-infn/motorPIGCS2/config/config_5101.07-174_175.txt
