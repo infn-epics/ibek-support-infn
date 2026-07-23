@@ -38,16 +38,29 @@ The module provides the following main record groups:
 
 ## Configuration Example
 
+Each device is a single `EEI.ps` entity - it declares its own TCP/IP connection directly, there is no
+separate connection entity:
+
 ```yaml
-- type: psEEI.tcp
-  name: EEI_TCP
-  P: "EEI:"
+- type: EEI.ps
+  P: "EEI"
+  R: "PS01"
   IP: "192.168.190.153"
   TCPPORT: 502
-
-- type: psEEI.ps
-  tcpctrl: EEI_TCP
-  R: "PS01"
   SLAVE_ID: 1
   MAX_CURR: 330000
+  MIN_CURR: -330000
+```
+
+For a pulsed-dipole/H-bridge unit (no polarity contactors - see `psEEI.ibek.support.yaml` for the full
+parameter list and defaults):
+
+```yaml
+- type: EEI.ps
+  P: "EEI"
+  R: "DHPTB102"
+  IP: "192.168.190.157"
+  MAX_CURR: 100000
+  MIN_CURR: -100000
+  POLARITY_VIA_SIGN: 1
 ```

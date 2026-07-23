@@ -52,6 +52,22 @@ entity_models:
         description: |-
           Minimum current in mA
         default: -330000
+      SW_MODE:
+        type: int
+        description: |-
+          Boot default for Software mode (1) vs Triggered mode (0). In
+          Triggered mode a pending write - including a polarity change -
+          only applies once CMD_START_RAMP is pulsed. Can be toggled live
+          at runtime via CFG_POLARITY_VIA_SIGN's sibling PV MODE_SW_ENABLE.
+        default: 1
+      POLARITY_VIA_SIGN:
+        type: int
+        description: |-
+          Set to 1 for pulsed-dipole/H-bridge units (e.g. DHPTB102) that have
+          no polarity contactors and instead reverse current electronically
+          via the CURRENT_SP_SIGN bit committed by CMD_START_RAMP. Default 0
+          (contactor-based polarity) for quadrupole/normal-dipole units.
+        default: 0
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{IP}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
@@ -77,6 +93,8 @@ entity_models:
           P: '{{P}}:{{R}}'
           MAX_CURR: '{{MAX_CURR}}'
           MIN_CURR: '{{MIN_CURR}}'
+          SW_MODE: '{{SW_MODE}}'
+          POLARITY_VIA_SIGN: '{{POLARITY_VIA_SIGN}}'
     
     post_init: 
       - value: |
