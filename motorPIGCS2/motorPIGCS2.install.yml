@@ -19,3 +19,4 @@ libs:
 
 runtime_files:
   - /epics/generic-source/ibek-support-infn/motorPIGCS2/config/config_5101.07-174_175.txt
+  - /epics/generic-source/ibek-support-infn/motorPIGCS2/config/config_PI_VT-80.txt
