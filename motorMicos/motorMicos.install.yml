@@ -16,3 +16,4 @@ libs:
 
 runtime_files:
   - /epics/support/motorMicos/config/MP21.init.txt
+  - /epics/support/motorMicos/config/Silver_bullet_extreme.txt
