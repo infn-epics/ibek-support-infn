@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: PTUControl
+
+entity_models:
+  - name: meteo
+    description: |-
+      Yocto-Meteo V2 temperature, humidity and pressure monitor.
+
+    parameters:
+      name:
+        type: str
+        description: asyn port name
+
+      P:
+        type: str
+        description: EPICS PV prefix
+
+      hubAddress:
+        type: str
+        description: Address of the Yoctopuce VirtualHub
+
+      serialNumber:
+        type: str
+        description: Yocto-Meteo V2 serial number
+
+      pollPeriod:
+        type: float
+        description: Polling period in seconds
+        default: 2.0
+
+    pre_init:
+      - value: |
+          YoctoMeteoConfigure("{{name}}","{{hubAddress}}","{{serialNumber}}",{{pollPeriod}})
+
+    databases:
+      - file: PTUControl.db
+        args:
+          P:
+          PORT: "{{name}}"

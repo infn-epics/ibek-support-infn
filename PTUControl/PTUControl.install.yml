@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: PTU_control
+organization: https://github.com/ediociat/
+
+version: main
+recursive: true
+
+dbds:
+  - asyn.dbd
+  - YoctoMeteoSupport.dbd
+
+libs:
+  - asyn
+  - PTUControlSupport
