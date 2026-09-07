@@ -3,7 +3,7 @@
 module: PTU_control
 organization: https://github.com/ediociat/
 
-version: main
+version: v26.9.07
 recursive: true
 
 dbds:
