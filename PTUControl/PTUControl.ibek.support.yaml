@@ -16,6 +16,10 @@ entity_models:
         type: str
         description: EPICS PV prefix
 
+      R:
+        type: str
+        description: EPICS PV suffix  
+
       hubAddress:
         type: str
         description: Address of the Yoctopuce VirtualHub
@@ -36,5 +40,6 @@ entity_models:
     databases:
       - file: PTUControl.db
         args:
-          P:
+          P: "{{P}}"
+          R: "{{R}}"
           PORT: "{{name}}"

@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
 
 module: PTU_control
-organization: https://github.com/ediociat/
+organization: https://github.com/infn-epics/
 
 version: v26.9.07
 recursive: true
