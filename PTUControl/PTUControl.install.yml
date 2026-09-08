@@ -3,7 +3,7 @@
 module: PTU_control
 organization: https://github.com/infn-epics/
 
-version: v26.9.07
+version: main
 recursive: true
 
 dbds:
