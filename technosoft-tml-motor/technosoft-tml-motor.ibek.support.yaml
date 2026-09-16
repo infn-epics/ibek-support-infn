@@ -170,6 +170,12 @@ entity_models:
           Motor resolution (EGU per step)
         default: 0.001
 
+      ARES:
+        type: float
+        description: |-
+          Encoder resolution (EGU per encoder count), passed to the motor
+          record's ERES field. Defaults to MRES when omitted.
+
       PREC:
         type: int
         description: |-
@@ -219,7 +225,7 @@ entity_models:
           TmlAxisConfig("{{controller.controllerName}}", {{axisNo}}, {{axisId}}, "$(TECHNOSOFT_TML_MOTOR)/tml_lib/config/{{setupFile}}", "{{homingSwitch}}", {{ignoreLSP}}, {{ignoreLSN}}, {{scrValue}})
 
           # Load motor record
-          dbLoadRecords("$(TECHNOSOFT_TML_MOTOR)/db/motor.db", "P={{controller.P}},M={{M}},DESC={{DESC}},PORT={{controller.controllerName}},ADDR={{axisNo}},DIR={{DIR}},MRES={{MRES}},EGU={{EGU}},DHLM={{DHLM}},DLLM={{DLLM}},VELO={{VELO}},VBAS={{VBAS}},ACCS={{ACCS}},BDST={{BDST}},BVEL={{BVEL}},BACC={{BACC}},PREC={{PREC}},TWV={{TWV}}")
+          dbLoadRecords("$(TECHNOSOFT_TML_MOTOR)/db/motor.db", "P={{controller.P}},M={{M}},DESC={{DESC}},PORT={{controller.controllerName}},ADDR={{axisNo}},DIR={{DIR}},MRES={{MRES}},ARES={{ARES | default(MRES, true)}},EGU={{EGU}},DHLM={{DHLM}},DLLM={{DLLM}},VELO={{VELO}},VBAS={{VBAS}},ACCS={{ACCS}},BDST={{BDST}},BVEL={{BVEL}},BACC={{BACC}},PREC={{PREC}},TWV={{TWV}}")
 
           # Load TML-specific compatibility records
           dbLoadRecords("$(TECHNOSOFT_TML_MOTOR)/db/tml_compat.db", "P={{controller.P}},M={{M}},PORT={{controller.controllerName}},ADDR={{axisNo}}")
