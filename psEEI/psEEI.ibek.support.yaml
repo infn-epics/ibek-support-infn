@@ -68,6 +68,30 @@ entity_models:
           via the CURRENT_SP_SIGN bit committed by CMD_START_RAMP. Default 0
           (contactor-based polarity) for quadrupole/normal-dipole units.
         default: 0
+      ZERO_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A used by the UNIMAG sequencer to decide the current is
+          zero before going to standby / changing polarity. Exact zero is never
+          reached on real hardware (sensor noise, regulator dead-band). Can be
+          changed live via the ZERO_TOLERANCE PV.
+        default: 2.0
+      SET_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A within which the readback must get of the requested
+          current for it to count as reached; otherwise SP_NOT_REACHED is raised
+          (STATE_RB=6, MINOR) when SET_TIMEOUT_S expires. 0 disables the check.
+          Can be changed live via the SET_TOLERANCE PV.
+        default: 1.0
+      SET_TIMEOUT_S:
+        type: float
+        description: |-
+          Timeout in s for each wait of the UNIMAG sequencer (zero current,
+          standby, polarity switch, power on, setpoint reached). A failed step
+          raises ST_NOT_REACHED (STATE_RB=7, MAJOR). Can be changed live via the
+          SET_TIMEOUT_S PV.
+        default: 30.0
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{IP}}_ASYN", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
@@ -95,6 +119,9 @@ entity_models:
           MIN_CURR: '{{MIN_CURR}}'
           SW_MODE: '{{SW_MODE}}'
           POLARITY_VIA_SIGN: '{{POLARITY_VIA_SIGN}}'
+          ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
+          SET_TOLERANCE: '{{SET_TOLERANCE}}'
+          SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
     
     post_init: 
       - value: |

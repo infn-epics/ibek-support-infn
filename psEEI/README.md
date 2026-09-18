@@ -52,6 +52,34 @@ separate connection entity:
   MIN_CURR: -330000
 ```
 
+### Sequencer tolerances and timeout
+
+The UNIMAG sequencer (`unimagEEIControl`) does not wait for an exact zero or an exact setpoint - neither is ever
+reached on real hardware (sensor noise, regulator dead-band). Three optional parameters tune it per unit; each is
+also a live PV (`<P>:<R>:ZERO_TOLERANCE`, `SET_TOLERANCE`, `SET_TIMEOUT_S`) that can be changed at runtime:
+
+| parameter | default | meaning |
+|---|---|---|
+| `ZERO_TOLERANCE` | 2.0 A | \|readback\| at or below this counts as zero before standby / polarity change |
+| `SET_TOLERANCE` | 1.0 A | readback within this of the request counts as reached (0 disables the check) |
+| `SET_TIMEOUT_S` | 30.0 s | timeout of every wait (zero, standby, polarity, power on, setpoint) |
+
+A step that times out raises `ST_NOT_REACHED` (`STATE_RB` = 7, MAJOR); a setpoint not reached within
+`SET_TOLERANCE` raises `SP_NOT_REACHED` (`STATE_RB` = 6, MINOR). Both clear on the next setpoint or `CMD_RESET`.
+
+```yaml
+- type: EEI.ps
+  P: "EEI"
+  R: "QUAD01"
+  IP: "192.168.190.152"
+  ZERO_TOLERANCE: 1.5
+  SET_TOLERANCE: 0.5
+  SET_TIMEOUT_S: 45
+```
+
+With the `psEEI` template of `ibek-templates`, set `zero_tolerance` / `set_tolerance` / `set_timeout_s` once
+at IOC level and/or per device (the device value wins); when omitted, the defaults above apply.
+
 For a pulsed-dipole/H-bridge unit (no polarity contactors - see `psEEI.ibek.support.yaml` for the full
 parameter list and defaults):
 
