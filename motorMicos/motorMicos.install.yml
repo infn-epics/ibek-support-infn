@@ -15,5 +15,5 @@ libs:
   - asyn
 
 runtime_files:
-  - /epics/support/motorMicos/config/MP21.init.txt
-  - /epics/support/motorMicos/config/Silver_bullet_extreme.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/MP21.init.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/Silver_bullet_extreme.txt
