@@ -44,6 +44,25 @@ entity_models:
         description: |-
           Whether to disconnect from the device on read timeout
         default: true
+      ZERO_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A within which a zero current setpoint counts as reached (UNIMAG watchdog).
+          Live PV ZERO_TOLERANCE.
+        default: 0.5
+      SET_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A within which the readback must get of CURRENT_SP, otherwise SP_NOT_REACHED
+          (STATE_RB=6, MINOR) is raised after SET_TIMEOUT_S. 0 disables the check. Live PV SET_TOLERANCE.
+        default: 0.0
+      SET_TIMEOUT_S:
+        type: float
+        description: |-
+          Timeout in s of the UNIMAG watchdogs, restarted on progress. An unreached setpoint gives
+          SP_NOT_REACHED (STATE_RB=6), an unreached commanded state ST_NOT_REACHED (STATE_RB=7, MAJOR).
+          Live PV SET_TIMEOUT_S.
+        default: 30.0
 
     pre_init:
       - value: |
@@ -57,3 +76,6 @@ entity_models:
           P: "{{P}}"          
           R: "{{R}}"          
           PORT: "{{NAME}}"    
+          SET_TOLERANCE: '{{SET_TOLERANCE}}'
+          ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
+          SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'

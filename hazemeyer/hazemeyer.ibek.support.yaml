@@ -103,6 +103,25 @@ entity_models:
         description: |-
           write Polling time in ms
         default: 200
+      ZERO_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A within which a zero current setpoint counts as reached (UNIMAG watchdog).
+          Live PV ZERO_TOLERANCE.
+        default: 0.5
+      SET_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A within which the readback must get of CURRENT_SP, otherwise SP_NOT_REACHED
+          (STATE_RB=6, MINOR) is raised after SET_TIMEOUT_S. 0 disables the check. Live PV SET_TOLERANCE.
+        default: 1.0
+      SET_TIMEOUT_S:
+        type: float
+        description: |-
+          Timeout in s of the UNIMAG watchdogs, restarted on progress. An unreached setpoint gives
+          SP_NOT_REACHED (STATE_RB=6), an unreached commanded state ST_NOT_REACHED (STATE_RB=7, MAJOR).
+          Live PV SET_TIMEOUT_S.
+        default: 30.0
       
 
     pre_init:
@@ -122,6 +141,9 @@ entity_models:
           IMAX: '{{IMAX}}'
           VMAX: '{{VMAX}}'
           TIMEOUT: '{{serctrl.TIMEOUT}}'
+          SET_TOLERANCE: '{{SET_TOLERANCE}}'
+          ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
+          SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
     
 
   - name: ps_iocast
@@ -151,6 +173,25 @@ entity_models:
         type: int
         description: Timeout in ms 
         default: 2000
+      ZERO_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A within which a zero current setpoint counts as reached (UNIMAG watchdog).
+          Live PV ZERO_TOLERANCE.
+        default: 0.5
+      SET_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A within which the readback must get of CURRENT_SP, otherwise SP_NOT_REACHED
+          (STATE_RB=6, MINOR) is raised after SET_TIMEOUT_S. 0 disables the check. Live PV SET_TOLERANCE.
+        default: 1.0
+      SET_TIMEOUT_S:
+        type: float
+        description: |-
+          Timeout in s of the UNIMAG watchdogs, restarted on progress. An unreached setpoint gives
+          SP_NOT_REACHED (STATE_RB=6), an unreached commanded state ST_NOT_REACHED (STATE_RB=7, MAJOR).
+          Live PV SET_TIMEOUT_S.
+        default: 30.0
 
     pre_init:
       - value: |
@@ -168,3 +209,6 @@ entity_models:
           PORT: '{{R}}_PORT_RAO'
           WPORT: '{{R}}_PORT_WAO'
           TIMEOUT: '{{TIMEOUT}}'
+          SET_TOLERANCE: '{{SET_TOLERANCE}}'
+          ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
+          SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
