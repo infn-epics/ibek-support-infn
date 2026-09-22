@@ -37,6 +37,13 @@ These parameters configure the driver-level settings for the entire chain of pow
 | 2 | Protocol details (ENQ/ACK/NAK, raw bytes) |
 | 3 | Full trace (every function call, all data) |
 
+### Slave Names
+
+Each `E642` entity emits `ocemSetName <ADDR>, "<R>"` in its `pre_init`, right after the
+`E642Group` has run `ocemInit`. Driver log lines then read `[DHPTT001/PS5]` (name and bus
+address) instead of just `[PS5]`. Nothing needs to be configured: the name is the slave's `R`.
+This needs a driver build that provides `ocemSetName` (OCEM_E642 with the slave-name command).
+
 ---
 
 ## E642 (Slave) Parameters

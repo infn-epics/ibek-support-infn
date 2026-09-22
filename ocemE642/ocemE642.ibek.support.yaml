@@ -161,6 +161,12 @@ entity_models:
         type: float
         default: 0.5
 
+    # Name the slave in the driver so log lines read [R/PS<ADDR>] instead of [PS<ADDR>].
+    # Runs after the E642Group pre_init (ocemInit), which creates the slave.
+    pre_init:
+      - value: |
+          ocemSetName {{ADDR}}, "{{R}}"
+
     databases:
       - file: OCEM_E642.db
         args:
