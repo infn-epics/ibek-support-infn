@@ -21,3 +21,22 @@ communication errors. With the `ibek-templates` `ocem` template set `zero_tolera
 and `set_timeout_s` at IOC level and/or per device (the device value wins).
 
 On `modbusps4chan` the parameters are per crate and apply to each of its four ways (`WAYA`..`WAYD`).
+
+
+## Hardware alarm mask
+
+`MASKALARM` is an integer bit field over the hardware alarm words: a bit at 1 masks that alarm,
+a bit at 0 leaves it active. Masked alarms are ignored by `Fault` / `WayX_AlarmSummary`, so they do
+not drive `STATE_RB` to `FAULT` / `EXT_INTLK`; the raw alarm words still show every bit. The
+value is a signed 32 bit integer (-1 masks everything) and also a live PV.
+
+| entity | parameter | PV | bits 0-15 | bits 16-31 |
+|--------|-----------|----|-----------|------------|
+| `modbusps` | `MASKALARM` | `<prefix>MASKALARM` | `AlarmsFirst` | `AlarmsSecond` |
+| `modbusps4chan` | `MASKALARM` | `<prefix>MASKALARM` | `GlobalAlarms` (all ways) | - |
+| `modbusps4chan` | `MASKALARM_A`..`_D` | `<prefix>WAYx:MASKALARM` | `WayX_AlarmsFirst` | `WayX_AlarmsSecond` |
+
+Default 0 (nothing masked). With the `ibek-templates` `ocem` template set `maskalarm` at IOC level
+and/or per device (the device value wins; on `modbusps4chan` device *n* is way A..D), and
+`maskalarm_global` for the `modbusps4chan` `GlobalAlarms` word. Values above 0x7FFFFFFF (e.g.
+`0xFFFFFFFF`) are converted to the signed value by the template.

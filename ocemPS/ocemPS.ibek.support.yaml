@@ -64,6 +64,13 @@ entity_models:
           SP_NOT_REACHED (STATE_RB=6), an unreached commanded state ST_NOT_REACHED (STATE_RB=7, MAJOR).
           Live PV SET_TIMEOUT_S.
         default: 30.0
+      MASKALARM:
+        type: int
+        description: |-
+          Hardware alarm mask (bit at 1 masks the alarm, bit at 0 no mask): bits 0-15 mask
+          AlarmsFirst, bits 16-31 AlarmsSecond. Masked alarms do not set Fault / STATE_RB FAULT.
+          Signed 32 bit value (-1 masks everything). Live PV MASKALARM.
+        default: 0
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{R}}_ASYN", "{{IP}}:{{TCPPORT}}", 0,0,0)
@@ -83,6 +90,7 @@ entity_models:
           VMAX:
           CORRECTION:
           CORRECTIONSET:
+          MASKALARM:
 
       ## unimag interface overlay
       - file: unimag-ocem.db
@@ -144,6 +152,36 @@ entity_models:
        SP_NOT_REACHED (STATE_RB=6), an unreached commanded state ST_NOT_REACHED (STATE_RB=7, MAJOR).
        Live PV SET_TIMEOUT_S.
       default: 30.0
+     MASKALARM:
+      type: int
+      description: |-
+       Global hardware alarm mask (bit at 1 masks the alarm, bit at 0 no mask): bits 0-15 mask
+       GlobalAlarms, shared by all the ways. Masked alarms do not set EXT_INTLK. Live PV MASKALARM.
+      default: 0
+     MASKALARM_A:
+      type: int
+      description: |-
+       Way A hardware alarm mask (bit at 1 masks the alarm): bits 0-15 mask WayX_AlarmsFirst,
+       bits 16-31 WayX_AlarmsSecond. Signed 32 bit value. Live PV WAYA:MASKALARM.
+      default: 0
+     MASKALARM_B:
+      type: int
+      description: |-
+       Way B hardware alarm mask (bit at 1 masks the alarm): bits 0-15 mask WayX_AlarmsFirst,
+       bits 16-31 WayX_AlarmsSecond. Signed 32 bit value. Live PV WAYB:MASKALARM.
+      default: 0
+     MASKALARM_C:
+      type: int
+      description: |-
+       Way C hardware alarm mask (bit at 1 masks the alarm): bits 0-15 mask WayX_AlarmsFirst,
+       bits 16-31 WayX_AlarmsSecond. Signed 32 bit value. Live PV WAYC:MASKALARM.
+      default: 0
+     MASKALARM_D:
+      type: int
+      description: |-
+       Way D hardware alarm mask (bit at 1 masks the alarm): bits 0-15 mask WayX_AlarmsFirst,
+       bits 16-31 WayX_AlarmsSecond. Signed 32 bit value. Live PV WAYD:MASKALARM.
+      default: 0
 
     pre_init:
     - value: |
@@ -162,7 +200,11 @@ entity_models:
         CMD_PORT: "{{R}}_command_port"
         IMAX:
         VMAX:
-        
+        MASKALARM:
+        MASKALARM_A:
+        MASKALARM_B:
+        MASKALARM_C:
+        MASKALARM_D:
 
     - file: unimag-ocem4chan.db
       args:
