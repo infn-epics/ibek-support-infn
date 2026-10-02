@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+# CAEN V965/V965A/V792 VME QDCs (asyn, interrupt driven), from CaenV965 1.0
+# (LBNL, epics.anl.gov) with EPICS 7, RTEMS-pc686, A32 and V792 support.
+# VME targets only (RTEMS, vxWorks).
+module: CaenV965
+organization: https://github.com/infn-epics/
+version: R1-1
+
+dbds:
+  - devCaenV965.dbd
+
+libs:
+  - devCaenV965

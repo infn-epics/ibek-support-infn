@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: vme
+
+entity_models:
+  - name: MasterWindow
+    description: |-
+      VME outbound (master) window of the Universe II bridge (RTEMS-pc686,
+      e.g. VMIVME-7750). The BSP sets up port 0 (A32 0x20000000..0x2dffffff),
+      1 (A24), 2 (A16) and 7 (CR/CSR); ports 3..6 are free.
+    parameters:
+      port:
+        type: int
+        description: |-
+          Universe master port, 3..6
+      am:
+        type: str
+        description: |-
+          Address modifier, e.g. 0x0d A32 supervisory data (what devLib uses),
+          0x09 A32 user data
+        default: "0x0d"
+      vme_address:
+        type: str
+        description: |-
+          VME base address of the window (64 kB aligned)
+      pci_address:
+        type: str
+        description: |-
+          PCI (local) address, free range 0xa0000000..0xefffffff
+      size:
+        type: str
+        description: |-
+          Window size in bytes (multiple of 64 kB)
+        default: "0x01000000"
+    pre_init:
+      - value: |
+          vmeMasterWindow {{port}} {{am}} {{vme_address}} {{pci_address}} {{size}}
+
+  - name: A32Card
+    description: |-
+      Generic A32/D32 VME card for the "Generic A32 VME" device support
+      (ai, ao, bi, bo, mbbi, mbbo, longin, longout with INP/OUT @#C<card> S<reg>)
+    parameters:
+      card:
+        type: int
+        description: |-
+          Card number used in the record links
+      address:
+        type: str
+        description: |-
+          A32 base address
+      nregs:
+        type: int
+        description: |-
+          Number of 32 bit registers
+      vector:
+        type: int
+        description: |-
+          Interrupt vector (0: no interrupts)
+        default: 0
+      level:
+        type: int
+        description: |-
+          Interrupt level
+        default: 0
+    pre_init:
+      - value: |
+          devA32VmeConfig {{card}} {{address}} {{nregs}} {{vector}} {{level}}

@@ -1,0 +1,92 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: mca
+
+entity_models:
+  - name: SIS3820
+    description: |-
+      Struck SIS3820 32 channel VME scaler / multichannel scaler (mca
+      drvSIS3820), with a 32 channel scaler record and the MCS controls.
+      Needs a VME A32 window covering the board (vme.MasterWindow) unless
+      it is in the default 0x20000000..0x2dffffff window.
+    parameters:
+      PORT:
+        type: id
+        description: |-
+          Asyn port name
+      P:
+        type: str
+        description: |-
+          Record prefix
+      address:
+        type: str
+        description: |-
+          A32 base address, e.g. 0x38000000
+      vector:
+        type: int
+        description: |-
+          Interrupt vector
+        default: 224
+      level:
+        type: int
+        description: |-
+          Interrupt level
+        default: 6
+      max_chans:
+        type: int
+        description: |-
+          Maximum number of MCS channels (time bins)
+        default: 2048
+      max_signals:
+        type: int
+        description: |-
+          Number of MCS signals (inputs). One MCA record (signal 0) is
+          loaded; the sequencer program expects one per signal
+        default: 1
+      use_dma:
+        type: int
+        description: |-
+          Use the VME bridge DMA (0 = programmed I/O)
+        default: 0
+      fifo_words:
+        type: str
+        description: |-
+          FIFO buffer size in 32 bit words
+        default: "0x200000"
+      freq:
+        type: int
+        description: |-
+          Internal clock frequency of the scaler record
+        default: 50000000
+      R:
+        type: str
+        description: |-
+          MCA record name prefix
+        default: mca
+    pre_init:
+      - value: |
+          drvSIS3820Config("{{PORT}}", {{address}}, {{vector}}, {{level}}, {{max_chans}}, {{max_signals}}, {{use_dma}}, {{fifo_words}})
+    databases:
+      - file: $(SCALER)/db/scaler32.db
+        args:
+          P:
+          S: scaler1
+          DTYP: Asyn Scaler
+          OUT: "@asyn({{PORT}})"
+          FREQ: "{{freq}}"
+      - file: $(MCA)/db/SIS38XX.template
+        args:
+          P:
+          PORT:
+          SCALER: "{{P}}scaler1"
+      - file: $(MCA)/db/simple_mca.db
+        args:
+          P:
+          M: "{{R}}1"
+          DTYP: asynMCA
+          INP: "@asyn({{PORT}} 0)"
+          PREC: 3
+          CHANS: "{{max_chans}}"
+    post_init:
+      - value: |
+          seq(&SIS38XX_SNL, "P={{P}}, R={{R}}, NUM_SIGNALS={{max_signals}}, FIELD=READ")

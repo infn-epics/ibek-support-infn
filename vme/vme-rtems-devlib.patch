@@ -1,0 +1,301 @@
+diff --git a/vmeApp/src/Makefile b/vmeApp/src/Makefile
+index 459a5d0..70d7cda 100644
+--- a/vmeApp/src/Makefile
++++ b/vmeApp/src/Makefile
+@@ -8,14 +8,16 @@ include $(TOP)/configure/CONFIG
+ CFG += VME_DEPS
+ 
+ USR_CFLAGS += -DUSE_TYPED_RSET
+-USR_CFLAGS += -mstrict-align
++# PowerPC (vxWorks) only flags
++USR_CFLAGS_vxWorks += -mstrict-align
+ USR_CFLAGS += -fno-builtin
+-USR_CFLAGS += -mlongcall
++USR_CFLAGS_vxWorks += -mlongcall
+ 
+ #=============================
+ # xxxRecord.h will be created from xxxRecord.dbd
+ 
+ DBDINC_vxWorks += vmeRecord
++DBDINC_RTEMS += vmeRecord
+ 
+ # <name>.dbd will be created from <name>Include.dbd
+ DBD_vxWorks += vmeSupport.dbd
+@@ -41,6 +43,9 @@ vme_SRCS_RTEMS += devIK320.c
+ vme_SRCS_RTEMS += drvIK320.c
+ vme_SRCS_RTEMS += drvIK320ErrStat.c
+ vme_SRCS_RTEMS += aiCvtDouble.c
++# generic VME access, ported from vxWorks to devLib
++vme_SRCS_RTEMS += vmeRecord.c
++vme_SRCS_RTEMS += devA32Vme.c
+ 
+ #vme_SRCS_vxWorks += devScaler.c
+ vme_SRCS_vxWorks += devScaler_debug.c
+diff --git a/vmeApp/src/devA32Vme.c b/vmeApp/src/devA32Vme.c
+index da19049..4f25262 100644
+--- a/vmeApp/src/devA32Vme.c
++++ b/vmeApp/src/devA32Vme.c
+@@ -104,18 +104,12 @@
+  /**                                                                  **/
+  /**********************************************************************/
+ 
+-#include	<vxWorks.h>
+-#include	<vxLib.h>
+-#include	<sysLib.h>
+-#include	<vme.h>
+-#include	<types.h>
+-#include	<stdioLib.h>
++#include	<stdio.h>
+ #include	<stdlib.h>
+-#include	<intLib.h>
+ #include	<string.h>
+ #include	<math.h>
+-#include	<iv.h>
+-#include	<rebootLib.h>
++#include	<devLib.h>
++#include	<epicsExit.h>
+ 
+ #include	<alarm.h>
+ #include	<dbDefs.h>
+@@ -129,6 +123,13 @@
+ #include	<iocsh.h>
+ #include	<epicsExport.h>
+ 
++#ifndef OK
++#define OK 0
++#endif
++#ifndef ERROR
++#define ERROR (-1)
++#endif
++
+ #include	<aoRecord.h>
+ #include	<aiRecord.h>
+ #include	<boRecord.h>
+@@ -152,8 +153,8 @@ static long init_mbbi(), read_mbbi();
+ static long init_mbbo(), write_mbbo();
+ static long checkCard(), write_card(), read_card();
+ static long get_bi_int_info();
+-static void devA32_isr();
+-static void devA32RebootFunc();
++static void devA32_isr(void *arg);
++static void devA32RebootFunc(void *arg);
+ 
+ static long devA32VmeReport();
+ 
+@@ -278,16 +279,23 @@ int	      iLevel;
+       return(ERROR);
+   }
+ 
+-  if(sysBusToLocalAdrs(VME_AM_EXT_USR_DATA, (char *)a32base,
+-        (char **)&cards[card].base) != OK) {
+-       cards[card].base = NULL;
+-       epicsPrintf("devA32VmeConfig: A32 Address map failed for Card %d",card);
+-       return(ERROR);
++  /* devLib maps A32 with the supervisory data AM (0x0d); the vxWorks
++   * version used the user data AM (0x09) */
++  {
++    volatile void *base;
++    if(devRegisterAddress("devA32Vme", atVMEA32, (size_t) a32base,
++          (size_t) (nregs > 0 ? nregs : 1) * sizeof(unsigned long),
++          &base) != 0) {
++         cards[card].base = NULL;
++         epicsPrintf("devA32VmeConfig: A32 Address map failed for Card %d\n",card);
++         return(ERROR);
++    }
++    cards[card].base = (void *) base;
+   }
+ 
+-  if(vxMemProbe( (char *)cards[card].base, READ, 4, (char *)&probeVal) != OK ) {
++  if(devReadProbe(4, (volatile void *)cards[card].base, &probeVal) != 0) {
+        cards[card].base = NULL;
+-       epicsPrintf("devA32VmeConfig: vxMemProbe failed for Card %d",card);
++       epicsPrintf("devA32VmeConfig: devReadProbe failed for Card %d\n",card);
+        return(ERROR);
+   }
+ 
+@@ -302,21 +310,21 @@ int	      iLevel;
+  
+   if(iVector) {
+       scanIoInit(&cards[card].ioscanpvt);
+-      if(intConnect(INUM_TO_IVEC(iVector), (VOIDFUNCPTR)devA32_isr, 
+-                    (int)card) == OK)
++      if(devConnectInterruptVME(iVector, devA32_isr,
++                    (void *)(size_t)card) == 0)
+       {
+           cards[card].base->reg[IVEC_REG] = (unsigned long)iVector;
+           write_card(card, IVEC_REG, IVEC_MASK, (unsigned long)iVector);
+           write_card(card, IVEC_REENABLE_REG, IVEC_REENABLE_MASK, 
+                      IVEC_REENABLE_MASK);
+           write_card(card, IVEC_ENA_REG, IVEC_ENA_MASK, IVEC_ENA_MASK);
+-          sysIntEnable(iLevel);
++          devEnableInterruptLevelVME(iLevel);
+       }
+       else {
+           epicsPrintf("devA32VmeConfig: Interrupt connect failed for card %d\n",
+                           card);
+       }
+-      rebootHookAdd((FUNCPTR)devA32RebootFunc);
++      epicsAtExit(devA32RebootFunc, NULL);
+   }       
+   return(OK);
+ }
+@@ -349,8 +357,9 @@ IOSCANPVT               *ppvt;
+  * Interrupt service routine
+  *
+  **************************************************************************/
+-static void devA32_isr(int card)
++static void devA32_isr(void *arg)
+ {
++   int card = (int)(size_t)arg;
+    scanIoRequest(cards[card].ioscanpvt);
+    write_card(card, IVEC_REENABLE_REG, IVEC_REENABLE_MASK, IVEC_REENABLE_MASK);
+ }
+@@ -361,7 +370,7 @@ static void devA32_isr(int card)
+  * A function to disable interrupts in case we get a ^X style reboot.
+  *
+  ******************************************************************************/
+-static void devA32RebootFunc(void)
++static void devA32RebootFunc(void *arg)
+ {
+   int   card = 0;
+ 
+diff --git a/vmeApp/src/vmeRTEMSSupport.dbd b/vmeApp/src/vmeRTEMSSupport.dbd
+index 752dff4..c6dbd9c 100644
+--- a/vmeApp/src/vmeRTEMSSupport.dbd
++++ b/vmeApp/src/vmeRTEMSSupport.dbd
+@@ -2,10 +2,24 @@
+ # DBD for RTEMS version of vme library
+ ######################################
+ 
++# generic VME record (vmeRecord.c, devLib)
++include "vmeRecord.dbd"
++
+ ################
+ # DEVICE SUPPORT
+ ################
+ 
++# Generic A32/D32 VME Access (devA32Vme.c, devLib)
++device(ai,VME_IO,devAiA32Vme,"Generic A32 VME")
++device(ao,VME_IO,devAoA32Vme,"Generic A32 VME")
++device(bi,VME_IO,devBiA32Vme,"Generic A32 VME")
++device(bo,VME_IO,devBoA32Vme,"Generic A32 VME")
++device(mbbi,VME_IO,devMbbiA32Vme,"Generic A32 VME")
++device(mbbo,VME_IO,devMbboA32Vme,"Generic A32 VME")
++device(longin,VME_IO,devLiA32Vme,"Generic A32 VME")
++device(longout,VME_IO,devLoA32Vme,"Generic A32 VME")
++registrar(devA32VmeRegistrar)
++
+ 
+ # Heidenhain IK320 VME counter/interpolator (Till Straumann/BESSY)
+ device(mbbo,VME_IO,devIK320Funct,"Heidenhain IK320 Command")
+diff --git a/vmeApp/src/vmeRecord.c b/vmeApp/src/vmeRecord.c
+index ae87573..99fcfae 100644
+--- a/vmeApp/src/vmeRecord.c
++++ b/vmeApp/src/vmeRecord.c
+@@ -45,14 +45,10 @@
+  */
+ 
+ 
+-#include        <vxWorks.h>
+-#include        <vxLib.h>
+-#include        <types.h>
++#include        <stdio.h>
+ #include        <stdlib.h>
+-#include        <stdioLib.h>
+-#include        <lstLib.h>
+ #include        <string.h>
+-#include        <sysLib.h>
++#include        <devLib.h>
+ 
+ #include        <alarm.h>
+ #include        <dbDefs.h>
+@@ -63,10 +59,16 @@
+ #include        <errMdef.h>
+ #include        <recSup.h>
+ #include        <recGbl.h>
+-#include        <vme.h>
+ #include        <epicsExport.h>
+ #define GEN_SIZE_OFFSET
+ #include        <vmeRecord.h>
++
++#ifndef OK
++#define OK 0
++#endif
++#ifndef ERROR
++#define ERROR (-1)
++#endif
+ #undef GEN_SIZE_OFFSET
+ 
+ volatile int vmeRecordDebug = 0;
+@@ -217,52 +219,55 @@ static long doVmeIo(pvme)
+    char *vme_ptr;
+    short word_value;
+    char char_value;
+-   int all_amods[] = {
+-      VME_AM_SUP_SHORT_IO,
+-      VME_AM_STD_SUP_DATA,
+-      VME_AM_EXT_SUP_DATA};
++   /* devLib address types A16, A24, A32 (supervisory data AMs) */
++   epicsAddressType all_amods[] = {atVMEA16, atVMEA24, atVMEA32};
+    int all_lengths[] = {1, 2, 4};
+-   int all_modes[] = {VX_READ, VX_WRITE};
++   int all_modes[] = {0 /* read */, 1 /* write */};
++   volatile void *local;
+ 
+    amod = all_amods[pvme->amod];
+    length = all_lengths[pvme->dsiz];
+    mode = all_modes[pvme->rdwt];
+-   sysBusToLocalAdrs(amod, (char *)pvme->addr, &vme_ptr);
+-   if (mode == VX_READ) {
++   if (devBusToLocalAddr(amod, (size_t) pvme->addr, &local) != 0) {
++      for (i=0; i<pvme->nuse; i++) status_array[i] = (unsigned char) ERROR;
++      return OK;
++   }
++   vme_ptr = (char *) local;
++   if (mode == 0) {
+       for (i=0; i<pvme->nuse; i++) {
+          switch(length) {
+-         case 1: status = vxMemProbe( vme_ptr, VX_READ, 1, (char *) &char_value);
++         case 1: status = devReadProbe(1, vme_ptr, &char_value) ? ERROR : OK;
+                  value = char_value;
+                  break;
+-         case 2: status = vxMemProbe( vme_ptr, VX_READ, 2, (char *) &word_value);
++         case 2: status = devReadProbe(2, vme_ptr, &word_value) ? ERROR : OK;
+                  value = word_value;
+                  break;
+-         case 4: status = vxMemProbe( vme_ptr, VX_READ, 4, (char *) &value);
++         case 4: status = devReadProbe(4, vme_ptr, &value) ? ERROR : OK;
+                  break;
+          }
+          data_array[i] = value;
+          status_array[i] = status;
+          if (vmeRecordDebug >= 1) {
+-            printf("vmeRecord: VX_READ, vme_ptr=%p, value=0x%x, status=0x%x\n", 
++            printf("vmeRecord: read, vme_ptr=%p, value=0x%x, status=0x%x\n", 
+                    vme_ptr, value, status);
+          }
+          vme_ptr += pvme->ainc;
+       }
+-   } else {               /* VX_WRITE */
++   } else {               /* write */
+       for (i=0; i<pvme->nuse; i++) {
+          switch(length) {
+          case 1: char_value = data_array[i];
+-                 status = vxMemProbe( vme_ptr, VX_WRITE, 1, (char *) &char_value);
++                 status = devWriteProbe(1, vme_ptr, &char_value) ? ERROR : OK;
+                  break;
+          case 2: word_value = data_array[i];
+-                 status = vxMemProbe( vme_ptr, VX_WRITE, 2, (char *) &word_value);
++                 status = devWriteProbe(2, vme_ptr, &word_value) ? ERROR : OK;
+                  break;
+          case 4: value = data_array[i];
+-                 status = vxMemProbe( vme_ptr, VX_WRITE, 4, (char *) &value);
++                 status = devWriteProbe(4, vme_ptr, &value) ? ERROR : OK;
+                  break;
+          }
+          if (vmeRecordDebug >= 1) {
+-            printf("vmeRecord: VX_WRITE, vme_ptr=%p, value=0x%x, status=0x%x\n", 
++            printf("vmeRecord: write, vme_ptr=%p, value=0x%x, status=0x%x\n", 
+                    vme_ptr, data_array[i], status);
+          }
+          vme_ptr += pvme->ainc;

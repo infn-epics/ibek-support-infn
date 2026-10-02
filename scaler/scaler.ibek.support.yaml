@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: scaler
+
+# no entities: the scaler record is loaded by the drivers that use it
+# (e.g. mca.SIS3820)
+entity_models: []

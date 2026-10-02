@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+# synApps generic VME support. Only built for VME targets (RTEMS here):
+# there is no vme library for linux-x86_64.
+module: vme
+organization: https://github.com/epics-modules/
+version: master
+
+# master after R2-9-5 (adds the RTEMS build), plus the port of vmeRecord and
+# devA32Vme from vxWorks APIs to devLib, so they build on RTEMS-pc686
+patch_file:
+  path: vme-rtems-devlib.patch
+  commit: 2b75636e3cf69afce0ac5fa8912a7f9a9048d321
+  when: "{{ is_rtems | bool }}"
+
+dbds:
+  - vmeRTEMSSupport.dbd
+
+libs:
+  - vme

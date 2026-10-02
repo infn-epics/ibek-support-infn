@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+# synApps mca: only the core and the Struck SIS38XX VME scalers (SIS3801,
+# SIS3820). SIS38XX is built for vxWorks and RTEMS only.
+module: mca
+organization: https://github.com/epics-modules/
+version: R7-10
+
+comment_out:
+  # Canberra, Rontec and Amptek need host network/USB libraries
+  - path: mcaApp/Makefile
+    regexp: (Canberra|Rontec|Amptek)
+  # the SIS38XX test IOC: the Generic IOC is the executable
+  - path: mcaApp/SISSrc/Makefile
+    regexp: SIS38XXTest
+
+dbds:
+  - mcaSupport.dbd
+  - SIS38XXSupport.dbd
+
+libs:
+  - SIS38XX
+  - mca

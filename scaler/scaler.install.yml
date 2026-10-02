@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+# synApps scaler record (needed by mca for the SIS38XX scalers)
+module: scaler
+organization: https://github.com/epics-modules/
+version: "4.1"
+
+dbds:
+  - scalerSupport.dbd
+
+libs:
+  - scaler

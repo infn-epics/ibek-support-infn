@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: CaenV965
+
+entity_models:
+  - name: CaenQdc
+    description: |-
+      CAEN V965, V965A or V792 charge to digital converter. Conversions are
+      read on interrupt (event ready) and published per channel; the event
+      counter, firmware and serial number are also available.
+    parameters:
+      PORT:
+        type: id
+        description: |-
+          Asyn port name
+      P:
+        type: str
+        description: |-
+          Record prefix
+      R:
+        type: str
+        description: |-
+          Record suffix
+        default: ""
+      card_type:
+        type: enum
+        description: |-
+          Card type
+        values:
+          V965:
+          V965A:
+          V792:
+        default: V965
+      address:
+        type: str
+        description: |-
+          VME base address set with the rotary switches: A24 (e.g. 0x000000)
+          or A32 (e.g. 0xee000000, above 0xffffff)
+      vector:
+        type: int
+        description: |-
+          Interrupt vector (1..255, unique per board)
+      level:
+        type: int
+        description: |-
+          Interrupt level (1..6)
+        default: 5
+      priority:
+        type: int
+        description: |-
+          Readout thread priority (0: default)
+        default: 0
+    pre_init:
+      - value: |
+          CaenV965Configure("{{PORT}}", "{{card_type}}", {{address}}, {{vector}}, {{level}}, {{priority}})
+    databases:
+      - file: "$(CAENV965)/db/{{ 'devCaenV792' if card_type == 'V792' else 'devCaenV965' }}.db"
+        args:
+          P:
+          R:
+          PORT:
