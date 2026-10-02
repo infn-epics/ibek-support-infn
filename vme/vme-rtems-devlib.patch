@@ -189,7 +189,7 @@ index 752dff4..c6dbd9c 100644
  # Heidenhain IK320 VME counter/interpolator (Till Straumann/BESSY)
  device(mbbo,VME_IO,devIK320Funct,"Heidenhain IK320 Command")
 diff --git a/vmeApp/src/vmeRecord.c b/vmeApp/src/vmeRecord.c
-index ae87573..99fcfae 100644
+index ae87573..26e1f20 100644
 --- a/vmeApp/src/vmeRecord.c
 +++ b/vmeApp/src/vmeRecord.c
 @@ -45,14 +45,10 @@
@@ -227,6 +227,15 @@ index ae87573..99fcfae 100644
  #undef GEN_SIZE_OFFSET
  
  volatile int vmeRecordDebug = 0;
+@@ -91,7 +93,7 @@ static long put_array_info();
+ #define get_control_double NULL
+ #define get_alarm_double NULL
+ 
+-struct rset vmeRSET={
++rset vmeRSET={
+    RSETNUMBER,
+    report,
+    initialize,
 @@ -217,52 +219,55 @@ static long doVmeIo(pvme)
     char *vme_ptr;
     short word_value;
