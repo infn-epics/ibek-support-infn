@@ -63,6 +63,41 @@ entity_models:
           scan of the trigger and output readbacks (Passive: read at boot
           and after each setpoint only)
         default: 10 second
+      T0_LABEL:
+        type: str
+        description: |-
+          label of channel T0 (what the output drives), PV T0_LABEL
+        default: "T0"
+      A_LABEL:
+        type: str
+        description: |-
+          label of channel A (what the output drives), PV A_LABEL
+        default: "A"
+      B_LABEL:
+        type: str
+        description: |-
+          label of channel B (what the output drives), PV B_LABEL
+        default: "B"
+      AB_LABEL:
+        type: str
+        description: |-
+          label of channel AB (what the output drives), PV AB_LABEL
+        default: "AB"
+      C_LABEL:
+        type: str
+        description: |-
+          label of channel C (what the output drives), PV C_LABEL
+        default: "C"
+      D_LABEL:
+        type: str
+        description: |-
+          label of channel D (what the output drives), PV D_LABEL
+        default: "D"
+      CD_LABEL:
+        type: str
+        description: |-
+          label of channel CD (what the output drives), PV CD_LABEL
+        default: "CD"
 
     pre_init:
       - value: |
@@ -77,3 +112,10 @@ entity_models:
           ADDR: "{{ADDR}}"
           SCAN: "{{SCAN}}"
           SCAN_CFG: "{{SCAN_CFG}}"
+          T0_LABEL: "{{T0_LABEL}}"
+          A_LABEL: "{{A_LABEL}}"
+          B_LABEL: "{{B_LABEL}}"
+          AB_LABEL: "{{AB_LABEL}}"
+          C_LABEL: "{{C_LABEL}}"
+          D_LABEL: "{{D_LABEL}}"
+          CD_LABEL: "{{CD_LABEL}}"
