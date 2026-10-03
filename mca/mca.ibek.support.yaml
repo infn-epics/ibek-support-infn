@@ -85,7 +85,7 @@ entity_models:
           M: "{{R}}1"
           DTYP: asynMCA
           INP: "@asyn({{PORT}} 0)"
-          PREC: 3
+          PREC: "3"
           CHANS: "{{max_chans}}"
     post_init:
       - value: |
