@@ -1,8 +1,8 @@
 diff --git a/vmeApp/src/Makefile b/vmeApp/src/Makefile
-index 459a5d0..70d7cda 100644
+index 459a5d0..c61d98f 100644
 --- a/vmeApp/src/Makefile
 +++ b/vmeApp/src/Makefile
-@@ -8,14 +8,16 @@ include $(TOP)/configure/CONFIG
+@@ -8,14 +8,17 @@ include $(TOP)/configure/CONFIG
  CFG += VME_DEPS
  
  USR_CFLAGS += -DUSE_TYPED_RSET
@@ -16,12 +16,14 @@ index 459a5d0..70d7cda 100644
  #=============================
  # xxxRecord.h will be created from xxxRecord.dbd
  
- DBDINC_vxWorks += vmeRecord
-+DBDINC_RTEMS += vmeRecord
+-DBDINC_vxWorks += vmeRecord
++# all targets: the dbd is installed by the common build (vmeRecord.c is
++# only compiled for vxWorks and RTEMS)
++DBDINC += vmeRecord
  
  # <name>.dbd will be created from <name>Include.dbd
  DBD_vxWorks += vmeSupport.dbd
-@@ -41,6 +43,9 @@ vme_SRCS_RTEMS += devIK320.c
+@@ -41,6 +44,9 @@ vme_SRCS_RTEMS += devIK320.c
  vme_SRCS_RTEMS += drvIK320.c
  vme_SRCS_RTEMS += drvIK320ErrStat.c
  vme_SRCS_RTEMS += aiCvtDouble.c
