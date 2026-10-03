@@ -5,7 +5,7 @@
 # VME targets only (RTEMS, vxWorks).
 module: CaenV965
 organization: https://github.com/infn-epics/
-version: R1-1
+version: R1-2
 
 dbds:
   - devCaenV965.dbd
