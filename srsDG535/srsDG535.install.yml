@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+module: gbip-ddg
+
+organization: https://github.com/infn-epics/
+version: main
+
+dbds:
+  - asyn.dbd
+  - stream.dbd
+  - niEnet.dbd
+
+libs:
+  - niEnet
+  - asyn
+  - stream
+
+protocol_files:
+  - db/DG535.proto

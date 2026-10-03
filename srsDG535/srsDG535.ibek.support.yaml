@@ -1,0 +1,79 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: srsDG535
+
+entity_models:
+  - name: niEnetPort
+    description: |-
+      asyn GPIB port on a National Instruments GPIB-ENET/1000 (native NI
+      network protocol, no NI software needed on the IOC host)
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          asyn port name
+      IP:
+        type: str
+        description: |-
+          IP address or host name of the GPIB-ENET/1000
+      BOARD_PAD:
+        type: int
+        description: |-
+          GPIB primary address of the GPIB-ENET controller itself
+        default: 0
+      PRIORITY:
+        type: int
+        description: |-
+          asyn port thread priority (0 = default)
+        default: 0
+
+    pre_init:
+      - value: |
+          niEnetConfigure("{{NAME}}", "{{IP}}", {{BOARD_PAD}}, {{PRIORITY}}, 0)
+
+  - name: DG535
+    description: |-
+      SRS DG535 Digital Delay / Pulse Generator on an asyn GPIB port
+    parameters:
+      PORT:
+        type: object
+        description: |-
+          the asyn GPIB port (niEnetPort or any other asyn GPIB driver)
+      P:
+        type: str
+        description: |-
+          PV prefix, PVs are P:R:<name>
+      R:
+        type: str
+        description: |-
+          PV name of the unit, PVs are P:R:<name>
+      ADDR:
+        type: int
+        description: |-
+          GPIB address of the DG535
+        default: 15
+      SCAN:
+        type: str
+        description: |-
+          scan of the delay and status readbacks
+        default: 2 second
+      SCAN_CFG:
+        type: str
+        description: |-
+          scan of the trigger and output readbacks (Passive: read at boot
+          and after each setpoint only)
+        default: 10 second
+
+    pre_init:
+      - value: |
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(GBIP_DDG)/db")
+
+    databases:
+      - file: $(GBIP_DDG)/db/DG535.template
+        args:
+          P: "{{P}}"
+          R: "{{R}}"
+          PORT: "{{PORT}}"
+          ADDR: "{{ADDR}}"
+          SCAN: "{{SCAN}}"
+          SCAN_CFG: "{{SCAN_CFG}}"
