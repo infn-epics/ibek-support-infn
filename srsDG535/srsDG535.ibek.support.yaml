@@ -1,0 +1,121 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: srsDG535
+
+entity_models:
+  - name: niEnetPort
+    description: |-
+      asyn GPIB port on a National Instruments GPIB-ENET/1000 (native NI
+      network protocol, no NI software needed on the IOC host)
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          asyn port name
+      IP:
+        type: str
+        description: |-
+          IP address or host name of the GPIB-ENET/1000
+      BOARD_PAD:
+        type: int
+        description: |-
+          GPIB primary address of the GPIB-ENET controller itself
+        default: 0
+      PRIORITY:
+        type: int
+        description: |-
+          asyn port thread priority (0 = default)
+        default: 0
+
+    pre_init:
+      - value: |
+          niEnetConfigure("{{NAME}}", "{{IP}}", {{BOARD_PAD}}, {{PRIORITY}}, 0)
+
+  - name: DG535
+    description: |-
+      SRS DG535 Digital Delay / Pulse Generator on an asyn GPIB port
+    parameters:
+      PORT:
+        type: object
+        description: |-
+          the asyn GPIB port (niEnetPort or any other asyn GPIB driver)
+      P:
+        type: str
+        description: |-
+          PV prefix, PVs are P:R:<name>
+      R:
+        type: str
+        description: |-
+          PV name of the unit, PVs are P:R:<name>
+      ADDR:
+        type: int
+        description: |-
+          GPIB address of the DG535
+        default: 15
+      SCAN:
+        type: str
+        description: |-
+          scan of the delay and status readbacks
+        default: 2 second
+      SCAN_CFG:
+        type: str
+        description: |-
+          scan of the trigger and output readbacks (Passive: read at boot
+          and after each setpoint only)
+        default: 10 second
+      T0_LABEL:
+        type: str
+        description: |-
+          label of channel T0 (what the output drives), PV T0_LABEL
+        default: "T0"
+      A_LABEL:
+        type: str
+        description: |-
+          label of channel A (what the output drives), PV A_LABEL
+        default: "A"
+      B_LABEL:
+        type: str
+        description: |-
+          label of channel B (what the output drives), PV B_LABEL
+        default: "B"
+      AB_LABEL:
+        type: str
+        description: |-
+          label of channel AB (what the output drives), PV AB_LABEL
+        default: "AB"
+      C_LABEL:
+        type: str
+        description: |-
+          label of channel C (what the output drives), PV C_LABEL
+        default: "C"
+      D_LABEL:
+        type: str
+        description: |-
+          label of channel D (what the output drives), PV D_LABEL
+        default: "D"
+      CD_LABEL:
+        type: str
+        description: |-
+          label of channel CD (what the output drives), PV CD_LABEL
+        default: "CD"
+
+    pre_init:
+      - value: |
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(GBIP_DDG)/db")
+
+    databases:
+      - file: $(GBIP_DDG)/db/DG535.template
+        args:
+          P: "{{P}}"
+          R: "{{R}}"
+          PORT: "{{PORT}}"
+          ADDR: "{{ADDR}}"
+          SCAN: "{{SCAN}}"
+          SCAN_CFG: "{{SCAN_CFG}}"
+          T0_LABEL: "{{T0_LABEL}}"
+          A_LABEL: "{{A_LABEL}}"
+          B_LABEL: "{{B_LABEL}}"
+          AB_LABEL: "{{AB_LABEL}}"
+          C_LABEL: "{{C_LABEL}}"
+          D_LABEL: "{{D_LABEL}}"
+          CD_LABEL: "{{CD_LABEL}}"
