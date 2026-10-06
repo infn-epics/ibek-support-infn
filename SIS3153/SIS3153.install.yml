@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: SIS3153
+organization: https://github.com/infn-epics
+
+# TODO: pin this to a release tag once the support module is released.
+version: eth-support
+
+# SIS3153App.dbd includes the two iocsh registrars used by the support:
+# drvSIS3153EthConfigure and V965WrapperConfigure.
+dbds:
+  - asyn.dbd
+  - SIS3153App.dbd
+
+libs:
+  - asyn
+  - SIS3153Support
+  - SIS3150
+
+# The deployed support uses the SIS3153 Ethernet transport. The obsolete
+# SIS3150 USB transport is disabled by the default build.
+apt_developer:
+  - libmemcached-dev
+
+apt_runtime:
+  - libmemcached11t64

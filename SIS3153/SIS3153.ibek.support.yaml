@@ -1,0 +1,105 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: SIS3153
+
+entity_models:
+  - name: ethernet
+    description: |-
+      SIS3153 Ethernet-to-VME controller. One controller can serve multiple
+      VME modules.
+    parameters:
+      name:
+        type: id
+        description: asyn port name of the SIS3153 controller
+      IP:
+        type: str
+        description: IPv4 address or host name of the SIS3153
+
+    pre_init:
+      - value: |
+          drvSIS3153EthConfigure("{{name}}", "{{IP}}")
+
+  - name: v965_channel
+    description: |-
+      Internal V965 channel threshold database.
+    parameters:
+      P:
+        type: str
+        description: PV prefix, including any desired trailing separator
+      PORT:
+        type: str
+        description: V965 wrapper asyn port name (reference to the parent port)
+      BASE:
+        type: str
+        description: VME base-address prefix
+      CHAN:
+        type: int
+        description: Physical V965 channel number (0 to 15)
+      THRS_ADDR_HIGH:
+        type: str
+        description: High-range threshold register offset
+      THRS_ADDR_LOW:
+        type: str
+        description: Low-range threshold register offset
+
+    databases:
+      - file: $(SIS3153)/db/CAEN965_channel.template
+        args:
+          P:
+          PORT:
+          BASE:
+          CHAN:
+          THRS_ADDR_HIGH:
+          THRS_ADDR_LOW:
+
+  - name: v965
+    description: |-
+      CAEN V965 16-channel dual-range QDC connected through a SIS3153.
+      The generated waveform contains 32 values: high range in indices 0-15
+      and low range in indices 16-31.
+    parameters:
+      name:
+        type: id
+        description: asyn port name of the V965 wrapper
+      controller:
+        type: object
+        description: Reference to the SIS3153 Ethernet controller
+      P:
+        type: str
+        description: PV prefix, including any desired trailing separator
+      BASE:
+        type: str
+        description: VME A32 base-address prefix of the V965
+        default: "0xee00"
+
+    pre_init:
+      - value: |
+          V965WrapperConfigure("{{name}}", "{{controller.name}}")
+
+    databases:
+      - file: $(SIS3153)/db/CAEN965.template
+        args:
+          P:
+          PORT: "{{name}}"
+          BASE:
+
+    sub_entities:
+      - type: ibek.repeat
+        variable: channel
+        values: "{{ range(16) | list }}"
+        entity:
+          type: SIS3153.v965_channel
+          P: "{{P}}"
+          PORT: "{{name}}"
+          BASE: "{{BASE}}"
+          CHAN: "{{channel | int}}"
+          THRS_ADDR_HIGH: "{{ '%04X' % (0x1080 + 4 * (channel | int)) }}"
+          THRS_ADDR_LOW: "{{ '%04X' % (0x1082 + 4 * (channel | int)) }}"
+
+    post_init:
+      # An IOC restart does not reset the hardware QDC. Clear a possible
+      # partial FIFO event, then restore the known acquisition mode.
+      - value: |
+          dbpf "{{P}}BitSet2" 4
+          dbpf "{{P}}BitClear2" 4
+          dbpf "{{P}}BitSet2" 24
