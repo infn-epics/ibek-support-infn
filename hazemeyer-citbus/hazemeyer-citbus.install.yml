@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+# Databases of the hazemeyer.cit / hazemeyer.cit_channel entities (Hazemeyer CHV TL
+# cubicles on the CITBus). The entity models live in ../hazemeyer.
+module: hazemeyer-citbus
+organization: https://github.com/infn-epics/
+
+# TODO this should be a tag to make rebuilding the container deterministic
+version: main
+
+
+dbds:
+  - asyn.dbd
+  - modbusSupport.dbd
+
+libs:
+  - asyn
+  - modbus

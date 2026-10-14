@@ -212,3 +212,163 @@ entity_models:
           SET_TOLERANCE: '{{SET_TOLERANCE}}'
           ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
           SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
+
+
+  # CHV TL cubicle on the CITBus (hazemeyer-citbus): the Main Monitoring Unit (MMU)
+  # is a Modbus RTU slave fronting 8 channels (MAU0..MAU7). The gateway is a
+  # hazemeyer.serial entity; the databases come from the hazemeyer-citbus module.
+  - name: cit
+    description: |-
+      Hazemeyer CHV TL cubicle (CITBus module): MMU Modbus slave with 8 channels
+    parameters:
+      NAME:
+        type: id
+        description: |-
+          Cubicle id, prefix of its modbus ports
+      serctrl:
+        type: object
+        description: |-
+          Serial gateway (hazemeyer.serial)
+      R:
+        type: str
+        description: |-
+          Cubicle name, PVs $(P):$(R):...
+      ID:
+        type: int
+        description: |-
+          Modbus slave address of the MMU
+        default: 1
+      MEAS_POLL:
+        type: int
+        description: |-
+          Polling time in ms of the measurements ($0080-$00CB)
+        default: 500
+      STS_POLL:
+        type: int
+        description: |-
+          Polling time in ms of the detailed faults / statuses ($0020-$003F)
+        default: 1000
+      TIMEOUT:
+        type: int
+        description: |-
+          asyn timeout in ms
+        default: 1000
+      PULSE:
+        type: float
+        description: |-
+          Command pulse width in s (command word written, then cleared)
+        default: 0.5
+      ON_DLY:
+        type: float
+        description: |-
+          Delay in s between Standby and Power On when the cubicle is switched ON from Energized
+        default: 3.0
+      SET_TIMEOUT_S:
+        type: float
+        description: |-
+          Timeout in s of the cubicle state watchdog (ST_NOT_REACHED, STATE_RB=7). Live PV SET_TIMEOUT_S.
+        default: 30.0
+
+    pre_init:
+      - value: |
+          ## cubicle {{R}} slave {{ID}}: measurements, MAU ready/power, currents $0080-$00CB
+          drvModbusAsynConfigure("{{NAME}}_MEAS", "{{serctrl.NAME}}_ASYN", {{ID}}, 3, 0x80, 76, 0, {{MEAS_POLL}}, "HAZEMEYER")
+          ## cubicle {{R}} slave {{ID}}: general and MAU faults / statuses $0020-$003F
+          drvModbusAsynConfigure("{{NAME}}_STS", "{{serctrl.NAME}}_ASYN", {{ID}}, 3, 0x20, 32, 0, {{STS_POLL}}, "HAZEMEYER")
+          ## cubicle {{R}} slave {{ID}}: general and MAU commands $0000-$001F
+          drvModbusAsynConfigure("{{NAME}}_CMD", "{{serctrl.NAME}}_ASYN", {{ID}}, 6, 0x00, 32, 0, 1, "HAZEMEYER")
+          ## cubicle {{R}} slave {{ID}}: MAU current settings $0060-$0067
+          drvModbusAsynConfigure("{{NAME}}_ISET", "{{serctrl.NAME}}_ASYN", {{ID}}, 6, 0x60, 8, 0, 1, "HAZEMEYER")
+
+    databases:
+      - file: hzacc_cubicle.db
+        args:
+          P: '{{serctrl.P}}'
+          R: '{{R}}'
+          PORT_MEAS: '{{NAME}}_MEAS'
+          PORT_CMD: '{{NAME}}_CMD'
+          TIMEOUT: '{{TIMEOUT}}'
+          PULSE: '{{PULSE}}'
+          ON_DLY: '{{ON_DLY}}'
+          SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
+
+
+  - name: cit_channel
+    description: |-
+      One channel (MAU) of a Hazemeyer CHV TL cubicle, UNIMAG power supply
+    parameters:
+      cit:
+        type: object
+        description: |-
+          Cubicle (hazemeyer.cit)
+      R:
+        type: str
+        description: |-
+          Channel (magnet) name, PVs $(P):$(R):...
+      CHANNEL:
+        type: int
+        description: |-
+          Channel number 0..7 (MAU0..MAU7, chanel #1..#8 of the drawings)
+      IMAX:
+        type: float
+        description: |-
+          Full scale current in A
+        default: 10.0
+      VMAX:
+        type: float
+        description: |-
+          Full scale voltage in V
+        default: 20.0
+      RAWMAX:
+        type: int
+        description: |-
+          Raw value at full scale
+        default: 4095
+      ZERO_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A within which a zero current setpoint counts as reached (UNIMAG watchdog).
+          Live PV ZERO_TOLERANCE.
+        default: 0.05
+      SET_TOLERANCE:
+        type: float
+        description: |-
+          Tolerance in A within which the readback must get of CURRENT_SP, otherwise SP_NOT_REACHED
+          (STATE_RB=6, MINOR) is raised after SET_TIMEOUT_S. 0 disables the check. Live PV SET_TOLERANCE.
+        default: 0.1
+      SET_TIMEOUT_S:
+        type: float
+        description: |-
+          Timeout in s of the UNIMAG watchdogs, restarted on progress. An unreached setpoint gives
+          SP_NOT_REACHED (STATE_RB=6), an unreached commanded state ST_NOT_REACHED (STATE_RB=7, MAJOR).
+          Live PV SET_TIMEOUT_S.
+        default: 30.0
+
+    # asyn offsets of channel n: current $00C4+n and voltage $00A1+4n in the
+    # MEAS port ($0080), faults $0030+2n and status $0031+2n in the STS port
+    # ($0020), commands $0010+2n in the CMD port ($0000), setting $0060+n in ISET
+    databases:
+      - file: hzacc_channel.template
+        args:
+          P: '{{cit.serctrl.P}}'
+          R: '{{R}}'
+          CUB: '{{cit.R}}'
+          PORT_MEAS: '{{cit.NAME}}_MEAS'
+          PORT_STS: '{{cit.NAME}}_STS'
+          PORT_CMD: '{{cit.NAME}}_CMD'
+          PORT_ISET: '{{cit.NAME}}_ISET'
+          TIMEOUT: '{{cit.TIMEOUT}}'
+          PULSE: '{{cit.PULSE}}'
+          CH: '{{CHANNEL}}'
+          IRB: '{{68 + CHANNEL}}'
+          VRB: '{{33 + 4 * CHANNEL}}'
+          FLT: '{{16 + 2 * CHANNEL}}'
+          STS: '{{17 + 2 * CHANNEL}}'
+          CMD: '{{16 + 2 * CHANNEL}}'
+          ISET: '{{CHANNEL}}'
+          IMAX: '{{IMAX}}'
+          VMAX: '{{VMAX}}'
+          RAWMAX: '{{RAWMAX}}'
+          SET_TOLERANCE: '{{SET_TOLERANCE}}'
+          ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
+          SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
