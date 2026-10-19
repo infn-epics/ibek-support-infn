@@ -229,19 +229,14 @@ entity_models:
         type: object
         description: |-
           Serial gateway (hazemeyer.serial)
-      R:
-        type: str
-        description: |-
-          Cubicle name, PVs $(P):$(R):...
       ID:
         type: int
         description: |-
-          Modbus slave address of the MMU
-        default: 1
+          Modbus slave address of the MMU. The cubicle is named after it: PVs $(P):CIT<ID>:...
       MEAS_POLL:
         type: int
         description: |-
-          Polling time in ms of the measurements ($0080-$00CB)
+          Polling time in ms of the measurements ($0080-$00CB, read in two blocks)
         default: 500
       STS_POLL:
         type: int
@@ -271,21 +266,26 @@ entity_models:
 
     pre_init:
       - value: |
-          ## cubicle {{R}} slave {{ID}}: measurements, MAU ready/power, currents $0080-$00CB
-          drvModbusAsynConfigure("{{NAME}}_MEAS", "{{serctrl.NAME}}_ASYN", {{ID}}, 3, 0x80, 76, 0, {{MEAS_POLL}}, "HAZEMEYER")
-          ## cubicle {{R}} slave {{ID}}: general and MAU faults / statuses $0020-$003F
+          ## cubicle CIT{{ID}}: word area $0080-$00CB in two reads (32 + 44 words): serial
+          ## gateways split replies at 104 bytes and the modbus RTU layer needs each in one read
+          ## cubicle CIT{{ID}}: mains measurements $0080-$009F
+          drvModbusAsynConfigure("{{NAME}}_MEAS", "{{serctrl.NAME}}_ASYN", {{ID}}, 3, 0x80, 32, 0, {{MEAS_POLL}}, "HAZEMEYER")
+          ## cubicle CIT{{ID}}: MAU voltages/currents, general and MAU ready/power $00A0-$00CB
+          drvModbusAsynConfigure("{{NAME}}_MEAS2", "{{serctrl.NAME}}_ASYN", {{ID}}, 3, 0xA0, 44, 0, {{MEAS_POLL}}, "HAZEMEYER")
+          ## cubicle CIT{{ID}}: general and MAU faults / statuses $0020-$003F
           drvModbusAsynConfigure("{{NAME}}_STS", "{{serctrl.NAME}}_ASYN", {{ID}}, 3, 0x20, 32, 0, {{STS_POLL}}, "HAZEMEYER")
-          ## cubicle {{R}} slave {{ID}}: general and MAU commands $0000-$001F
+          ## cubicle CIT{{ID}}: general and MAU commands $0000-$001F
           drvModbusAsynConfigure("{{NAME}}_CMD", "{{serctrl.NAME}}_ASYN", {{ID}}, 6, 0x00, 32, 0, 1, "HAZEMEYER")
-          ## cubicle {{R}} slave {{ID}}: MAU current settings $0060-$0067
+          ## cubicle CIT{{ID}}: MAU current settings $0060-$0067
           drvModbusAsynConfigure("{{NAME}}_ISET", "{{serctrl.NAME}}_ASYN", {{ID}}, 6, 0x60, 8, 0, 1, "HAZEMEYER")
 
     databases:
       - file: hzacc_cubicle.db
         args:
           P: '{{serctrl.P}}'
-          R: '{{R}}'
+          R: 'CIT{{ID}}'
           PORT_MEAS: '{{NAME}}_MEAS'
+          PORT_MEAS2: '{{NAME}}_MEAS2'
           PORT_CMD: '{{NAME}}_CMD'
           TIMEOUT: '{{TIMEOUT}}'
           PULSE: '{{PULSE}}'
@@ -319,11 +319,18 @@ entity_models:
         description: |-
           Full scale voltage in V
         default: 20.0
-      RAWMAX:
+      RAWMAX_SP:
         type: int
         description: |-
-          Raw value at full scale
-        default: 4095
+          Raw current setting at IMAX (signed, bipolar). Measured against the reference
+          control system: raw 410 = 2.000 A at IMAX 10
+        default: 2048
+      RAWMAX_RB:
+        type: int
+        description: |-
+          Raw current / voltage readback at IMAX / VMAX (signed). Measured against the
+          reference control system: raw 1644 = 2.000 A at IMAX 10
+        default: 8192
       ZERO_TOLERANCE:
         type: float
         description: |-
@@ -345,30 +352,38 @@ entity_models:
         default: 30.0
 
     # asyn offsets of channel n: current $00C4+n and voltage $00A1+4n in the
-    # MEAS port ($0080), faults $0030+2n and status $0031+2n in the STS port
+    # MEAS2 port ($00A0), faults $0030+2n and status $0031+2n in the STS port
     # ($0020), commands $0010+2n in the CMD port ($0000), setting $0060+n in ISET
     databases:
       - file: hzacc_channel.template
         args:
           P: '{{cit.serctrl.P}}'
           R: '{{R}}'
-          CUB: '{{cit.R}}'
-          PORT_MEAS: '{{cit.NAME}}_MEAS'
+          CUB: 'CIT{{cit.ID}}'
+          PORT_MEAS2: '{{cit.NAME}}_MEAS2'
           PORT_STS: '{{cit.NAME}}_STS'
           PORT_CMD: '{{cit.NAME}}_CMD'
           PORT_ISET: '{{cit.NAME}}_ISET'
           TIMEOUT: '{{cit.TIMEOUT}}'
           PULSE: '{{cit.PULSE}}'
           CH: '{{CHANNEL}}'
-          IRB: '{{68 + CHANNEL}}'
-          VRB: '{{33 + 4 * CHANNEL}}'
+          IRB: '{{36 + CHANNEL}}'
+          VRB: '{{1 + 4 * CHANNEL}}'
           FLT: '{{16 + 2 * CHANNEL}}'
           STS: '{{17 + 2 * CHANNEL}}'
           CMD: '{{16 + 2 * CHANNEL}}'
           ISET: '{{CHANNEL}}'
           IMAX: '{{IMAX}}'
           VMAX: '{{VMAX}}'
-          RAWMAX: '{{RAWMAX}}'
+          RAWMAX_SP: '{{RAWMAX_SP}}'
+          RAWMAX_RB: '{{RAWMAX_RB}}'
           SET_TOLERANCE: '{{SET_TOLERANCE}}'
           ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
           SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
+      # position aliases $(P):CIT<ID>:CH1..CH8:... for the cubicle OPI (hzacc.bob)
+      - file: hzacc_channel_alias.template
+        args:
+          P: '{{cit.serctrl.P}}'
+          R: '{{R}}'
+          CUB: 'CIT{{cit.ID}}'
+          CHN: '{{CHANNEL + 1}}'
