@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+# a release tag makes the image reproducible; a branch follows whatever was pushed last
+module: keysight-e36100
+organization: https://github.com/infn-epics/
+version: main
+dbds:
+- asyn.dbd
+- drvAsynIPPort.dbd
+- drvAsynSerialPort.dbd
+- e36100Support.dbd
+libs:
+- asyn
+- seq
+- pv
+- e36100Support
