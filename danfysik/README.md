@@ -27,6 +27,25 @@ Starts the SNL program for UNIMAG control.
 
 See the template in `ibek-templates/templates/ps/danfysik/danfysik.yaml.j2` for example configuration.
 
+## Controller models
+
+`ps.model` selects the database variant; the ibek template sets it from the IOC (or device) `devtype`:
+
+| devtype | model | firmware (`VER`) | databases |
+|---|---|---|---|
+| `sys8x00` (default), `sys8800` | `sys8800` | `DANFYSIK A/S SYSTEM 8800 SB` | `danfysik.template` (+ `danfysik_unimag.template`) |
+| `sys80it` | `sys80it` | `SCC-995 BASEVERS. 952` / `SPEC.ITALIEN BY OH-ELECTRONICS` | the above + `danfysik_sys80it.template` (+ `danfysik_sys80it_unimag.template`) |
+
+sys80it is the older System 8000 command set: 24-character `S1`, no `ADCV`/`?1`/`?2` (current from `AD 8`),
+AD channels per the System 8000 table, and a pause needed after `VER`. The overlay is loaded last and only
+redefines the fields that differ. `SCAN_FAST`/`SCAN_SLOW`/`SCAN_DIAG` set the poll rates; the template defaults
+them to 1 s / 10 s for sys8800 and 2 s / 10 s / Passive for sys80it (all units on one slow serial line), and `scan_fast`,
+`scan_slow`, `scan_diag` in the IOC or device values override them.
+
+UNIMAG (`unimag_enable`, default true) works on both models. On sys80it the sequencer's ramp trigger is a
+no-op (System 8000 `TS` is "trig sequence" and needs a stack number; `WAR` ramps by itself), and every write
+holds the line 100 ms so a late error reply can't be read by the next request.
+
 ## UNIMAG watchdog parameters
 
 The UNIMAG overlay of `ps` (when `unimag_enable` is true) exposes the tuning of its state and setpoint watchdogs. Each

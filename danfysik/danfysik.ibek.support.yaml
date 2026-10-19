@@ -55,6 +55,28 @@ entity_models:
         type: int
         description: Precision for display
         default: 3
+      model:
+        type: str
+        description: |-
+          Controller firmware, picks the database variant:
+            sys8800 - "DANFYSIK A/S SYSTEM 8800 SB" (32-char S1, ADCV); danfysik.template only.
+            sys80it - System 8000 "SPEC.ITALIEN BY OH-ELECTRONICS" (24-char S1, no ADCV/?1/?2,
+                      VER needs a pause); adds the danfysik_sys80it.template overlay.
+        default: sys8800
+      SCAN_FAST:
+        type: str
+        description: Scan of the state/current readbacks (S1, RA, current, polarity)
+        default: 1 second
+      SCAN_SLOW:
+        type: str
+        description: Scan of settings and housekeeping readbacks
+        default: 10 second
+      SCAN_DIAG:
+        type: str
+        description: |-
+          Scan of the raw/duplicate diagnostics (sys80it only). Any menuScan choice:
+          Passive, 10/5/2/1/.5/.2/.1 second (nothing slower than 10 s exists).
+        default: Passive
       unimag_enable:
         type: bool
         description: Enable UNIMAG sequencer for bipolar operation
@@ -92,6 +114,8 @@ entity_models:
           IMAX: '{{IMAX}}'
           VMAX: '{{VMAX}}'
           PREC: '{{PREC}}'
+          SCAN_FAST: '{{SCAN_FAST}}'
+          SCAN_SLOW: '{{SCAN_SLOW}}'
       - file: danfysik_unimag.template
         args:
           DEVICE: '{{P}}'
@@ -100,6 +124,22 @@ entity_models:
           ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
           SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
         enabled: '{{unimag_enable}}'
+      # Must come after danfysik.template and danfysik_unimag.template: it
+      # redefines fields of records loaded by both.
+      - file: danfysik_sys80it.template
+        args:
+          DEVICE: '{{P}}'
+          PORT: '{{PORT}}'
+          ADDR: '{{ADDR}}'
+          IMAX: '{{IMAX}}'
+          VMAX: '{{VMAX}}'
+          SCAN_SLOW: '{{SCAN_SLOW}}'
+          SCAN_DIAG: '{{SCAN_DIAG}}'
+        enabled: '{{ model == "sys80it" }}'
+      - file: danfysik_sys80it_unimag.template
+        args:
+          DEVICE: '{{P}}'
+        enabled: '{{ unimag_enable and model == "sys80it" }}'
 
     post_init:
       - type: text
