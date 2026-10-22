@@ -42,9 +42,9 @@ redefines the fields that differ. `SCAN_FAST`/`SCAN_SLOW`/`SCAN_DIAG` set the po
 them to 1 s / 10 s for sys8800 and 2 s / 10 s / Passive for sys80it (all units on one slow serial line), and `scan_fast`,
 `scan_slow`, `scan_diag` in the IOC or device values override them.
 
-UNIMAG (`unimag_enable`, default true) works on both models. On sys80it the sequencer's ramp trigger is a
-no-op (System 8000 `TS` is "trig sequence" and needs a stack number; `WAR` ramps by itself), and every write
-holds the line 100 ms so a late error reply can't be read by the next request.
+UNIMAG (`unimag_enable`, default true) works on both models. On sys80it, as on sys8800, `WAR` stores the
+ramp end and a bare `TS` starts the ramp (`WA` is a syntax error there); every write holds the line 100 ms so
+a late error reply can't be read by the next request. The sys80it current readback (`AD 8`) is in 10 mA units.
 
 ## UNIMAG watchdog parameters
 
