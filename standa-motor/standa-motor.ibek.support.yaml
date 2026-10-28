@@ -1,0 +1,207 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.0.1/ibek.support.schema.json
+
+# Standa 8SMC1-USBhF: one USB controller per motor. The controllers are
+# plugged into a small host (e.g. a Raspberry Pi) running usmc_server.py,
+# which forwards USB control transfers over TCP; one EPICS controller groups
+# the axes behind one bridge, each selected by its serial number.
+
+module: standa
+
+entity_models:
+  - name: controller
+    description: |-
+      Creates an 8SMC1-USBhF motor controller (asyn port) behind a usmc_server.py bridge
+    parameters:
+      controllerName:
+        type: id
+        description: |-
+          The name of the controller and its asyn port name
+
+      P:
+        type: str
+        description: |-
+          Device PV prefix
+
+      IP:
+        type: str
+        description: |-
+          Host running usmc_server.py
+        default: 127.0.0.1
+
+      TCPPORT:
+        type: int
+        description: |-
+          TCP port of usmc_server.py
+        default: 5080
+
+      serials:
+        type: str
+        description: |-
+          Controller serial numbers, one per axis in ADDR order, separated by spaces
+          (trailing digits are enough, e.g. "6183 5912")
+
+      movingPollPeriod:
+        type: int
+        description: |-
+          Poll period (ms) while any axis is moving
+        default: 100
+
+      idlePollPeriod:
+        type: int
+        description: |-
+          Poll period (ms) while no axis is moving
+        default: 1000
+
+      limitsEnable:
+        type: int
+        description: |-
+          1 to enable the limit switch inputs (stop the motor), 0 to ignore them
+        default: 1
+
+      limit1ActiveHigh:
+        type: int
+        description: |-
+          Limit switch 1 (low limit) active level: 0 = 0 V, 1 = +3/5 V
+        default: 0
+
+      limit2ActiveHigh:
+        type: int
+        description: |-
+          Limit switch 2 (high limit) active level: 0 = 0 V, 1 = +3/5 V
+        default: 0
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{controllerName}}_BRIDGE", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+          USMCCreateController("{{controllerName}}", "{{controllerName}}_BRIDGE", "{{serials}}", {{movingPollPeriod}}, {{idlePollPeriod}})
+          USMCConfigLimits("{{controllerName}}", {{limitsEnable}}, {{limit1ActiveHigh}}, {{limit2ActiveHigh}})
+
+  - name: axis
+    description: |-
+      Creates a motor axis. Positions count 1/8 full steps: with the default
+      MRES 0.125 the EGU is full steps and VELO ranges 2..625 steps/s.
+    parameters:
+      controller:
+        type: object
+        description: |-
+          A reference to the motion controller
+
+      M:
+        type: str
+        description: |-
+          PV suffix for the motor record
+
+      ADDR:
+        type: int
+        description: |-
+          The axis number (0 to number of serials - 1)
+
+      DESC:
+        type: str
+        description: |-
+          The description of the axis
+        default: ""
+
+      DLLM:
+        type: float
+        description: |-
+          Dial low limit (DLLM = DHLM = 0 disables soft limits)
+        default: 0
+
+      DHLM:
+        type: float
+        description: |-
+          Dial high limit
+        default: 0
+
+      VELO:
+        type: float
+        description: |-
+          Velocity (EGU/s)
+        default: 25
+
+      DIR:
+        type: enum
+        description: |-
+          The direction of the axis
+        default: 0
+        values:
+          Pos: 0
+          Neg: 1
+
+      EGU:
+        type: str
+        description: |-
+          Engineering units
+        default: "steps"
+
+      VBAS:
+        type: float
+        description: |-
+          Base velocity (EGU/s)
+        default: 2
+
+      ACCL:
+        type: float
+        description: |-
+          Seconds to velocity (the controller supports 0.1 .. 1.5 s)
+        default: 0.2
+
+      BDST:
+        type: float
+        description: |-
+          Backlash distance (EGU)
+        default: 0
+
+      BVEL:
+        type: float
+        description: |-
+          Backlash velocity (EGU/s)
+        default: 25
+
+      BACC:
+        type: float
+        description: |-
+          Backlash seconds to velocity
+        default: 0.2
+
+      MRES:
+        type: float
+        description: |-
+          Motor step size (EGU per 1/8 step)
+        default: 0.125
+
+      PREC:
+        type: int
+        description: |-
+          Display precision
+        default: 3
+
+    databases:
+      - file: basic_asyn_motor.db
+        args:
+          P: "{{controller.P}}"
+          M:
+          DTYP: asynMotor
+          PORT: "{{controller.controllerName}}"
+          ADDR:
+          DESC:
+          EGU:
+          DIR:
+          VELO:
+          VBAS:
+          ACCL:
+          BDST:
+          BVEL:
+          BACC:
+          MRES:
+          PREC:
+          DHLM:
+          DLLM:
+          INIT: ""
+      - file: $(STANDA_MOTOR)/db/standaAxis.db
+        args:
+          P: "{{controller.P}}"
+          M:
+          PORT: "{{controller.controllerName}}"
+          ADDR:

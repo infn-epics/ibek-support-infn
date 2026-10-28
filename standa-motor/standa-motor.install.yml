@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../_scripts/support_install_variables.json
+
+# Standa 8SMC1-USBhF stepper motor controllers, reached through the
+# usmc_server.py USB-to-TCP bridge (see the standa-motor repo README).
+module: standa-motor
+version: main
+organization: https://github.com/infn-epics
+
+dbds:
+  - USMCSupport.dbd
+  - motorRecord.dbd
+  - motorSupport.dbd
+
+libs:
+  - USMC
+  - motor
+  - asyn
