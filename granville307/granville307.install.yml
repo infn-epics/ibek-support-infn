@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
 
-module: granville307
+module: vug-granville-307
 version: main
 organization: https://github.com/infn-epics/
 macro: vug-granville-307
