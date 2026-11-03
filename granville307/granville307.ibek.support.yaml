@@ -3,17 +3,14 @@
 module: granville307
 
 entity_models:
-  - name: controller
+  - name: gateway
     description: |-
-      Granville-Phillips Series 307 vacuum controller connected through a
-      transparent Moxa serial server using StreamDevice and asyn IP.
+      Shared Moxa TCP serial connection for one or more Granville-Phillips 307
+      controllers on an addressed RS-485 line.
     parameters:
       name:
         type: id
         description: Asyn port name for the Moxa TCP serial connection.
-      P:
-        type: str
-        description: PV prefix for this controller, for example VUGTR001.
       IP:
         type: str
         description: Moxa NPort IP address.
@@ -22,35 +19,46 @@ entity_models:
         type: int
         description: Moxa TCP server port mapped to the serial line.
         default: 4008
-      ADDR:
-        type: str
-        description: Two-digit hexadecimal RS-485 address of the 307.
-        default: "01"
       PROTO:
-        type: enum
-        description: StreamDevice protocol file.
-        values:
-          granville307-rs232.proto:
-          granville307-rs485.proto:
+        type: str
+        description: StreamDevice protocol. Defaults to addressed RS-485.
         default: granville307-rs485.proto
-      PRES_UNIT_DEFAULT:
-        type: enum
-        description: Initial PRES_RB units; 0 is Torr and 1 is Bar.
-        values:
-          "0":
-          "1":
-        default: "0"
 
     pre_init:
       - value: |
           drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
           epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
 
+  - name: controller
+    description: |-
+      One Granville-Phillips Series 307 controller on a shared Moxa connection.
+    parameters:
+      gateway:
+        type: object
+        description: Reference to the shared granville307.gateway entity.
+      name:
+        type: id
+        description: Controller name, usually the gauge PV prefix.
+      P:
+        type: str
+        description: PV prefix for this controller, for example VUGTR001.
+      ADDR:
+        type: str
+        description: Two-digit hexadecimal RS-485 address of the 307.
+        default: "01"
+      PRES_UNIT_DEFAULT:
+        type: enum
+        description: Initial PRES_RB units; 0 is Torr and 1 is Bar.
+        values:
+          "0":
+          "1":
+        default: "1"
+
     databases:
       - file: $(GRANVILLE307)/db/granville307.db
         args:
           P: "{{P}}"
-          PORT: "{{name}}"
+          PORT: "{{gateway.name}}"
           ADDR: "{{ADDR}}"
-          PROTO: "{{PROTO}}"
+          PROTO: "{{gateway.PROTO}}"
           PRES_UNIT_DEFAULT: "{{PRES_UNIT_DEFAULT}}"
