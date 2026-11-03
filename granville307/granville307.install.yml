@@ -3,7 +3,6 @@
 module: vug-granville-307
 version: main
 organization: https://github.com/infn-epics/
-macro: vug-granville-307
 
 dbds:
   - asyn.dbd
@@ -15,8 +14,6 @@ libs:
   - stream
 
 protocol_files:
-  - db/granville307-rs232.proto
-  - db/granville307-rs485.proto
+  - granville307App/Db/granville307-rs232.proto
+  - granville307App/Db/granville307-rs485.proto
 
-db_files:
-  - db/granville307.db
