@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: granville307
+
+entity_models:
+  - name: controller
+    description: |-
+      Granville-Phillips Series 307 vacuum controller connected through a
+      transparent Moxa serial server using StreamDevice and asyn IP.
+    parameters:
+      name:
+        type: id
+        description: Asyn port name for the Moxa TCP serial connection.
+      P:
+        type: str
+        description: PV prefix for this controller, for example VUGTR001.
+      IP:
+        type: str
+        description: Moxa NPort IP address.
+        default: 127.0.0.1
+      TCPPORT:
+        type: int
+        description: Moxa TCP server port mapped to the serial line.
+        default: 4008
+      ADDR:
+        type: str
+        description: Two-digit hexadecimal RS-485 address of the 307.
+        default: "01"
+      PROTO:
+        type: enum
+        description: StreamDevice protocol file.
+        values:
+          granville307-rs232.proto:
+          granville307-rs485.proto:
+        default: granville307-rs485.proto
+      PRES_UNIT_DEFAULT:
+        type: enum
+        description: Initial PRES_RB units; 0 is Torr and 1 is Bar.
+        values:
+          "0":
+          "1":
+        default: "0"
+
+    pre_init:
+      - value: |
+          drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+          epicsEnvSet "STREAM_PROTOCOL_PATH", "/epics/support/configure/protocol/"
+
+    databases:
+      - file: $(GRANVILLE307)/db/granville307.db
+        args:
+          P: "{{P}}"
+          PORT: "{{name}}"
+          ADDR: "{{ADDR}}"
+          PROTO: "{{PROTO}}"
+          PRES_UNIT_DEFAULT: "{{PRES_UNIT_DEFAULT}}"

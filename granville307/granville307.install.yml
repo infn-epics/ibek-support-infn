@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: granville307
+version: main
+organization: https://github.com/infn-epics/
+macro: vug-granville-307
+
+dbds:
+  - asyn.dbd
+  - drvAsynIPPort.dbd
+  - stream.dbd
+
+libs:
+  - asyn
+  - stream
+
+protocol_files:
+  - db/granville307-rs232.proto
+  - db/granville307-rs485.proto
+
+db_files:
+  - db/granville307.db
