@@ -3,6 +3,7 @@
 module: vug-granville-307
 version: main
 organization: https://github.com/infn-epics/
+macro: GRANVILLE307
 
 dbds:
   - asyn.dbd
