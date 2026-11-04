@@ -64,3 +64,11 @@ and `set_timeout_s` at IOC level and/or per device (the device value wins).
 
 `AT_SETPOINT` compares `CURR_DIFF` with `SET_TOLERANCE`; `RAMPING` (8) and `POL_CHANGE` (9) are
 device specific `STATE_RB` states.
+
+### Ignoring a faulty interlock input
+
+`FAULT_IGNORE` (ibek-templates key `fault_ignore`, a list of STATUS_BITS bit
+numbers, IOC-level or per device) removes S1 interlock bits from
+`INTERLOCKED` / `STATE_RB=FAULT`; `STATUS` and `STATUS_BITS` still show them
+raw. On sys80it, bit = 24 - S1 character (1-based), e.g. char 9 "One
+transistor fault" = bit 15. The mask is also the live PV `<P>:FAULT_IGNORE`.
