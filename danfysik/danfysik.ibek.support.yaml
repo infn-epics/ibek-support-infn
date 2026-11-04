@@ -104,6 +104,13 @@ entity_models:
           SP_NOT_REACHED (STATE_RB=6), an unreached commanded state ST_NOT_REACHED (STATE_RB=7, MAJOR).
           Live PV SET_TIMEOUT_S.
         default: 30.0
+      FAULT_IGNORE:
+        type: int
+        description: |-
+          Bit mask of S1 interlock bits (STATUS_BITS bit n = 2^n) that never raise INTERLOCKED or
+          STATE_RB=FAULT, for a broken or unwired interlock input. STATUS/STATUS_BITS still show them.
+          Live PV FAULT_IGNORE.
+        default: 0
 
     databases:
       - file: danfysik.template
@@ -123,6 +130,7 @@ entity_models:
           SET_TOLERANCE: '{{SET_TOLERANCE}}'
           ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
           SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
+          FAULT_IGNORE: '{{FAULT_IGNORE}}'
         enabled: '{{unimag_enable}}'
       # Must come after danfysik.template and danfysik_unimag.template: it
       # redefines fields of records loaded by both.
