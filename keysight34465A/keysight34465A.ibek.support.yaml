@@ -1,0 +1,100 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: keysight34465A
+
+entity_models:
+  - name: dmm
+    description: |-
+      Keysight 34465A Truevolt 6.5 digit DMM on its raw SCPI socket.
+      PVs are P:R:<name>. Readings: VAL, MEAN, STD, MIN, MAX, READ_ARR.
+      User conversion: CONV_VAL/MEAN/MIN/MAX = reading * CONV_FACTOR + CONV_OFFSET,
+      CONV_STD = STD * |CONV_FACTOR|, unit CONV_EGU (e.g. pC).
+    parameters:
+      name:
+        type: id
+        description: |-
+          asyn port name
+      P:
+        type: str
+        description: |-
+          PV prefix, PVs are P:R:<name>
+      R:
+        type: str
+        description: |-
+          PV name of the unit, PVs are P:R:<name>
+      IP:
+        type: str
+        description: |-
+          IP address or host name of the DMM
+      TCPPORT:
+        type: int
+        description: |-
+          SCPI raw socket port
+        default: 5025
+      NELM:
+        type: int
+        description: |-
+          max readings per READ? (TRIG:COUN x SAMP:COUN)
+        default: 1000
+      SCAN:
+        type: str
+        description: |-
+          acquisition scan (READ_ARR); Passive = on demand with TRIGGER
+        default: 1 second
+      RB_SCAN:
+        type: str
+        description: |-
+          scan of the settings readbacks
+        default: 5 second
+      ERR_SCAN:
+        type: str
+        description: |-
+          scan of the SCPI error queue poll
+        default: 1 second
+      ACQ_EN:
+        type: int
+        description: |-
+          periodic acquisition enabled at boot (1) or not (0)
+        default: 1
+      CONV_FACTOR:
+        type: float
+        description: |-
+          conversion factor of the CONV_* outputs
+        default: 1.0
+      CONV_OFFSET:
+        type: float
+        description: |-
+          conversion offset of the CONV_* outputs
+        default: 0.0
+      CONV_EGU:
+        type: str
+        description: |-
+          engineering unit of the CONV_* outputs (e.g. pC)
+        default: ""
+      CONV_PREC:
+        type: int
+        description: |-
+          display precision of the CONV_* outputs
+        default: 4
+
+    pre_init:
+      - value: |
+          epicsEnvSet("STREAM_PROTOCOL_PATH", "$(MULTIMETER_KEYSIGHT)/db")
+          epicsEnvSet("EPICS_CA_MAX_ARRAY_BYTES", "100000")
+          drvAsynIPPortConfigure("{{name}}", "{{IP}}:{{TCPPORT}}", 0, 0, 0)
+
+    databases:
+      - file: $(MULTIMETER_KEYSIGHT)/db/keysight34465A.db
+        args:
+          P: "{{P}}"
+          R: "{{R}}"
+          PORT: "{{name}}"
+          NELM: "{{NELM}}"
+          SCAN: "{{SCAN}}"
+          RB_SCAN: "{{RB_SCAN}}"
+          ERR_SCAN: "{{ERR_SCAN}}"
+          ACQ_EN: "{{ACQ_EN}}"
+          CONV_FACTOR: "{{CONV_FACTOR}}"
+          CONV_OFFSET: "{{CONV_OFFSET}}"
+          CONV_EGU: "{{CONV_EGU}}"
+          CONV_PREC: "{{CONV_PREC}}"

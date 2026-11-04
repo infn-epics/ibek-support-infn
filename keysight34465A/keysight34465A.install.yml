@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+# Keysight 34465A Truevolt DMM, StreamDevice over raw SCPI socket (TCP 5025)
+module: multimeter-keysight
+version: main
+organization: https://github.com/infn-epics/
+macro: MULTIMETER_KEYSIGHT
+
+dbds:
+  - asyn.dbd
+  - drvAsynIPPort.dbd
+  - stream.dbd
+  - keysightStats.dbd
+
+libs:
+  - keysight34465ASupport
+  - asyn
+  - stream
+
+protocol_files:
+  - keysight34465AApp/Db/keysight34465A.proto
