@@ -1,0 +1,85 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
+module: moxaNport
+
+entity_models:
+  - name: device
+    description: |-
+      One Moxa NPort serial device server, monitored and configured through its
+      web console over HTTP. Exposes overview, per-port serial settings,
+      operating settings, Monitor Line and Monitor Async, and lets the operating
+      mode be changed (stored, then activated by Save/Restart).
+
+      Fully supported on the gen-2 "5410-style" console (MoxaHttp/1.0). Gen-3
+      firmware (fw 3.x) is detected and reported but not yet driven; the IOC
+      backs off instead of churning the device session.
+    parameters:
+      name:
+        type: id
+        description: Asyn port name for this NPort.
+      P:
+        type: str
+        description: PV prefix, e.g. SPARC:MOXA:CHL001.
+      host:
+        type: str
+        description: NPort web-console host name or IP.
+      httpPort:
+        type: int
+        description: Web-console HTTP port.
+        default: 80
+      nports:
+        type: int
+        description: Number of serial ports to expose.
+        default: 4
+      pollPeriod:
+        type: float
+        description: Monitor poll period in seconds.
+        default: 2.0
+      credentialsFile:
+        type: str
+        description: |-
+          .netrc-format file with console logins for password-protected units
+          (mounted from the epik8s-secret Secret at /.ssh/moxa_netrc). Leave the
+          default for units whose console has no login.
+        default: /.ssh/moxa_netrc
+      dryRun:
+        type: enum
+        description: 1 = log mode-change/restart requests without sending them.
+        values:
+          "0":
+          "1":
+        default: "1"
+
+    pre_init:
+      - value: |
+          moxaNportCredentialsFile("{{credentialsFile}}")
+          moxaNportConfigure("{{name}}", "{{host}}", {{httpPort}}, {{nports}}, {{pollPeriod}}, "", "", {{dryRun}})
+
+    databases:
+      - file: $(MOXANPORT)/db/moxaNport.db
+        args:
+          P: "{{P}}"
+          PORT: "{{name}}"
+
+  - name: port
+    description: Records for one serial port of a moxaNport.device.
+    parameters:
+      device:
+        type: object
+        description: Reference to the owning moxaNport.device entity.
+      P:
+        type: str
+        description: PV prefix (same as the device's P).
+      N:
+        type: int
+        description: Serial port number, 1-based.
+      ADDR:
+        type: int
+        description: Asyn address for this port (N - 1).
+    databases:
+      - file: $(MOXANPORT)/db/moxaNportPort.db
+        args:
+          P: "{{P}}"
+          PORT: "{{device.name}}"
+          N: "{{N}}"
+          ADDR: "{{ADDR}}"

@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../ibek-support/_scripts/support_install_variables.json
+
+module: serial-converter-moxa
+version: main
+organization: https://github.com/infn-epics/
+macro: MOXANPORT
+
+dbds:
+  - asyn.dbd
+  - moxaNportSupport.dbd
+
+libs:
+  - moxaNport
+  - asyn

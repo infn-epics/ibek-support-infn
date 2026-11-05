@@ -1,0 +1,381 @@
+# Moxa NPort web-console IOC. Generated layout; edit freely.
+# Per serial port records. Macros: P, PORT, N (port number 1..), ADDR (= N-1)
+
+# ---- Serial Settings (03View.htm)
+record(stringin, "$(P):P$(N):SER:ALIAS") {
+    field(DESC, "Port alias")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)SER_ALIAS")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):SER:BAUD") {
+    field(DESC, "Baud rate")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)SER_BAUD")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):SER:DATABITS") {
+    field(DESC, "Data bits")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)SER_DATABITS")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):SER:STOPBITS") {
+    field(DESC, "Stop bits")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)SER_STOPBITS")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):SER:PARITY") {
+    field(DESC, "Parity")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)SER_PARITY")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):SER:FIFO") {
+    field(DESC, "UART FIFO")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)SER_FIFO")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):SER:FLOW") {
+    field(DESC, "Flow control")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)SER_FLOW")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):SER:IFACE") {
+    field(DESC, "Interface")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)SER_IFACE")
+    field(SCAN, "I/O Intr")
+}
+
+# ---- Operating Settings (04View.htm)
+record(stringin, "$(P):P$(N):OP:MODE") {
+    field(DESC, "Operating mode (text)")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_MODE")
+    field(SCAN, "I/O Intr")
+}
+record(mbbi, "$(P):P$(N):OP:MODE_RBV") {
+    field(DESC, "Operating mode")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_MODE_IDX")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ZRST, "Real COM")
+    field(ONVL, "1")
+    field(ONST, "TCP Server")
+    field(TWVL, "2")
+    field(TWST, "TCP Client")
+    field(THVL, "3")
+    field(THST, "UDP")
+    field(FRVL, "4")
+    field(FRST, "Pair Slave")
+    field(FVVL, "5")
+    field(FVST, "Pair Master")
+    field(SXVL, "6")
+    field(SXST, "Reverse Telnet")
+    field(SVVL, "7")
+    field(SVST, "Disabled")
+    field(EIVL, "8")
+    field(EIST, "RFC2217")
+    field(NIVL, "9")
+    field(NIST, "Ethernet Modem")
+    field(TEVL, "10")
+    field(TEST, "Printer")
+    field(UNSV, "MINOR")
+}
+record(mbbo, "$(P):P$(N):OP:MODE_SP") {
+    field(DESC, "Set operating mode (needs restart)")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),1)OP_MODE_SP")
+    field(ZRVL, "0")
+    field(ZRST, "Real COM")
+    field(ONVL, "1")
+    field(ONST, "TCP Server")
+    field(TWVL, "2")
+    field(TWST, "TCP Client")
+    field(THVL, "3")
+    field(THST, "UDP")
+    field(FRVL, "4")
+    field(FRST, "Pair Slave")
+    field(FVVL, "5")
+    field(FVST, "Pair Master")
+    field(SXVL, "6")
+    field(SXST, "Reverse Telnet")
+    field(SVVL, "7")
+    field(SVST, "Disabled")
+    field(EIVL, "8")
+    field(EIST, "RFC2217")
+    field(NIVL, "9")
+    field(NIST, "Ethernet Modem")
+    field(TEVL, "10")
+    field(TEST, "Printer")
+}
+record(stringin, "$(P):P$(N):OP:PACKLEN") {
+    field(DESC, "Packing length")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_PACKLEN")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):OP:DELIM1") {
+    field(DESC, "Delimiter 1")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_DELIM1")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):OP:DELIM2") {
+    field(DESC, "Delimiter 2")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_DELIM2")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):OP:DELIMPROC") {
+    field(DESC, "Delimiter process")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_DELIMPROC")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):OP:FORCETX") {
+    field(DESC, "Force transmit [ms]")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_FORCETX")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):OP:ALIVE") {
+    field(DESC, "TCP alive check [min]")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_ALIVE")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):OP:INACT") {
+    field(DESC, "Inactivity time [ms]")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_INACT")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):OP:MAXCONN") {
+    field(DESC, "Max connections")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_MAXCONN")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):OP:LOCALPORT") {
+    field(DESC, "Local TCP port")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_LOCALPORT")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):OP:CMDPORT") {
+    field(DESC, "Command port")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_CMDPORT")
+    field(SCAN, "I/O Intr")
+}
+record(waveform, "$(P):P$(N):OP:DETAILS") {
+    field(DESC, "All operating settings")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)OP_DETAILS")
+    field(FTVL, "CHAR")
+    field(NELM, "512")
+    field(SCAN, "I/O Intr")
+}
+
+# ---- Monitor Line (Mn_line.htm)
+record(stringin, "$(P):P$(N):LINE:OPMODE") {
+    field(DESC, "Op mode (monitor)")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)LINE_OPMODE")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):LINE:IP1") {
+    field(DESC, "Connected peer 1")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)LINE_IP1")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):LINE:IP2") {
+    field(DESC, "Connected peer 2")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)LINE_IP2")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):LINE:IP3") {
+    field(DESC, "Connected peer 3")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)LINE_IP3")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):LINE:IP4") {
+    field(DESC, "Connected peer 4")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)LINE_IP4")
+    field(SCAN, "I/O Intr")
+}
+
+# ---- Monitor Async (Mn_asyn.htm)
+record(ai, "$(P):P$(N):ASY:TXCNT") {
+    field(DESC, "Tx bytes since port open")
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_TXCNT")
+    field(EGU,  "B")
+    field(PREC, "0")
+    field(SCAN, "I/O Intr")
+}
+record(ai, "$(P):P$(N):ASY:RXCNT") {
+    field(DESC, "Rx bytes since port open")
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_RXCNT")
+    field(EGU,  "B")
+    field(PREC, "0")
+    field(SCAN, "I/O Intr")
+}
+record(ai, "$(P):P$(N):ASY:TXTOT") {
+    field(DESC, "Tx bytes since boot")
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_TXTOT")
+    field(EGU,  "B")
+    field(PREC, "0")
+    field(SCAN, "I/O Intr")
+}
+record(ai, "$(P):P$(N):ASY:RXTOT") {
+    field(DESC, "Rx bytes since boot")
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_RXTOT")
+    field(EGU,  "B")
+    field(PREC, "0")
+    field(SCAN, "I/O Intr")
+}
+record(ai, "$(P):P$(N):ASY:TXRATE") {
+    field(DESC, "Tx rate")
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_TXRATE")
+    field(EGU,  "B/s")
+    field(PREC, "1")
+    field(SCAN, "I/O Intr")
+}
+record(ai, "$(P):P$(N):ASY:RXRATE") {
+    field(DESC, "Rx rate")
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_RXRATE")
+    field(EGU,  "B/s")
+    field(PREC, "1")
+    field(SCAN, "I/O Intr")
+}
+record(mbbi, "$(P):P$(N):ASY:DSR") {
+    field(DESC, "DSR line state")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_DSR")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ZRST, "OFF")
+    field(ONVL, "1")
+    field(ONST, "ON")
+    field(TWVL, "2")
+    field(TWST, "N/A")
+    field(TWSV, "INVALID")
+}
+record(mbbi, "$(P):P$(N):ASY:CTS") {
+    field(DESC, "CTS line state")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_CTS")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ZRST, "OFF")
+    field(ONVL, "1")
+    field(ONST, "ON")
+    field(TWVL, "2")
+    field(TWST, "N/A")
+    field(TWSV, "INVALID")
+}
+record(mbbi, "$(P):P$(N):ASY:DCD") {
+    field(DESC, "DCD line state")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_DCD")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ZRST, "OFF")
+    field(ONVL, "1")
+    field(ONST, "ON")
+    field(TWVL, "2")
+    field(TWST, "N/A")
+    field(TWSV, "INVALID")
+}
+record(mbbi, "$(P):P$(N):ASY:DTR") {
+    field(DESC, "DTR line state")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_DTR")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ZRST, "OFF")
+    field(ONVL, "1")
+    field(ONST, "ON")
+    field(TWVL, "2")
+    field(TWST, "N/A")
+    field(TWSV, "INVALID")
+}
+record(mbbi, "$(P):P$(N):ASY:RTS") {
+    field(DESC, "RTS line state")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASY_RTS")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ZRST, "OFF")
+    field(ONVL, "1")
+    field(ONST, "ON")
+    field(TWVL, "2")
+    field(TWST, "N/A")
+    field(TWSV, "INVALID")
+}
+
+# ---- Monitor Async-Setting (Mn_asynS.htm)
+record(stringin, "$(P):P$(N):ASET:BAUD") {
+    field(DESC, "Active baud rate")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASET_BAUD")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):ASET:DATABITS") {
+    field(DESC, "Active data bits")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASET_DATABITS")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):ASET:STOPBITS") {
+    field(DESC, "Active stop bits")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASET_STOPBITS")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):ASET:PARITY") {
+    field(DESC, "Active parity")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASET_PARITY")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):ASET:FIFO") {
+    field(DESC, "Active FIFO")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASET_FIFO")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):ASET:RTSCTS") {
+    field(DESC, "RTS/CTS flow")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASET_RTSCTS")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):ASET:XONXOFF") {
+    field(DESC, "XON/XOFF flow")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASET_XONXOFF")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):P$(N):ASET:DTRDSR") {
+    field(DESC, "DTR/DSR flow")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),1)ASET_DTRDSR")
+    field(SCAN, "I/O Intr")
+}

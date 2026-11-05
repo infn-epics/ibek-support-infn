@@ -1,0 +1,115 @@
+# Moxa NPort web-console IOC. Generated layout; edit freely.
+# Device-level records. Macros: P (prefix), PORT (asyn port)
+
+record(bi, "$(P):CONNECTED") {
+    field(DESC, "Web console reachable")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),0,1)CONNECTED")
+    field(SCAN, "I/O Intr")
+    field(ZNAM, "Disconnected")
+    field(ONAM, "Connected")
+    field(ZSV,  "MAJOR")
+}
+record(stringin, "$(P):STATUS") {
+    field(DESC, "Last poll status")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),0,1)STATUS_MSG")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):SERVER") {
+    field(DESC, "HTTP server banner")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),0,1)SERVER")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):MODEL") {
+    field(DESC, "Model name")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),0,1)MODEL")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):MAC") {
+    field(DESC, "MAC address")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),0,1)MAC")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):SERIALNO") {
+    field(DESC, "Serial number")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),0,1)SERIALNO")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):FWVER") {
+    field(DESC, "Firmware version")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),0,1)FWVER")
+    field(SCAN, "I/O Intr")
+}
+record(stringin, "$(P):UPTIME") {
+    field(DESC, "System uptime")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),0,1)UPTIME")
+    field(SCAN, "I/O Intr")
+}
+record(longin, "$(P):NPORTS") {
+    field(DESC, "Serial ports detected")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),0,1)NPORTS")
+    field(SCAN, "I/O Intr")
+}
+record(ao, "$(P):POLL_PERIOD") {
+    field(DESC, "Monitor poll period")
+    field(DTYP, "asynFloat64")
+    field(OUT,  "@asyn($(PORT),0,1)POLL_PERIOD")
+    field(EGU,  "s")
+    field(PREC, "1")
+    field(DRVL, "0.5")
+    field(DRVH, "3600")
+}
+record(bo, "$(P):REFRESH") {
+    field(DESC, "Re-read all pages now")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0,1)REFRESH")
+    field(ZNAM, "Idle")
+    field(ONAM, "Refresh")
+}
+record(bo, "$(P):RESTART") {
+    field(DESC, "Save/Restart NPort (reboots!)")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0,1)RESTART")
+    field(ZNAM, "Idle")
+    field(ONAM, "Restart")
+}
+record(bi, "$(P):RESTART_PENDING") {
+    field(DESC, "Changes stored, restart needed")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),0,1)RESTART_PENDING")
+    field(SCAN, "I/O Intr")
+    field(ZNAM, "No")
+    field(ONAM, "Restart required")
+    field(OSV,  "MINOR")
+}
+record(bo, "$(P):DRYRUN") {
+    field(DESC, "Log write requests, do not send")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0,1)DRYRUN")
+    field(ZNAM, "Live")
+    field(ONAM, "Dry run")
+}
+record(bi, "$(P):LOGGED_IN") {
+    field(DESC, "Console login session active")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),0,1)LOGGED_IN")
+    field(SCAN, "I/O Intr")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+}
+record(waveform, "$(P):LAST_ACTION") {
+    field(DESC, "Result of last write action")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),0,1)LAST_ACTION")
+    field(FTVL, "CHAR")
+    field(NELM, "512")
+    field(SCAN, "I/O Intr")
+}
