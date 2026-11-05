@@ -3,8 +3,8 @@
 module: danfysik_sys8x00
 organization: https://github.com/infn-epics/
 
-# TODO this should be a tag to make rebuilding the container deterministic
-version: main
+# Pinned to a commit so the image rebuilds (and is reproducible) when it moves.
+version: 44f13814625c50d369980e795328e30da7464935
 
 dbds:
   - asyn.dbd
