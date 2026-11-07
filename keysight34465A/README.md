@@ -16,6 +16,7 @@ conversion `CONV_* = reading * CONV_FACTOR + CONV_OFFSET` in unit `CONV_EGU`.
   IP: 192.168.190.18
   CONV_FACTOR: 1000.0   # e.g. Q[pC] = V * 1 nF * 1e12
   CONV_EGU: pC
+  BOOT_STATE: STATE_1.sta   # optional: restored at every IOC boot
 ```
 
 ibek template: `ibek-templates/templates/daq/keysight34465A`.

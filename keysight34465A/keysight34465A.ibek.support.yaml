@@ -56,6 +56,12 @@ entity_models:
         description: |-
           periodic acquisition enabled at boot (1) or not (0)
         default: 1
+      BOOT_STATE:
+        type: str
+        description: |-
+          instrument state file (e.g. STATE_1.sta) restored at every IOC
+          boot, overwriting the DMM setup; empty = no restore at boot
+        default: ""
       CONV_FACTOR:
         type: float
         description: |-
@@ -98,3 +104,10 @@ entity_models:
           CONV_OFFSET: "{{CONV_OFFSET}}"
           CONV_EGU: "{{CONV_EGU}}"
           CONV_PREC: "{{CONV_PREC}}"
+          STATE_FILE: "{{ BOOT_STATE or 'STATE_1.sta' }}"
+
+    post_init:
+      - value: |
+          {%- if BOOT_STATE %}
+          dbpf "{{P}}:{{R}}:STATE_RESTORE" "1"
+          {%- endif %}
