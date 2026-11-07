@@ -12,7 +12,10 @@ version: main
 dbds:
   - asyn.dbd
   - modbusSupport.dbd
+  # UNIMAG state machine of the channels (aSub routine)
+  - hzaccUnimagSM.dbd
 
 libs:
   - asyn
   - modbus
+  - hzaccSupport

@@ -334,22 +334,30 @@ entity_models:
       ZERO_TOLERANCE:
         type: float
         description: |-
-          Tolerance in A within which a zero current setpoint counts as reached (UNIMAG watchdog).
-          Live PV ZERO_TOLERANCE.
+          Tolerance in A within which a zero current counts as reached (zero setpoint, ramp down
+          before Power Off) by the UNIMAG state machine. Live PV ZERO_TOLERANCE.
         default: 0.05
       SET_TOLERANCE:
         type: float
         description: |-
-          Tolerance in A within which the readback must get of CURRENT_SP, otherwise SP_NOT_REACHED
-          (STATE_RB=6, MINOR) is raised after SET_TIMEOUT_S. 0 disables the check. Live PV SET_TOLERANCE.
+          Tolerance in A within which the readback must get of CURRENT_SP. The state machine sends
+          the setting again RETRY times, then STATE_SM=SPNOTSET (STATE_RB=6 SP_NOT_REACHED, MINOR).
+          0 disables the current checks. Live PV SET_TOLERANCE.
         default: 0.1
       SET_TIMEOUT_S:
         type: float
         description: |-
-          Timeout in s of the UNIMAG watchdogs, restarted on progress. An unreached setpoint gives
-          SP_NOT_REACHED (STATE_RB=6), an unreached commanded state ST_NOT_REACHED (STATE_RB=7, MAJOR).
-          Live PV SET_TIMEOUT_S.
+          Timeout in s after which the UNIMAG state machine sends a setting / state command again
+          (setpoint timer restarted on progress). After RETRY retries: STATE_SM=SPNOTSET
+          (STATE_RB=6) or STATENOTSET (STATE_RB=7 ST_NOT_REACHED, MAJOR). Live PV SET_TIMEOUT_S.
         default: 30.0
+      RETRY:
+        type: int
+        description: |-
+          Number of times the UNIMAG state machine sends a command again (current setting, ON,
+          Power Off) when the MMU has not applied it. STATE_SP=RESET stops the retries
+          (STATE_SM back to READY). Live PV RETRY.
+        default: 3
 
     # asyn offsets of channel n: current $00C4+n and voltage $00A1+4n in the
     # MEAS2 port ($00A0), faults $0030+2n and status $0031+2n in the STS port
@@ -380,6 +388,7 @@ entity_models:
           SET_TOLERANCE: '{{SET_TOLERANCE}}'
           ZERO_TOLERANCE: '{{ZERO_TOLERANCE}}'
           SET_TIMEOUT_S: '{{SET_TIMEOUT_S}}'
+          RETRY: '{{RETRY}}'
       # position aliases $(P):CIT<ID>:CH1..CH8:... for the cubicle OPI (hzacc.bob)
       - file: hzacc_channel_alias.template
         args:
