@@ -4,7 +4,7 @@ module: danfysik_sys8x00
 organization: https://github.com/infn-epics/
 
 # Pinned to a commit so the image rebuilds (and is reproducible) when it moves.
-version: 44f13814625c50d369980e795328e30da7464935
+version: 1781ecb9b089637fe13d166043a670a7a7850848
 
 dbds:
   - asyn.dbd
