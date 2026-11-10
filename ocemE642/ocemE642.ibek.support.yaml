@@ -122,9 +122,20 @@ entity_models:
         default: 1.8
 
       SET_TIMEOUT_S:
-        description: "Timeout for reaching setpoint (seconds)"
+        description: |-
+          Timeout in s (restarted on progress) after which the UNIMAG state machine sends a
+          setting / state command again. After RETRY retries: STATE_SM=SPNOTSET
+          (STATE_RB=6 SP_NOT_REACHED, MINOR) or STATENOTSET (STATE_RB=7 ST_NOT_REACHED, MAJOR).
         type: float
         default: 60.0
+
+      RETRY:
+        description: |-
+          Number of times the UNIMAG state machine sends a command again (current setting, ON,
+          STANDBY, polarity) when it has not been applied. An active alarm stops the retries,
+          STATE_SP=RESET interrupts them (STATE_SM back to READY). Live PV RETRY.
+        type: int
+        default: 3
 
       INIT_TIMEOUT_S:
         description: "Timeout before retrying PRG initialization (seconds)"
@@ -178,6 +189,7 @@ entity_models:
           SET_TOLERANCE:
           ZERO_TOLERANCE:
           SET_TIMEOUT_S:
+          RETRY:
           INIT_TIMEOUT_S:
           CURRENT_THRESHOLD:
           VOLTAGE_THRESHOLD:

@@ -60,7 +60,8 @@ These parameters configure each individual power supply channel.
 | `VMAX` | float | `40` | Max voltage for this slave (Volts) |
 | `SET_TOLERANCE` | float | `1.0` | Tolerance for current setpoint verification (Amperes) |
 | `ZERO_TOLERANCE` | float | `1.0` | Tolerance for zero current check (Amperes) |
-| `SET_TIMEOUT_S` | float | `10.0` | Timeout for reaching setpoint (seconds) |
+| `SET_TIMEOUT_S` | float | `60.0` | Timeout, restarted on progress, after which a command is sent again (seconds) |
+| `RETRY` | int | `3` | Times a command not applied within `SET_TIMEOUT_S` is sent again. Live PV `RETRY` |
 | `INIT_TIMEOUT_S` | float | `60.0` | Timeout before retrying PRG initialization (seconds) |
 | `CURRENT_THRESHOLD` | float | `-1` | Current threshold for unsolicited messages (A). -1 = auto (5% of IMAX) |
 | `VOLTAGE_THRESHOLD` | float | `-1` | Voltage threshold for unsolicited messages (V). -1 = auto (5% of VMAX) |
@@ -74,6 +75,16 @@ These parameters configure each individual power supply channel.
 The `CURRENT_THRESHOLD` and `VOLTAGE_THRESHOLD` parameters control when the power supply sends spontaneous COR/TEN messages:
 - Set to `-1` (default) for automatic threshold calculation (5% of IMAX/VMAX)
 - Set to a specific value to override the automatic calculation
+
+### UNIMAG State Machine
+
+`STATE_SM` publishes what the power supply is doing (READY, GOTOSET, GOTOSTATE, GOZERO, GOPOS,
+GONEG, SPNOTSET, STATENOTSET) and `RETRY_COUNT` the retries of the current step. A command not
+applied within `SET_TIMEOUT_S` is sent again up to `RETRY` times, so a step can take up to
+`SET_TIMEOUT_S` x (`RETRY` + 1) without progress before it fails. An active alarm stops the
+retries, a new ON/STANDBY or setpoint replaces a state still being retried, and `STATE_SP` =
+`RESET` interrupts everything and brings `STATE_SM` back to READY.
+This needs a driver build that provides `STATE_SM` and `RETRY`.
 
 ### Polling Configuration
 
@@ -103,7 +114,8 @@ debug_level: 0                 # Debug level (default: 0)
 ```yaml
 set_tolerance: 1.9             # Setpoint tolerance (default: 1.0)
 zero_tolerance: 1.8            # Zero tolerance (default: 1.0)
-set_timeout_s: 60              # Setpoint timeout (default: 10)
+set_timeout_s: 60              # Setpoint timeout (default: 60)
+retry: 3                       # Command retries (default: 3)
 init_timeout_s: 60             # Init timeout (default: 60)
 current_threshold: 100         # Current threshold, -1=auto (default: -1)
 voltage_threshold: 25          # Voltage threshold, -1=auto (default: -1)
