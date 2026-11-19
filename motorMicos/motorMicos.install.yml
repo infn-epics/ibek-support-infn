@@ -17,3 +17,10 @@ libs:
 runtime_files:
   - /epics/generic-source/ibek-support-infn/motorMicos/config/MP21.init.txt
   - /epics/generic-source/ibek-support-infn/motorMicos/config/Silver_bullet_extreme.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/1_exapod_fuoco.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/2_exapod_lunga.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/3_seconda_lente.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/4_lunga_shutter.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/5_prima_lente.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/6_lente_probe.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/7_piccola_libera.txt

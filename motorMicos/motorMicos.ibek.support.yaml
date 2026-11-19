@@ -149,6 +149,14 @@ entity_models:
         description: |-
           The axis number (allowed to be from 0 to controller.numAxes-1)
 
+      configFile:
+        type: str
+        description: |-
+          Optional configuration file applied only to this logical axis.
+          It is loaded after any controller-level configuration file and
+          therefore overrides matching controller-level settings.
+        default: ""
+
       DESC:
         type: str
         description: |-
@@ -234,7 +242,12 @@ entity_models:
           Display precision (EGU)
         default: 2
 
-    
+    pre_init:
+      - value: |
+          {% if configFile %}
+          SMCpolluxLoadAxisConfig("{{controller.controllerName}}", {{ADDR}}, "{{configFile}}")
+          {% endif %}
+
     databases:
       # TODO as this is a simulation I have hard coded some of the DB fields,
       # but these could easily be made into arguments above
