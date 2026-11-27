@@ -24,3 +24,5 @@ runtime_files:
   - /epics/generic-source/ibek-support-infn/motorMicos/config/5_prima_lente.txt
   - /epics/generic-source/ibek-support-infn/motorMicos/config/6_lente_probe.txt
   - /epics/generic-source/ibek-support-infn/motorMicos/config/7_piccola_libera.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/pollux1_sbn.txt
+  - /epics/generic-source/ibek-support-infn/motorMicos/config/pollux2_sbn.txt
